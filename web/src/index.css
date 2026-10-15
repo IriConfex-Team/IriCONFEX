@@ -1,111 +1,129 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import "tailwindcss";
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+/*
+ * Tokens IriConfex — fuente: Figma «IriConfex_Design», página 01 Fundamentos.
+ * Los nombres siguen la colección «Tokens IriConfex» (color/*, radio/*, sombra-*).
+ * Sin modo oscuro (regla de diseño).
+ */
+@theme {
+  /* Color */
+  --color-primario: #6b5b95;
+  --color-primario-hover: #574a7d;
+  --color-primario-suave: #efeaf6;
+  --color-primario-texto: #4a3f6b;
+  --color-fondo: #faf7f2;
+  --color-superficie: #ffffff;
+  --color-superficie-beige: #f1eae0;
+  --color-lienzo: #f3f0eb;
+  --color-borde: #e4dcd1;
+  --color-borde-control: #8c8279;
+  --color-texto: #2b2622;
+  --color-texto-secundario: #6b625a;
+  --color-exito: #2e7050;
+  --color-exito-suave: #e8f2ec;
+  --color-aviso: #8a5300;
+  --color-aviso-suave: #fbf0da;
+  --color-aviso-texto: #5e3a00;
+  --color-aviso-borde: #edd3a0;
+  --color-error: #b3261e;
+  --color-error-suave: #fbeae8;
+  --color-whatsapp: #1a7f4b;
+  --color-whatsapp-presionado: #146a3e;
+  --color-deshabilitado-borde: #d9d4cd;
+  --color-ilus-linea-oscura: #3a3430;
+  --color-ilus-linea-clara: #f6f2ec;
+  --color-ilus-sin-color: #e2ded8;
+  --color-ilus-boton: #fbf9f5;
+  --color-ilus-maniqui: #f6f2ec;
+  --color-ilus-maniqui-borde: #c9c0b4;
+  --color-acento-guia: #6b5b95;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Tipografía */
+  --font-sans: "Figtree", system-ui, sans-serif;
+  --font-display: "Newsreader", Georgia, serif;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  /* Espacio: base 4 px (esp-1 = p-1 = 4 px … esp-12 = p-12 = 48 px) */
+  --spacing: 4px;
+
+  /* Radios */
+  --radius-campo: 8px;
+  --radius-boton: 12px;
+  --radius-tarjeta: 16px;
+  --radius-hoja: 24px;
+
+  /* Sombras */
+  --shadow-1: 0 1px 2px 0 rgb(43 38 34 / 0.08);
+  --shadow-2: 0 4px 16px 0 rgb(43 38 34 / 0.1);
+  --shadow-3: 0 -6px 24px 0 rgb(43 38 34 / 0.14);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
+/* Estilos de texto de Figma (mínimo 14 px) */
+@utility estilo-display {
+  font-family: var(--font-display);
   font-weight: 500;
-  color: var(--text-h);
+  font-size: 32px;
+  line-height: 38px;
+}
+@utility estilo-titulo-1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 32px;
+}
+@utility estilo-titulo-2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 21px;
+  line-height: 28px;
+}
+@utility estilo-titulo-3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+}
+@utility estilo-cuerpo {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+@utility estilo-cuerpo-fuerte {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+}
+@utility estilo-pequeno {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+}
+@utility estilo-precio {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 32px;
+  font-variant-numeric: tabular-nums;
+}
+@utility estilo-etiqueta {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
   }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+  body {
+    @apply bg-fondo text-texto estilo-cuerpo antialiased;
+    margin: 0;
+    min-height: 100svh;
   }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
 }
