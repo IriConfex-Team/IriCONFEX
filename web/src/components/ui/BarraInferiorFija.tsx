@@ -2,8 +2,11 @@ import { formatColones } from '../../lib/formatColones'
 import { cx } from '../../lib/cx'
 
 export interface BarraInferiorFijaProps {
-  /** Precio estimado total calculado en el servidor. `null` = falta en la tabla (a confirmar). */
-  precioEstimado: number | null
+  /**
+   * Precio estimado total calculado en el servidor. `null` = falta en la tabla (a confirmar).
+   * Sin valor no se muestra precio (antes de HU-18).
+   */
+  precioEstimado?: number | null
   /** Deshabilita «Siguiente» hasta cumplir el paso. */
   deshabilitada?: boolean
   textoBoton?: string
@@ -30,7 +33,9 @@ export function BarraInferiorFija({
       )}
     >
       <div className="flex min-w-0 flex-1 flex-col gap-0.5" aria-live="polite">
-        {precioEstimado === null ? (
+        {precioEstimado === undefined ? (
+          deshabilitada && <p className="m-0 estilo-pequeno text-texto-secundario">Elige una opción para continuar.</p>
+        ) : precioEstimado === null ? (
           <p className="m-0 estilo-cuerpo-fuerte text-texto">Precio a confirmar por la costurera</p>
         ) : (
           <>

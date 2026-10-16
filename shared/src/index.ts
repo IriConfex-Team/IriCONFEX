@@ -6,3 +6,5 @@
 export function esNombreValido(nombre: string): boolean {
   return nombre.trim().length > 0;
 }
+
+export * from './motor';

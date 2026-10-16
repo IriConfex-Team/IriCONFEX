@@ -16,6 +16,12 @@ describe('BarraInferiorFija', () => {
     expect(screen.getByRole('button', { name: 'Siguiente' })).toBeEnabled()
   })
 
+  it('sin precio calculado aún no muestra ningún monto', () => {
+    render(<BarraInferiorFija deshabilitada />)
+    expect(screen.queryByText(/Precio/)).not.toBeInTheDocument()
+    expect(screen.getByText('Elige una opción para continuar.')).toBeInTheDocument()
+  })
+
   it('deshabilitada bloquea «Siguiente»', () => {
     render(<BarraInferiorFija precioEstimado={10000} deshabilitada />)
     expect(screen.getByRole('button', { name: 'Siguiente' })).toBeDisabled()
