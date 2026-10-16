@@ -1,3 +1,4 @@
+const variableSinUsar = 1
 import { DesignPreview } from './pages/DesignPreview'
 
 // Mientras el flujo genérico (HU-23) no esté listo, la portada muestra el sistema de diseño.
