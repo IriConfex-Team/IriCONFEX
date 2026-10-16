@@ -1,12 +1,17 @@
 import {
   elegir,
   evaluarFlujo,
+  ilustrar,
+  ilustrarOpcion,
   iniciarSeleccion,
+  mismaIlustracion,
   textoEncabezado,
   type ConfiguracionCategoria,
   type Conflicto,
   type EstadoPaso,
+  type Ilustracion,
   type Opcion,
+  type Seleccion,
 } from '@iriconfex/shared'
 import { useMemo, useState } from 'react'
 import {
@@ -18,6 +23,8 @@ import {
   SelectorSiNo,
   TarjetaOpcion,
 } from '../components/ui'
+import { cx } from '../lib/cx'
+import { IlustracionPrenda } from './IlustracionPrenda'
 
 export interface FlujoConfiguracionProps {
   configuracion: ConfiguracionCategoria
@@ -88,13 +95,16 @@ export function FlujoConfiguracion({ configuracion }: FlujoConfiguracionProps) {
 
       <main className="flex flex-1 flex-col gap-4 px-4 py-6">
         {terminado ? (
-          <Resumen pasos={estado.pasos} onEditar={irA} />
+          <>
+            <VistaPrenda ilustracion={ilustrar(configuracion, seleccion)} grande />
+            <Resumen pasos={estado.pasos} onEditar={irA} />
+          </>
         ) : (
           <>
             {aviso && <AvisoEnLinea tipo="aviso">{aviso}</AvisoEnLinea>}
             <Conflictos conflictos={estado.conflictos} pasoActual={actual.paso.id} nombreDelPaso={nombreDelPaso} onIr={irA} />
             {actual.paso.nota && <AvisoEnLinea>{actual.paso.nota}</AvisoEnLinea>}
-            <Paso estado={actual} onElegir={alElegir} />
+            <Paso configuracion={configuracion} seleccion={seleccion} estado={actual} onElegir={alElegir} />
           </>
         )}
       </main>
@@ -111,8 +121,23 @@ export function FlujoConfiguracion({ configuracion }: FlujoConfiguracionProps) {
   )
 }
 
-function Paso({ estado, onElegir }: { estado: EstadoPaso; onElegir: (opcionId: string) => void }) {
+interface PasoProps {
+  configuracion: ConfiguracionCategoria
+  seleccion: Seleccion
+  estado: EstadoPaso
+  onElegir: (opcionId: string) => void
+}
+
+function Paso({ configuracion, seleccion, estado, onElegir }: PasoProps) {
   const { paso, fijada, opciones, valor } = estado
+
+  // Cómo quedaría la prenda con cada opción. Si ninguna cambia el dibujo (p. ej. la talla), no se muestran.
+  const vistas = useMemo(() => {
+    const porOpcion = new Map(opciones.map((o) => [o.id, ilustrarOpcion(configuracion, seleccion, paso.id, o.id)]))
+    const primera = porOpcion.get(opciones[0]?.id)
+    const cambian = [...porOpcion.values()].some((vista) => !mismaIlustracion(vista, primera ?? null))
+    return cambian ? porOpcion : null
+  }, [configuracion, seleccion, paso.id, opciones])
 
   if (fijada) {
     const opcion = paso.opciones.find((o) => o.id === fijada.opcion)
@@ -120,7 +145,13 @@ function Paso({ estado, onElegir }: { estado: EstadoPaso; onElegir: (opcionId: s
       <>
         {fijada.mensaje && <AvisoEnLinea>{fijada.mensaje}</AvisoEnLinea>}
         <RejillaOpciones etiqueta={paso.nombre}>
-          {opcion && <TarjetaOpcion nombre={opcion.nombre} ilustracion={<Imagen opcion={opcion} />} seleccionada />}
+          {opcion && (
+            <TarjetaOpcion
+              nombre={opcion.nombre}
+              ilustracion={<Miniatura opcion={opcion} ilustracion={ilustrar(configuracion, seleccion)} />}
+              seleccionada
+            />
+          )}
         </RejillaOpciones>
       </>
     )
@@ -128,11 +159,14 @@ function Paso({ estado, onElegir }: { estado: EstadoPaso; onElegir: (opcionId: s
 
   if (paso.presentacion === 'si-no') {
     return (
-      <SelectorSiNo
-        etiqueta={paso.nombre}
-        valor={valor === undefined ? null : valor === 'si'}
-        onCambiar={(si) => onElegir(si ? 'si' : 'no')}
-      />
+      <>
+        <VistaPrenda ilustracion={ilustrar(configuracion, seleccion)} />
+        <SelectorSiNo
+          etiqueta={paso.nombre}
+          valor={valor === undefined ? null : valor === 'si'}
+          onCambiar={(si) => onElegir(si ? 'si' : 'no')}
+        />
+      </>
     )
   }
 
@@ -142,7 +176,7 @@ function Paso({ estado, onElegir }: { estado: EstadoPaso; onElegir: (opcionId: s
         <TarjetaOpcion
           key={opcion.id}
           nombre={opcion.nombre}
-          ilustracion={<Imagen opcion={opcion} />}
+          ilustracion={<Miniatura opcion={opcion} ilustracion={vistas?.get(opcion.id) ?? null} />}
           seleccionada={valor === opcion.id}
           onSeleccionar={() => onElegir(opcion.id)}
         />
@@ -151,8 +185,20 @@ function Paso({ estado, onElegir }: { estado: EstadoPaso; onElegir: (opcionId: s
   )
 }
 
-function Imagen({ opcion }: { opcion: Opcion }) {
-  return opcion.imagen ? <img src={opcion.imagen} alt="" className="h-full w-full object-contain" loading="lazy" /> : null
+/** Fotografía de la opción si la configuración la trae (HU-06 CA4); si no, la prenda dibujada con esa opción. */
+function Miniatura({ opcion, ilustracion }: { opcion: Opcion; ilustracion: Ilustracion | null }) {
+  if (opcion.imagen) return <img src={opcion.imagen} alt="" className="h-full w-full object-contain" loading="lazy" />
+  return <IlustracionPrenda ilustracion={ilustracion} className="h-full w-full py-2" />
+}
+
+/** La prenda armada hasta ahora, siempre sobre lienzo neutro. */
+function VistaPrenda({ ilustracion, grande = false }: { ilustracion: Ilustracion | null; grande?: boolean }) {
+  if (!ilustracion) return null
+  return (
+    <div className={cx('flex items-center justify-center rounded-tarjeta bg-lienzo', grande ? 'h-80 py-4' : 'h-48 py-3')}>
+      <IlustracionPrenda ilustracion={ilustracion} descripcion="Vista previa de tu elección" className="h-full w-full" />
+    </div>
+  )
 }
 
 /** Una elección posterior contradice otra anterior (HU-06 CA7): se explica y se ofrece cambiarla. */
