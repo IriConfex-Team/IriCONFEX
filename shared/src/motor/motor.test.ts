@@ -170,6 +170,13 @@ describe('motor de selección', () => {
     expect(ids(estado, 'b')).toEqual(['b2'])
   })
 
+  it('no fija por «única opción» un paso que depende de otro aún sin responder', () => {
+    // Sin «a», b3 queda en duda (depende de a); no se puede concluir que b sea b1 o b2.
+    expect(iniciarSeleccion(configuracion)).toEqual({})
+    const b = evaluarFlujo(configuracion, {}).pasos.find((e) => e.paso.id === 'b')
+    expect(b?.fijada).toBeNull()
+  })
+
   it('no deja elegir una opción no disponible', () => {
     expect(() => elegir(configuracion, { a: 'a1' }, 'b', 'b3')).toThrow(ErrorMotor)
     expect(() => elegir(configuracion, {}, 'x', 'y')).toThrow(ErrorMotor)

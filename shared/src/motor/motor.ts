@@ -1,5 +1,5 @@
+import { cumple, evaluar, todas, type EsPendiente, type Seleccion, type Trivalor } from './condiciones'
 import type {
-  Condicion,
   ConfiguracionCategoria,
   Opcion,
   Paso,
@@ -7,8 +7,7 @@ import type {
   ReglaVisibilidad,
 } from './esquema'
 
-/** Elección por paso: id del paso → id de la opción. */
-export type Seleccion = Readonly<Record<string, string>>
+export type { Seleccion }
 
 export interface Fijacion {
   opcion: string
@@ -71,9 +70,6 @@ export class ErrorMotor extends Error {
   }
 }
 
-/** Decide cómo tratar un paso sin valor dentro de una condición. */
-type SiFaltaValor = (pasoId: string) => boolean
-
 interface Indice {
   posicion: Map<string, number>
   pasos: Map<string, Paso>
@@ -117,25 +113,6 @@ function indexar(configuracion: ConfiguracionCategoria): Indice {
   return indice
 }
 
-function cumple(condicion: Condicion, seleccion: Seleccion, siFalta: SiFaltaValor): boolean {
-  if ('todas' in condicion) return condicion.todas.every((c) => cumple(c, seleccion, siFalta))
-  if ('alguna' in condicion) return condicion.alguna.some((c) => cumple(c, seleccion, siFalta))
-  const valor = seleccion[condicion.paso]
-  return valor === undefined ? siFalta(condicion.paso) : condicion.en.includes(valor)
-}
-
-/** Un paso sin valor nunca cumple: o está oculto, o aún no se responde. */
-const estricto: SiFaltaValor = () => false
-
-/**
- * Para filtrar opciones del paso en la posición `posicion`: un paso anterior sin valor está oculto (no cumple);
- * uno posterior sin valor aún no se responde y no restringe. Así R9 y R10 filtran de la tela hacia el escote y
- * la manga solo cuando la tela ya se eligió (HU-23 CA3).
- */
-function haciaAtras(indice: Indice, posicion: number): SiFaltaValor {
-  return (pasoId) => (indice.posicion.get(pasoId) ?? -1) > posicion
-}
-
 /** Elecciones de los pasos anteriores a `posicion` (sin mirar hacia adelante). */
 function anteriores(configuracion: ConfiguracionCategoria, seleccion: Seleccion, posicion: number): Seleccion {
   const resultado: Record<string, string> = {}
@@ -146,12 +123,23 @@ function anteriores(configuracion: ConfiguracionCategoria, seleccion: Seleccion,
   return resultado
 }
 
-function esVisible(indice: Indice, paso: Paso, seleccion: Seleccion): boolean {
-  return (indice.visibilidadDelPaso.get(paso.id) ?? []).every((regla) => cumple(regla.cuando, seleccion, estricto))
+/**
+ * Para evaluar el paso en `posicion`: un paso posterior sin valor aún no se responde, igual que uno anterior
+ * que todavía está pendiente; ambos dejan la condición en «no se sabe». Así R9 y R10 filtran de la tela hacia
+ * el escote y la manga solo cuando la tela ya se eligió (HU-23 CA3), y nada se fija antes de tiempo.
+ */
+function pendientesDesde(indice: Indice, pendientes: ReadonlySet<string>, posicion: number): EsPendiente {
+  return (pasoId) => pendientes.has(pasoId) || (indice.posicion.get(pasoId) ?? -1) > posicion
 }
 
+function visibilidad(indice: Indice, paso: Paso, seleccion: Seleccion, pendiente?: EsPendiente): Trivalor {
+  return todas((indice.visibilidadDelPaso.get(paso.id) ?? []).map((regla) => evaluar(regla.cuando, seleccion, pendiente)))
+}
+
+const esVisible = (indice: Indice, paso: Paso, seleccion: Seleccion) => visibilidad(indice, paso, seleccion) === true
+
 function reglaDeFijacion(indice: Indice, paso: Paso, seleccion: Seleccion): ReglaFijacion | undefined {
-  return (indice.fijaciones.get(paso.id) ?? []).find((regla) => cumple(regla.cuando, seleccion, estricto))
+  return (indice.fijaciones.get(paso.id) ?? []).find((regla) => cumple(regla.cuando, seleccion))
 }
 
 function reglasIncumplidas(
@@ -159,30 +147,40 @@ function reglasIncumplidas(
   paso: Paso,
   opcionId: string,
   seleccion: Seleccion,
-  siFalta: SiFaltaValor,
+  pendiente?: EsPendiente,
 ): ReglaVisibilidad[] {
   return (indice.visibilidadDeOpcion.get(claveOpcion(paso.id, opcionId)) ?? []).filter(
-    (regla) => !cumple(regla.cuando, seleccion, siFalta),
+    (regla) => evaluar(regla.cuando, seleccion, pendiente) === false,
   )
 }
 
-function opcionesDisponibles(indice: Indice, paso: Paso, seleccion: Seleccion, siFalta: SiFaltaValor): Opcion[] {
-  return paso.opciones.filter((opcion) => reglasIncumplidas(indice, paso, opcion.id, seleccion, siFalta).length === 0)
+function disponibilidad(indice: Indice, paso: Paso, opcionId: string, seleccion: Seleccion, pendiente: EsPendiente): Trivalor {
+  return todas(
+    (indice.visibilidadDeOpcion.get(claveOpcion(paso.id, opcionId)) ?? []).map((regla) =>
+      evaluar(regla.cuando, seleccion, pendiente),
+    ),
+  )
 }
 
-/** Fijación por regla, o por ser la única opción que dejan los pasos anteriores. */
+/**
+ * Fijación por regla, o por ser la única opción que dejan los pasos anteriores. Solo se fija cuando ya es seguro:
+ * si algo depende de un paso pendiente, `dudosa` es verdadero y no se fija nada.
+ */
 function fijacionDelPaso(
-  configuracion: ConfiguracionCategoria,
   indice: Indice,
   paso: Paso,
-  seleccion: Seleccion,
-): Fijacion | null {
-  const posicion = indice.posicion.get(paso.id) ?? 0
-  const previas = anteriores(configuracion, seleccion, posicion)
-  const regla = reglaDeFijacion(indice, paso, previas)
-  if (regla) return { opcion: regla.opcion, codigo: regla.codigo, mensaje: regla.mensaje }
-  const posibles = opcionesDisponibles(indice, paso, previas, haciaAtras(indice, posicion))
-  return posibles.length === 1 ? { opcion: posibles[0].id } : null
+  previas: Seleccion,
+  pendiente: EsPendiente,
+): { fijada: Fijacion | null; dudosa: boolean } {
+  for (const regla of indice.fijaciones.get(paso.id) ?? []) {
+    const resultado = evaluar(regla.cuando, previas, pendiente)
+    if (resultado === null) return { fijada: null, dudosa: true }
+    if (resultado) return { fijada: { opcion: regla.opcion, codigo: regla.codigo, mensaje: regla.mensaje }, dudosa: false }
+  }
+  const resultados = paso.opciones.map((opcion) => disponibilidad(indice, paso, opcion.id, previas, pendiente))
+  if (resultados.includes(null)) return { fijada: null, dudosa: true }
+  const posibles = paso.opciones.filter((_, i) => resultados[i])
+  return { fijada: posibles.length === 1 ? { opcion: posibles[0].id } : null, dudosa: false }
 }
 
 /**
@@ -197,33 +195,35 @@ function normalizar(
   const indice = indexar(configuracion)
   const actual: Record<string, string> = { ...seleccion }
   const limpiados: string[] = []
+  const pendientes = new Set<string>()
 
-  for (let i = desde + 1; i < configuracion.pasos.length; i++) {
-    const paso = configuracion.pasos[i]
-    const valor = actual[paso.id]
+  configuracion.pasos.forEach((paso, i) => {
+    const pendiente = pendientesDesde(indice, pendientes, i)
     const previas = anteriores(configuracion, actual, i)
+    const visible = visibilidad(indice, paso, previas, pendiente)
 
-    if (!esVisible(indice, paso, previas)) {
-      if (valor !== undefined) {
+    if (i <= desde || visible !== true) {
+      if (i > desde && visible === false && actual[paso.id] !== undefined) {
         delete actual[paso.id]
         limpiados.push(paso.id)
       }
-      continue
+      if (visible !== false && actual[paso.id] === undefined) pendientes.add(paso.id)
+      return
     }
 
-    const fijada = fijacionDelPaso(configuracion, indice, paso, actual)
+    const valor = actual[paso.id]
+    const { fijada, dudosa } = fijacionDelPaso(indice, paso, previas, pendiente)
     if (fijada) {
       if (valor !== undefined && valor !== fijada.opcion) limpiados.push(paso.id)
       actual[paso.id] = fijada.opcion
-      continue
+      return
     }
-
-    const posibles = opcionesDisponibles(indice, paso, previas, haciaAtras(indice, i))
-    if (valor !== undefined && !posibles.some((opcion) => opcion.id === valor)) {
+    if (!dudosa && valor !== undefined && disponibilidad(indice, paso, valor, previas, pendiente) === false) {
       delete actual[paso.id]
       limpiados.push(paso.id)
     }
-  }
+    if (actual[paso.id] === undefined) pendientes.add(paso.id)
+  })
 
   return { seleccion: actual, limpiados }
 }
@@ -244,24 +244,28 @@ export function iniciarSeleccion(configuracion: ConfiguracionCategoria): Selecci
 export function evaluarFlujo(configuracion: ConfiguracionCategoria, seleccion: Seleccion): EstadoFlujo {
   const indice = indexar(configuracion)
   const pasos: EstadoPaso[] = []
+  const pendientes = new Set<string>()
 
   configuracion.pasos.forEach((paso, posicion) => {
-    if (!esVisible(indice, paso, seleccion)) return
-    const siFalta = haciaAtras(indice, posicion)
+    const pendiente = pendientesDesde(indice, pendientes, posicion)
     const valor = seleccion[paso.id]
+    const visible = visibilidad(indice, paso, seleccion, pendiente)
+    if (visible !== false && valor === undefined) pendientes.add(paso.id)
+    if (visible !== true) return
+
     const conflictos: Conflicto[] =
       valor === undefined
         ? []
-        : reglasIncumplidas(indice, paso, valor, seleccion, siFalta).map((regla) => ({
+        : reglasIncumplidas(indice, paso, valor, seleccion, pendiente).map((regla) => ({
             paso: paso.id,
             codigo: regla.codigo,
             mensaje: regla.mensaje,
           }))
     pasos.push({
       paso,
-      opciones: opcionesDisponibles(indice, paso, seleccion, siFalta),
+      opciones: paso.opciones.filter((o) => disponibilidad(indice, paso, o.id, seleccion, pendiente) !== false),
       valor,
-      fijada: fijacionDelPaso(configuracion, indice, paso, seleccion),
+      fijada: fijacionDelPaso(indice, paso, anteriores(configuracion, seleccion, posicion), pendiente).fijada,
       conflictos,
     })
   })
@@ -282,16 +286,15 @@ export function elegir(
   pasoId: string,
   opcionId: string,
 ): ResultadoEleccion {
-  const indice = indexar(configuracion)
   const { paso, posicion } = buscarPaso(configuracion, pasoId)
+  const estado = evaluarFlujo(configuracion, seleccion).pasos.find((e) => e.paso.id === pasoId)
 
-  if (!esVisible(indice, paso, seleccion)) throw new ErrorMotor(`El paso «${pasoId}» no aplica a esta selección.`)
+  if (!estado) throw new ErrorMotor(`El paso «${pasoId}» no aplica a esta selección.`)
   if (!paso.opciones.some((opcion) => opcion.id === opcionId)) {
     throw new ErrorMotor(`La opción «${opcionId}» no existe en el paso «${pasoId}».`)
   }
-  const fijada = fijacionDelPaso(configuracion, indice, paso, seleccion)
-  if (fijada && fijada.opcion !== opcionId) throw new ErrorMotor(`El paso «${pasoId}» está fijado.`)
-  if (reglasIncumplidas(indice, paso, opcionId, seleccion, haciaAtras(indice, posicion)).length > 0) {
+  if (estado.fijada && estado.fijada.opcion !== opcionId) throw new ErrorMotor(`El paso «${pasoId}» está fijado.`)
+  if (!estado.opciones.some((opcion) => opcion.id === opcionId)) {
     throw new ErrorMotor(`La opción «${opcionId}» no está disponible en el paso «${pasoId}».`)
   }
 
@@ -353,7 +356,7 @@ export function validarSeleccion(
         mensaje: fijacion.mensaje ?? `«${paso.nombre}» está fijado en otra opción.`,
       })
     }
-    for (const regla of reglasIncumplidas(indice, paso, valor, seleccion, estricto)) {
+    for (const regla of reglasIncumplidas(indice, paso, valor, seleccion)) {
       errores.push({
         paso: paso.id,
         tipo: 'regla-incumplida',

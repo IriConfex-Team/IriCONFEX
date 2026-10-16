@@ -26,6 +26,22 @@ const mujerBlusa: [string, string][] = [
   ['base', 'dos-piezas'],
 ]
 
+describe('nada se elige solo antes de tiempo', () => {
+  it('al iniciar no hay ninguna elección', () => {
+    expect(iniciarSeleccion(configuracion)).toEqual({})
+  })
+
+  it('tras elegir perfil y base, el escote y los acabados siguen sin elegir', () => {
+    const s = recorrer(['perfil', 'mujer'], ['base', 'dos-piezas'])
+    expect(s).toEqual({ perfil: 'mujer', base: 'dos-piezas' })
+  })
+
+  it('una fijación que solo depende de lo ya elegido sí se aplica de inmediato', () => {
+    expect(recorrer(['perfil', 'hombre'])).toMatchObject({ base: 'dos-piezas', 'acabado-superior': 'simple' })
+    expect(recorrer(['perfil', 'bebe'])).toMatchObject({ base: 'dos-piezas', 'grupo-talla': 'bebe' })
+  })
+})
+
 describe('Anexo A 8.1 · perfiles y base', () => {
   it('ofrece exactamente cuatro perfiles (HU-04 CA1)', () => {
     expect(opciones({}, 'perfil')).toEqual(['mujer', 'hombre', 'nino', 'bebe'])
