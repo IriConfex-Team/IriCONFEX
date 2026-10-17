@@ -15,6 +15,7 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    "paths": { "@iriconfex/shared": ["../shared/src/index.ts"] },
 
     /* Linting */
     "noUnusedLocals": true,

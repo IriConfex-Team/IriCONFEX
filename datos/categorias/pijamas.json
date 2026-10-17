@@ -1,0 +1,669 @@
+{
+  "version": 1,
+  "categoria": { "id": "pijamas", "nombre": "Arma tu pijama" },
+  "encabezado": { "paso": "perfil", "plantilla": "Pijama para {opcion}" },
+  "pasos": [
+    {
+      "id": "perfil",
+      "nombre": "¿Para quién es la pijama?",
+      "presentacion": "tarjetas",
+      "reiniciaAlCambiar": true,
+      "opciones": [
+        { "id": "mujer", "nombre": "Mujer" },
+        { "id": "hombre", "nombre": "Hombre" },
+        { "id": "nino", "nombre": "Niño o niña" },
+        { "id": "bebe", "nombre": "Bebé" }
+      ]
+    },
+    {
+      "id": "base",
+      "nombre": "Base",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "una-pieza", "nombre": "1 pieza (bata)" },
+        { "id": "dos-piezas", "nombre": "2 piezas" }
+      ]
+    },
+    {
+      "id": "escote",
+      "nombre": "Escote",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "redondo", "nombre": "Redondo" },
+        { "id": "v", "nombre": "En V" },
+        { "id": "bralette", "nombre": "Bralette" },
+        {
+          "id": "camisero",
+          "nombre": "Cuello camisero",
+          "descripcion": "Con botonadura completa al frente."
+        }
+      ]
+    },
+    {
+      "id": "manga",
+      "nombre": "Manga",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "tirantes", "nombre": "Tirantes" },
+        { "id": "sin-manga", "nombre": "Sin manga" },
+        { "id": "corta", "nombre": "Manga corta" },
+        { "id": "tres-cuartos", "nombre": "Manga 3/4" },
+        { "id": "larga", "nombre": "Manga larga" }
+      ]
+    },
+    {
+      "id": "botones",
+      "nombre": "¿Botones a medio pecho?",
+      "presentacion": "si-no",
+      "nota": "Son 3 botones pequeños decorativos.",
+      "opciones": [
+        { "id": "si", "nombre": "Sí" },
+        { "id": "no", "nombre": "No" }
+      ]
+    },
+    {
+      "id": "largo",
+      "nombre": "Largo",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "rodilla", "nombre": "A la rodilla" },
+        { "id": "media-pierna", "nombre": "Media pierna" },
+        { "id": "corta", "nombre": "Corta" },
+        { "id": "bralette-crop", "nombre": "Bralette crop" },
+        { "id": "cintura", "nombre": "A la cintura" },
+        { "id": "cadera", "nombre": "A la cadera" }
+      ]
+    },
+    {
+      "id": "aberturas",
+      "nombre": "Aberturas",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "sin-aberturas", "nombre": "Sin aberturas" },
+        { "id": "laterales", "nombre": "Laterales" },
+        { "id": "al-frente", "nombre": "Al frente" }
+      ]
+    },
+    {
+      "id": "es-nina",
+      "nombre": "¿Es para niña?",
+      "presentacion": "si-no",
+      "opciones": [
+        { "id": "si", "nombre": "Sí" },
+        { "id": "no", "nombre": "No" }
+      ]
+    },
+    {
+      "id": "acabado-superior",
+      "nombre": "Acabado de la parte de arriba",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "simple", "nombre": "Simple" },
+        { "id": "encaje", "nombre": "Encaje" },
+        { "id": "repulgo", "nombre": "Repulgo" },
+        { "id": "vuelitos", "nombre": "Vuelitos" }
+      ]
+    },
+    {
+      "id": "tipo-inferior",
+      "nombre": "Parte de abajo",
+      "presentacion": "tarjetas",
+      "nota": "Cintura con elástico, sin bolsillos ni cordón, bota recta (o borde jogger si se elige en niños).",
+      "opciones": [
+        { "id": "pantalon-largo", "nombre": "Pantalón largo" },
+        { "id": "capri", "nombre": "Capri" },
+        { "id": "short", "nombre": "Short corto" }
+      ]
+    },
+    {
+      "id": "abertura-lateral",
+      "nombre": "¿Abertura lateral pequeña?",
+      "presentacion": "si-no",
+      "opciones": [
+        { "id": "si", "nombre": "Sí" },
+        { "id": "no", "nombre": "No" }
+      ]
+    },
+    {
+      "id": "acabado-inferior",
+      "nombre": "Acabado de la parte de abajo",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "simple", "nombre": "Simple" },
+        { "id": "encaje", "nombre": "Encaje" },
+        { "id": "repulgo", "nombre": "Repulgo" },
+        { "id": "vuelitos", "nombre": "Vuelitos" },
+        { "id": "jogger", "nombre": "Borde jogger tipo pretina" }
+      ]
+    },
+    {
+      "id": "tela-superior",
+      "nombre": "Tela de la parte de arriba",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "brush", "nombre": "Brush" },
+        { "id": "satin", "nombre": "Satín", "descripcion": "Solo en piezas holgadas; requiere más tela." },
+        { "id": "satin-alicrado", "nombre": "Satín alicrado" },
+        { "id": "resorte", "nombre": "Resorte" },
+        { "id": "rib", "nombre": "Rib acanalado" },
+        { "id": "modal", "nombre": "Modal" }
+      ]
+    },
+    {
+      "id": "tela-inferior",
+      "nombre": "Tela de la parte de abajo",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "brush", "nombre": "Brush" },
+        { "id": "satin", "nombre": "Satín", "descripcion": "Solo en piezas holgadas; requiere más tela." },
+        { "id": "satin-alicrado", "nombre": "Satín alicrado" },
+        { "id": "resorte", "nombre": "Resorte" },
+        { "id": "rib", "nombre": "Rib acanalado" },
+        { "id": "modal", "nombre": "Modal" }
+      ]
+    },
+    {
+      "id": "modalidad-talla",
+      "nombre": "¿Cómo indicas la talla?",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "universal", "nombre": "Talla estándar" },
+        { "id": "medida", "nombre": "Mis medidas" },
+        { "id": "presencial", "nombre": "Medición presencial" }
+      ]
+    },
+    {
+      "id": "grupo-talla",
+      "nombre": "Grupo de talla",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "bebe", "nombre": "Bebé (meses)" },
+        { "id": "nino", "nombre": "Niño (2 a 12)" },
+        { "id": "adulto", "nombre": "Adulto (S a XL)" },
+        { "id": "plus", "nombre": "Plus (2XL a 5XL)" }
+      ]
+    },
+    {
+      "id": "talla-superior",
+      "nombre": "Talla de la parte de arriba",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "bebe-0-3", "nombre": "0-3 meses" },
+        { "id": "bebe-3-6", "nombre": "3-6 meses" },
+        { "id": "bebe-6-9", "nombre": "6-9 meses" },
+        { "id": "bebe-9-12", "nombre": "9-12 meses" },
+        { "id": "nino-2", "nombre": "2" },
+        { "id": "nino-4", "nombre": "4" },
+        { "id": "nino-6", "nombre": "6" },
+        { "id": "nino-8", "nombre": "8" },
+        { "id": "nino-10", "nombre": "10" },
+        { "id": "nino-12", "nombre": "12" },
+        { "id": "adulto-s", "nombre": "S" },
+        { "id": "adulto-m", "nombre": "M" },
+        { "id": "adulto-l", "nombre": "L" },
+        { "id": "adulto-xl", "nombre": "XL" },
+        { "id": "plus-2xl", "nombre": "2XL" },
+        { "id": "plus-3xl", "nombre": "3XL" },
+        { "id": "plus-4xl", "nombre": "4XL" },
+        { "id": "plus-5xl", "nombre": "5XL" }
+      ]
+    },
+    {
+      "id": "talla-inferior",
+      "nombre": "Talla de la parte de abajo",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "bebe-0-3", "nombre": "0-3 meses" },
+        { "id": "bebe-3-6", "nombre": "3-6 meses" },
+        { "id": "bebe-6-9", "nombre": "6-9 meses" },
+        { "id": "bebe-9-12", "nombre": "9-12 meses" },
+        { "id": "nino-2", "nombre": "2" },
+        { "id": "nino-4", "nombre": "4" },
+        { "id": "nino-6", "nombre": "6" },
+        { "id": "nino-8", "nombre": "8" },
+        { "id": "nino-10", "nombre": "10" },
+        { "id": "nino-12", "nombre": "12" },
+        { "id": "adulto-s", "nombre": "S" },
+        { "id": "adulto-m", "nombre": "M" },
+        { "id": "adulto-l", "nombre": "L" },
+        { "id": "adulto-xl", "nombre": "XL" },
+        { "id": "plus-2xl", "nombre": "2XL" },
+        { "id": "plus-3xl", "nombre": "3XL" },
+        { "id": "plus-4xl", "nombre": "4XL" },
+        { "id": "plus-5xl", "nombre": "5XL" }
+      ]
+    },
+    {
+      "id": "bata-salida",
+      "nombre": "¿Agregar bata de salida?",
+      "presentacion": "si-no",
+      "nota": "Largo sobre la rodilla, en la misma tela de tu pijama.",
+      "opciones": [
+        { "id": "si", "nombre": "Sí" },
+        { "id": "no", "nombre": "No" }
+      ]
+    },
+    {
+      "id": "bata-salida-manga",
+      "nombre": "Manga de la bata de salida",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "tres-cuartos", "nombre": "Manga 3/4" },
+        { "id": "larga", "nombre": "Manga larga" }
+      ]
+    },
+    {
+      "id": "bata-salida-acabado",
+      "nombre": "Acabado de la bata de salida",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "simple", "nombre": "Simple" },
+        { "id": "encaje", "nombre": "Encaje" },
+        { "id": "con-vivo", "nombre": "Con vivo" }
+      ]
+    }
+  ],
+  "reglas": [
+    {
+      "tipo": "fijacion",
+      "codigo": "A8.1",
+      "paso": "base",
+      "opcion": "dos-piezas",
+      "cuando": { "paso": "perfil", "en": ["hombre", "nino", "bebe"] },
+      "mensaje": "Pijama de 2 piezas"
+    },
+
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.1",
+      "objetivo": { "paso": "escote", "opciones": ["v"] },
+      "cuando": { "paso": "perfil", "en": ["mujer", "hombre"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.1",
+      "objetivo": { "paso": "escote", "opciones": ["bralette"] },
+      "cuando": { "paso": "perfil", "en": ["mujer"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.2",
+      "objetivo": { "paso": "escote", "opciones": ["camisero"] },
+      "cuando": { "paso": "base", "en": ["dos-piezas"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R10",
+      "objetivo": { "paso": "escote", "opciones": ["camisero"] },
+      "cuando": { "paso": "tela-superior", "en": ["satin", "satin-alicrado", "modal"] },
+      "mensaje": "El cuello camisero solo se confecciona en satín, satín alicrado o modal."
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R9",
+      "objetivo": { "paso": "escote", "opciones": ["bralette"] },
+      "cuando": { "paso": "tela-superior", "en": ["brush", "satin-alicrado", "resorte", "rib", "modal"] },
+      "mensaje": "El satín puro solo se confecciona en piezas holgadas."
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R9",
+      "objetivo": { "paso": "escote", "opciones": ["redondo", "v"] },
+      "cuando": {
+        "alguna": [
+          { "paso": "tela-superior", "en": ["brush", "satin-alicrado", "resorte", "rib", "modal"] },
+          { "todas": [{ "paso": "perfil", "en": ["mujer"] }, { "paso": "manga", "en": ["tirantes", "sin-manga"] }] }
+        ]
+      },
+      "mensaje": "El satín puro solo se confecciona en piezas holgadas."
+    },
+
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.1",
+      "objetivo": { "paso": "manga", "opciones": ["tirantes"] },
+      "cuando": { "paso": "perfil", "en": ["mujer"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.2",
+      "objetivo": { "paso": "manga", "opciones": ["tres-cuartos"] },
+      "cuando": { "todas": [{ "paso": "perfil", "en": ["mujer"] }, { "paso": "base", "en": ["dos-piezas"] }] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.2",
+      "objetivo": { "paso": "manga", "opciones": ["larga"] },
+      "cuando": { "paso": "base", "en": ["dos-piezas"] }
+    },
+    {
+      "tipo": "fijacion",
+      "codigo": "R1",
+      "paso": "manga",
+      "opcion": "tirantes",
+      "cuando": { "paso": "escote", "en": ["bralette"] },
+      "mensaje": "El escote bralette lleva tirantes."
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R2",
+      "objetivo": { "paso": "manga", "opciones": ["tirantes", "sin-manga", "tres-cuartos"] },
+      "cuando": { "paso": "escote", "en": ["redondo", "v", "bralette"] },
+      "mensaje": "El cuello camisero lleva manga corta o larga con botonadura completa."
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R9",
+      "objetivo": { "paso": "manga", "opciones": ["corta", "tres-cuartos", "larga"] },
+      "cuando": {
+        "alguna": [
+          { "paso": "tela-superior", "en": ["brush", "satin-alicrado", "resorte", "rib", "modal"] },
+          { "paso": "escote", "en": ["camisero"] }
+        ]
+      },
+      "mensaje": "El satín puro solo se confecciona en piezas holgadas."
+    },
+
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.2",
+      "objetivo": { "paso": "botones" },
+      "cuando": { "paso": "perfil", "en": ["mujer"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R3",
+      "objetivo": { "paso": "botones" },
+      "cuando": {
+        "todas": [{ "paso": "manga", "en": ["sin-manga", "corta"] }, { "paso": "escote", "en": ["redondo", "v"] }]
+      }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R4",
+      "objetivo": { "paso": "botones" },
+      "cuando": { "paso": "manga", "en": ["sin-manga", "corta", "tres-cuartos", "larga"] }
+    },
+
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.1",
+      "objetivo": { "paso": "largo" },
+      "cuando": { "paso": "perfil", "en": ["mujer"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.2",
+      "objetivo": { "paso": "largo", "opciones": ["rodilla", "media-pierna", "corta"] },
+      "cuando": { "paso": "base", "en": ["una-pieza"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.2",
+      "objetivo": { "paso": "largo", "opciones": ["bralette-crop", "cintura", "cadera"] },
+      "cuando": { "paso": "base", "en": ["dos-piezas"] }
+    },
+    {
+      "tipo": "fijacion",
+      "codigo": "A8.2",
+      "paso": "largo",
+      "opcion": "cadera",
+      "cuando": { "paso": "escote", "en": ["camisero"] },
+      "mensaje": "La blusa con cuello camisero va a la cadera."
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.2",
+      "objetivo": { "paso": "aberturas" },
+      "cuando": { "paso": "base", "en": ["una-pieza"] }
+    },
+
+    {
+      "tipo": "visibilidad",
+      "codigo": "R5",
+      "objetivo": { "paso": "es-nina" },
+      "cuando": { "paso": "perfil", "en": ["nino", "bebe"] }
+    },
+    {
+      "tipo": "fijacion",
+      "codigo": "A8.1",
+      "paso": "acabado-superior",
+      "opcion": "simple",
+      "cuando": { "paso": "perfil", "en": ["hombre"] },
+      "mensaje": "Para hombre el acabado es simple."
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.4",
+      "objetivo": { "paso": "acabado-superior", "opciones": ["encaje"] },
+      "cuando": {
+        "todas": [
+          { "paso": "perfil", "en": ["mujer"] },
+          { "alguna": [{ "paso": "escote", "en": ["bralette"] }, { "paso": "manga", "en": ["tirantes", "tres-cuartos"] }] }
+        ]
+      }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.4",
+      "objetivo": { "paso": "acabado-superior", "opciones": ["repulgo"] },
+      "cuando": { "todas": [{ "paso": "perfil", "en": ["mujer"] }, { "paso": "manga", "en": ["tirantes", "corta"] }] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R5",
+      "objetivo": { "paso": "acabado-superior", "opciones": ["vuelitos"] },
+      "cuando": {
+        "alguna": [
+          { "paso": "perfil", "en": ["mujer"] },
+          { "todas": [{ "paso": "perfil", "en": ["nino", "bebe"] }, { "paso": "es-nina", "en": ["si"] }] }
+        ]
+      }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.4",
+      "objetivo": { "paso": "acabado-superior", "opciones": ["vuelitos"] },
+      "cuando": { "paso": "manga", "en": ["tirantes", "sin-manga", "corta"] }
+    },
+
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.1",
+      "objetivo": { "paso": "tipo-inferior" },
+      "cuando": { "paso": "base", "en": ["dos-piezas"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.3",
+      "objetivo": { "paso": "tipo-inferior", "opciones": ["capri"] },
+      "cuando": { "paso": "perfil", "en": ["mujer"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.3",
+      "objetivo": { "paso": "abertura-lateral" },
+      "cuando": { "todas": [{ "paso": "perfil", "en": ["mujer"] }, { "paso": "tipo-inferior", "en": ["capri", "short"] }] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.1",
+      "objetivo": { "paso": "acabado-inferior" },
+      "cuando": { "paso": "base", "en": ["dos-piezas"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.3",
+      "objetivo": { "paso": "acabado-inferior", "opciones": ["encaje", "repulgo"] },
+      "cuando": { "todas": [{ "paso": "perfil", "en": ["mujer"] }, { "paso": "tipo-inferior", "en": ["short"] }] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R5",
+      "objetivo": { "paso": "acabado-inferior", "opciones": ["vuelitos"] },
+      "cuando": {
+        "alguna": [
+          { "paso": "perfil", "en": ["mujer"] },
+          { "todas": [{ "paso": "perfil", "en": ["nino", "bebe"] }, { "paso": "es-nina", "en": ["si"] }] }
+        ]
+      }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.3",
+      "objetivo": { "paso": "acabado-inferior", "opciones": ["vuelitos"] },
+      "cuando": { "paso": "tipo-inferior", "en": ["short"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.3",
+      "objetivo": { "paso": "acabado-inferior", "opciones": ["jogger"] },
+      "cuando": {
+        "todas": [{ "paso": "perfil", "en": ["nino", "bebe"] }, { "paso": "tipo-inferior", "en": ["pantalon-largo"] }]
+      }
+    },
+
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.5",
+      "objetivo": { "paso": "tela-superior", "opciones": ["satin-alicrado"] },
+      "cuando": { "paso": "perfil", "en": ["mujer", "nino", "bebe"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R6",
+      "objetivo": { "paso": "tela-inferior" },
+      "cuando": { "paso": "base", "en": ["dos-piezas"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.5",
+      "objetivo": { "paso": "tela-inferior", "opciones": ["satin-alicrado"] },
+      "cuando": { "paso": "perfil", "en": ["mujer", "nino", "bebe"] }
+    },
+
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.7",
+      "objetivo": { "paso": "modalidad-talla", "opciones": ["medida"] },
+      "cuando": { "paso": "perfil", "en": ["mujer", "hombre"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.7",
+      "objetivo": { "paso": "grupo-talla", "opciones": ["bebe"] },
+      "cuando": { "paso": "perfil", "en": ["bebe"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.7",
+      "objetivo": { "paso": "grupo-talla", "opciones": ["nino"] },
+      "cuando": { "paso": "perfil", "en": ["nino"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.7",
+      "objetivo": { "paso": "grupo-talla", "opciones": ["adulto", "plus"] },
+      "cuando": { "paso": "perfil", "en": ["mujer", "hombre"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.7",
+      "objetivo": { "paso": "talla-superior" },
+      "cuando": { "paso": "modalidad-talla", "en": ["universal"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.7",
+      "objetivo": { "paso": "talla-inferior" },
+      "cuando": {
+        "todas": [{ "paso": "base", "en": ["dos-piezas"] }, { "paso": "modalidad-talla", "en": ["universal"] }]
+      }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R8",
+      "objetivo": { "paso": "talla-superior", "opciones": ["bebe-0-3", "bebe-3-6", "bebe-6-9", "bebe-9-12"] },
+      "cuando": { "paso": "grupo-talla", "en": ["bebe"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R8",
+      "objetivo": { "paso": "talla-superior", "opciones": ["nino-2", "nino-4", "nino-6", "nino-8", "nino-10", "nino-12"] },
+      "cuando": { "paso": "grupo-talla", "en": ["nino"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R8",
+      "objetivo": { "paso": "talla-superior", "opciones": ["adulto-s", "adulto-m", "adulto-l", "adulto-xl"] },
+      "cuando": { "paso": "grupo-talla", "en": ["adulto"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R8",
+      "objetivo": { "paso": "talla-superior", "opciones": ["plus-2xl", "plus-3xl", "plus-4xl", "plus-5xl"] },
+      "cuando": { "paso": "grupo-talla", "en": ["plus"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R8",
+      "objetivo": { "paso": "talla-inferior", "opciones": ["bebe-0-3", "bebe-3-6", "bebe-6-9", "bebe-9-12"] },
+      "cuando": { "paso": "grupo-talla", "en": ["bebe"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R8",
+      "objetivo": { "paso": "talla-inferior", "opciones": ["nino-2", "nino-4", "nino-6", "nino-8", "nino-10", "nino-12"] },
+      "cuando": { "paso": "grupo-talla", "en": ["nino"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R8",
+      "objetivo": { "paso": "talla-inferior", "opciones": ["adulto-s", "adulto-m", "adulto-l", "adulto-xl"] },
+      "cuando": { "paso": "grupo-talla", "en": ["adulto"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "R8",
+      "objetivo": { "paso": "talla-inferior", "opciones": ["plus-2xl", "plus-3xl", "plus-4xl", "plus-5xl"] },
+      "cuando": { "paso": "grupo-talla", "en": ["plus"] }
+    },
+
+    {
+      "tipo": "visibilidad",
+      "codigo": "R7",
+      "objetivo": { "paso": "bata-salida" },
+      "cuando": {
+        "todas": [
+          { "paso": "perfil", "en": ["mujer"] },
+          { "paso": "manga", "en": ["tirantes"] },
+          { "paso": "tela-superior", "en": ["satin", "satin-alicrado"] },
+          { "paso": "grupo-talla", "en": ["adulto", "plus"] },
+          {
+            "alguna": [
+              { "paso": "base", "en": ["una-pieza"] },
+              {
+                "todas": [
+                  { "paso": "tipo-inferior", "en": ["short"] },
+                  { "paso": "tela-inferior", "en": ["satin", "satin-alicrado"] }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.6",
+      "objetivo": { "paso": "bata-salida-manga" },
+      "cuando": { "paso": "bata-salida", "en": ["si"] }
+    },
+    {
+      "tipo": "visibilidad",
+      "codigo": "A8.6",
+      "objetivo": { "paso": "bata-salida-acabado" },
+      "cuando": { "paso": "bata-salida", "en": ["si"] }
+    }
+  ]
+}

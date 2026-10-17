@@ -1,0 +1,28 @@
+export {
+  cargarConfiguracion,
+  ErrorConfiguracion,
+  esquemaConfiguracion,
+  type Condicion,
+  type ConfiguracionCategoria,
+  type Opcion,
+  type Paso,
+  type Regla,
+  type ReglaFijacion,
+  type ReglaVisibilidad,
+} from './esquema'
+export {
+  elegir,
+  ErrorMotor,
+  evaluarFlujo,
+  iniciarSeleccion,
+  textoEncabezado,
+  validarSeleccion,
+  type Conflicto,
+  type ErrorSeleccion,
+  type EstadoFlujo,
+  type EstadoPaso,
+  type Fijacion,
+  type ResultadoEleccion,
+  type Seleccion,
+  type TipoErrorSeleccion,
+} from './motor'

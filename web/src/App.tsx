@@ -1,8 +1,11 @@
+import { configuraciones } from './flujo/configuraciones'
+import { FlujoConfiguracion } from './flujo/FlujoConfiguracion'
 import { DesignPreview } from './pages/DesignPreview'
 
-// Mientras el flujo genérico (HU-23) no esté listo, la portada muestra el sistema de diseño.
+// Sin router todavía: /design muestra el sistema de diseño (T-04); el resto, el flujo genérico (HU-23).
 function App() {
-  return <DesignPreview />
+  if (window.location.pathname.startsWith('/design')) return <DesignPreview />
+  return <FlujoConfiguracion configuracion={configuraciones[0]} />
 }
 
 export default App
