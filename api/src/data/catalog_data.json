@@ -1,0 +1,19 @@
+{
+  "profiles": [
+    { "id": "mujer", "label": "Mujer", "allowedPieces": [1, 2] },
+    { "id": "hombre", "label": "Hombre", "allowedPieces": [2], "fixedFinish": "simple" },
+    { "id": "nino", "label": "Niño / Niña", "allowedPieces": [2] },
+    { "id": "bebe", "label": "Bebé", "allowedPieces": [2] }
+  ],
+  "rules": [
+    { "id": "R1", "description": "Hombre fijo en 2 piezas y acabado simple" },
+    { "id": "R5", "description": "Acabado con vuelitos solo disponible para mujer o niña" },
+    { "id": "R9", "description": "Satín puro requiere etiqueta de cuidado especial" }
+  ],
+  "fabric_prices_reference": [
+    { "type": "algodon", "price_per_meter_crc": 3500 },
+    { "type": "licra", "price_per_meter_crc": 4000 },
+    { "type": "satin", "price_per_meter_crc": 4500 },
+    { "type": "franela", "price_per_meter_crc": 3800 }
+  ]
+}
