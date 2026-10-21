@@ -1,0 +1,14 @@
+codigo,nombre,seccion,soloConManga,min,max
+ancho_espalda,Ancho de espalda,SUPERIOR,false,25,60
+contorno_busto,Contorno de busto,SUPERIOR,false,60,180
+separacion_busto,Separación de busto,SUPERIOR,false,8,30
+altura_busto,Altura de busto,SUPERIOR,false,15,40
+largo_talle,Largo de talle,SUPERIOR,false,30,60
+largo_total,Largo total,SUPERIOR,false,40,150
+largo_manga,Largo de manga,SUPERIOR,true,10,70
+ancho_manga,Ancho de manga,SUPERIOR,true,15,60
+contorno_cintura,Contorno de cintura,INFERIOR,false,50,170
+contorno_cadera,Contorno de cadera,INFERIOR,false,60,190
+altura_cadera,Altura de cadera,INFERIOR,false,10,30
+largo_tiro,Largo de tiro,INFERIOR,false,15,50
+largo_short,Largo de short,INFERIOR,false,20,60

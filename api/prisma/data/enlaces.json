@@ -1,0 +1,18 @@
+{
+  "pasos": {
+    "perfil": "perfil",
+    "tela-superior": "tela",
+    "tela-inferior": "tela",
+    "grupo-talla": "grupoTalla",
+    "tipo-inferior": "tipoPieza"
+  },
+  "alias": {
+    "perfil": { "nino": "nino_nina" },
+    "tela": { "satin-alicrado": "satin_alicrado", "rib": "rib_acanalado" },
+    "tipoPieza": { "pantalon-largo": "pantalon_largo" }
+  },
+  "adicionales": {
+    "escote:camisero": "cuello_camisero",
+    "bata-salida:si": "bata_salida"
+  }
+}

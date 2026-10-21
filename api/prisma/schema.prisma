@@ -1,0 +1,495 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TipoRegla {
+  VISIBILIDAD
+  FIJACION
+}
+
+enum PiezaPaso {
+  GENERAL
+  SUPERIOR
+  INFERIOR
+  ADICIONAL
+}
+
+enum TipoColor {
+  LISO
+  ESTAMPADO
+}
+
+enum EstadoPrecio {
+  CONFIRMADO
+  ESTIMADO
+  PENDIENTE
+}
+
+enum RolBase {
+  SUPERIOR
+  INFERIOR
+  COMPLETA
+}
+
+enum Seccion {
+  SUPERIOR
+  INFERIOR
+}
+
+enum ModalidadTalla {
+  UNIVERSAL
+  MEDIDA
+  PRESENCIAL
+}
+
+enum Entrega {
+  RETIRO
+  ENVIO
+}
+
+enum RolPieza {
+  SUPERIOR
+  INFERIOR
+}
+
+enum ColorOrigen {
+  CATALOGO
+  PERSONALIZADO
+  SIN_PREFERENCIA
+}
+
+model Categoria {
+  id                   Int           @id @default(autoincrement())
+  codigo               String        @unique @db.VarChar(40)
+  nombre               String        @db.VarChar(80)
+  imagenUrl            String?       @db.VarChar(255)
+  versionConfiguracion String        @db.VarChar(20)
+  encabezado           Json?
+  ilustracion          Json?
+  activa               Boolean       @default(true)
+  orden                Int           @default(0)
+  perfiles             Perfil[]
+  pasos                Paso[]
+  camposMedida         CampoMedida[]
+
+  @@map("categoria")
+}
+
+model Perfil {
+  id            Int                @id @default(autoincrement())
+  categoriaId   Int
+  categoria     Categoria          @relation(fields: [categoriaId], references: [id])
+  codigo        String             @db.VarChar(40)
+  nombre        String             @db.VarChar(60)
+  permiteMedida Boolean            @default(false)
+  orden         Int                @default(0)
+  opciones      Opcion[]
+  gruposTalla   PerfilGrupoTalla[]
+  fotos         GaleriaFoto[]
+  solicitudes   Solicitud[]
+
+  @@unique([categoriaId, codigo])
+  @@map("perfil")
+}
+
+model Paso {
+  id                Int              @id @default(autoincrement())
+  categoriaId       Int
+  categoria         Categoria        @relation(fields: [categoriaId], references: [id])
+  codigo            String           @db.VarChar(60)
+  nombre            String           @db.VarChar(120)
+  nota              String?          @db.VarChar(255)
+  presentacion      String           @default("tarjetas") @db.VarChar(20)  
+  pieza             PiezaPaso        @default(GENERAL)
+  orden             Int              @default(0)
+  obligatorio       Boolean          @default(true)
+  reiniciaAlCambiar Boolean          @default(false)
+  opciones          Opcion[]
+  reglas            Regla[]
+
+  @@unique([categoriaId, codigo])
+  @@map("paso")
+}
+
+model Opcion {
+  id               Int                   @id @default(autoincrement())
+  pasoId           Int
+  paso             Paso                  @relation(fields: [pasoId], references: [id])
+  codigo           String                @db.VarChar(60)
+  nombre           String                @db.VarChar(80)
+  descripcion      String?               @db.VarChar(255)
+  imagenUrl        String?               @db.VarChar(255)
+  orden            Int                   @default(0)
+  activa           Boolean               @default(true)
+  perfilId         Int?
+  perfil           Perfil?               @relation(fields: [perfilId], references: [id])
+  telaId           Int?
+  tela             Tela?                 @relation(fields: [telaId], references: [id])
+  tipoPiezaId      Int?
+  tipoPieza        TipoPieza?            @relation(fields: [tipoPiezaId], references: [id])
+  grupoTallaId     Int?
+  grupoTalla       GrupoTalla?           @relation(fields: [grupoTallaId], references: [id])
+  adicionalId      Int?
+  adicional        Adicional?            @relation(fields: [adicionalId], references: [id])
+  reglasAfectada   ReglaOpcionAfectada[]
+
+  @@unique([pasoId, codigo])
+  @@map("opcion")
+}
+
+model Regla {
+  id                Int                   @id @default(autoincrement())
+  codigo            String                @db.VarChar(10)
+  tipo              TipoRegla
+  orden             Int                   @default(0)
+  pasoId            Int
+  paso              Paso                  @relation(fields: [pasoId], references: [id])
+  descripcion       String?               @db.VarChar(255)
+  mensaje           String?               @db.VarChar(160)
+  condicion         Json
+  activa            Boolean               @default(true)
+  opcionesAfectadas ReglaOpcionAfectada[]
+
+  @@map("regla")
+}
+
+model ReglaOpcionAfectada {
+  reglaId  Int
+  regla    Regla  @relation(fields: [reglaId], references: [id], onDelete: Cascade)
+  opcionId Int
+  opcion   Opcion @relation(fields: [opcionId], references: [id], onDelete: Cascade)
+
+  @@id([reglaId, opcionId])
+  @@map("regla_opcion_afectada")
+}
+
+model Tela {
+  id            Int              @id @default(autoincrement())
+  codigo        String           @unique @db.VarChar(40)
+  nombre        String           @db.VarChar(60)
+  descripcion   String?          @db.VarChar(160)
+  imagenUrl     String?          @db.VarChar(255)
+  factorConsumo Decimal          @default(1) @db.Decimal(4, 2)
+  soloHolgada   Boolean          @default(false)
+  activa        Boolean          @default(true)
+  orden         Int              @default(0)
+  colores       Color[]
+  opciones      Opcion[]
+  precios       PrecioPieza[]
+  piezas        SolicitudPieza[]
+
+  @@map("tela")
+}
+
+model Color {
+  id             Int              @id @default(autoincrement())
+  telaId         Int
+  tela           Tela             @relation(fields: [telaId], references: [id], onDelete: Cascade)
+  tipo           TipoColor
+  codigoCatalogo String?          @db.VarChar(20)
+  nombre         String           @db.VarChar(60)
+  familia        String?          @db.VarChar(30)
+  tonoHex        String?          @db.Char(7)
+  miniaturaUrl   String?          @db.VarChar(255)
+  ofrecer        Boolean          @default(true)
+  orden          Int              @default(0)
+  piezas         SolicitudPieza[]
+
+  @@unique([telaId, tipo, nombre])
+  @@map("color")
+}
+
+model TipoPieza {
+  id       Int              @id @default(autoincrement())
+  codigo   String           @unique @db.VarChar(30)
+  nombre   String           @db.VarChar(60)
+  rolBase  RolBase
+  opciones Opcion[]
+  precios  PrecioPieza[]
+  piezas   SolicitudPieza[]
+
+  @@map("tipo_pieza")
+}
+
+model Adicional {
+  id          Int                  @id @default(autoincrement())
+  codigo      String               @unique @db.VarChar(30)
+  nombre      String               @db.VarChar(60)
+  opciones    Opcion[]
+  recargos    Recargo[]
+  solicitudes SolicitudAdicional[]
+
+  @@map("adicional")
+}
+
+model ColumnaPrecio {
+  id          Int           @id @default(autoincrement())
+  codigo      String        @unique @db.VarChar(20)
+  nombre      String        @db.VarChar(40)
+  orden       Int           @default(0)
+  precios     PrecioPieza[]
+  recargos    Recargo[]
+  tallas      Talla[]
+  solicitudes Solicitud[]
+
+  @@map("columna_precio")
+}
+
+model PrecioPieza {
+  id              Int           @id @default(autoincrement())
+  tipoPiezaId     Int
+  tipoPieza       TipoPieza     @relation(fields: [tipoPiezaId], references: [id])
+  telaId          Int
+  tela            Tela          @relation(fields: [telaId], references: [id])
+  columnaPrecioId Int
+  columna         ColumnaPrecio @relation(fields: [columnaPrecioId], references: [id])
+  montoCrc        Int?
+  estado          EstadoPrecio  @default(PENDIENTE)
+
+  @@unique([tipoPiezaId, telaId, columnaPrecioId])
+  @@map("precio_pieza")
+}
+
+model Recargo {
+  id              Int           @id @default(autoincrement())
+  adicionalId     Int
+  adicional       Adicional     @relation(fields: [adicionalId], references: [id])
+  columnaPrecioId Int
+  columna         ColumnaPrecio @relation(fields: [columnaPrecioId], references: [id])
+  montoCrc        Int?
+  estado          EstadoPrecio  @default(PENDIENTE)
+
+  @@unique([adicionalId, columnaPrecioId])
+  @@map("recargo")
+}
+
+model GrupoTalla {
+  id       Int                @id @default(autoincrement())
+  codigo   String             @unique @db.VarChar(20)
+  nombre   String             @db.VarChar(40)
+  tallas   Talla[]
+  perfiles PerfilGrupoTalla[]
+  opciones Opcion[]
+
+  @@map("grupo_talla")
+}
+
+model Talla {
+  id              Int              @id @default(autoincrement())
+  grupoTallaId    Int
+  grupoTalla      GrupoTalla       @relation(fields: [grupoTallaId], references: [id])
+  columnaPrecioId Int
+  columna         ColumnaPrecio    @relation(fields: [columnaPrecioId], references: [id])
+  codigo          String           @db.VarChar(12)
+  orden           Int              @default(0)
+  medidasRef      TallaMedidaRef[]
+  piezas          SolicitudPieza[]
+
+  @@unique([grupoTallaId, codigo])
+  @@map("talla")
+}
+
+model PerfilGrupoTalla {
+  perfilId     Int
+  perfil       Perfil     @relation(fields: [perfilId], references: [id], onDelete: Cascade)
+  grupoTallaId Int
+  grupoTalla   GrupoTalla @relation(fields: [grupoTallaId], references: [id], onDelete: Cascade)
+
+  @@id([perfilId, grupoTallaId])
+  @@map("perfil_grupo_talla")
+}
+
+model CampoMedida {
+  id              Int              @id @default(autoincrement())
+  categoriaId     Int
+  categoria       Categoria        @relation(fields: [categoriaId], references: [id])
+  codigo          String           @db.VarChar(40)
+  nombre          String           @db.VarChar(60)
+  seccion         Seccion
+  soloConManga    Boolean          @default(false)
+  instruccion     String           @default("") @db.VarChar(255)
+  rutaIlustracion String?          @db.VarChar(255)
+  unidad          String           @default("cm") @db.VarChar(5)
+  valorMin        Decimal          @db.Decimal(5, 1)
+  valorMax        Decimal          @db.Decimal(5, 1)
+  orden           Int              @default(0)
+  referencias     TallaMedidaRef[]
+  medidas         SolicitudMedida[]
+
+  @@unique([categoriaId, codigo])
+  @@map("campo_medida")
+}
+
+model TallaMedidaRef {
+  tallaId       Int
+  talla         Talla       @relation(fields: [tallaId], references: [id], onDelete: Cascade)
+  campoMedidaId Int
+  campoMedida   CampoMedida @relation(fields: [campoMedidaId], references: [id], onDelete: Cascade)
+  valorCm       Decimal     @db.Decimal(5, 1)
+
+  @@id([tallaId, campoMedidaId])
+  @@map("talla_medida_ref")
+}
+
+model Negocio {
+  id        Int     @id @default(autoincrement())
+  nombre    String  @db.VarChar(80)
+  direccion String  @db.VarChar(200)
+  senas     String? @db.VarChar(200)
+  horario   String  @db.VarChar(200)
+  whatsapp  String  @db.VarChar(8)
+  urlMapa   String? @db.VarChar(255)
+
+  @@map("negocio")
+}
+
+model GaleriaFoto {
+  id             Int     @id @default(autoincrement())
+  perfilId       Int
+  perfil         Perfil  @relation(fields: [perfilId], references: [id])
+  estiloEtiqueta String  @db.VarChar(60)
+  imagenUrl      String  @db.VarChar(255)
+  orden          Int     @default(0)
+  activa         Boolean @default(true)
+
+  @@map("galeria_foto")
+}
+
+model AvisoPrivacidad {
+  id           Int         @id @default(autoincrement())
+  version      String      @unique @db.VarChar(10)
+  texto        String      @db.Text
+  urlPolitica  String      @db.VarChar(255)
+  vigenteDesde DateTime    @db.Date
+  vigente      Boolean     @default(true)
+  solicitudes  Solicitud[]
+
+  @@map("aviso_privacidad")
+}
+
+model RegistroEliminacion {
+  id                Int      @id @default(autoincrement())
+  fechaEjecucion    DateTime @default(now())
+  cantidadEliminada Int
+
+  @@map("registro_eliminacion")
+}
+
+model Provincia {
+  id       Int      @id @default(autoincrement())
+  nombre   String   @unique @db.VarChar(40)
+  cantones Canton[]
+
+  @@map("provincia")
+}
+
+model Canton {
+  id          Int        @id @default(autoincrement())
+  provinciaId Int
+  provincia   Provincia  @relation(fields: [provinciaId], references: [id])
+  nombre      String     @db.VarChar(60)
+  distritos   Distrito[]
+
+  @@unique([provinciaId, nombre])
+  @@map("canton")
+}
+
+model Distrito {
+  id       Int              @id @default(autoincrement())
+  cantonId Int
+  canton   Canton           @relation(fields: [cantonId], references: [id])
+  nombre   String           @db.VarChar(60)
+  envios   SolicitudEnvio[]
+
+  @@unique([cantonId, nombre])
+  @@map("distrito")
+}
+
+model Solicitud {
+  id                   String               @id @default(uuid()) @db.Uuid
+  referencia           String               @unique @db.VarChar(16)
+  perfilId             Int
+  perfil               Perfil               @relation(fields: [perfilId], references: [id])
+  fechaHora            DateTime             @default(now())
+  nombreCliente        String               @db.VarChar(60)
+  telefono             String               @db.Char(8)
+  selecciones          Json
+  modalidadTalla       ModalidadTalla
+  columnaPrecioId      Int?
+  columnaPrecio        ColumnaPrecio?       @relation(fields: [columnaPrecioId], references: [id])
+  entrega              Entrega
+  precioEstimadoCrc    Int?
+  avisoId              Int
+  aviso                AvisoPrivacidad      @relation(fields: [avisoId], references: [id])
+  avisoAceptadoEn      DateTime
+  versionConfiguracion String               @db.VarChar(20)
+  mensajeWhatsapp      String               @db.Text
+  fechaVencimiento     DateTime
+  piezas               SolicitudPieza[]
+  adicionales          SolicitudAdicional[]
+  medidas              SolicitudMedida[]
+  envio                SolicitudEnvio?
+
+  @@index([fechaVencimiento])
+  @@map("solicitud")
+}
+
+model SolicitudPieza {
+  id           Int         @id @default(autoincrement())
+  solicitudId  String      @db.Uuid
+  solicitud    Solicitud   @relation(fields: [solicitudId], references: [id], onDelete: Cascade)
+  rol          RolPieza
+  tipoPiezaId  Int
+  tipoPieza    TipoPieza   @relation(fields: [tipoPiezaId], references: [id])
+  telaId       Int
+  tela         Tela        @relation(fields: [telaId], references: [id])
+  tallaId      Int?
+  talla        Talla?      @relation(fields: [tallaId], references: [id])
+  colorId      Int?
+  color        Color?      @relation(fields: [colorId], references: [id])
+  colorOrigen  ColorOrigen @default(SIN_PREFERENCIA)
+  colorTexto   String?     @db.VarChar(60)
+  tonoHex      String?     @db.Char(7)
+  montoCrc     Int?
+
+  @@unique([solicitudId, rol])
+  @@map("solicitud_pieza")
+}
+
+model SolicitudAdicional {
+  solicitudId String    @db.Uuid
+  solicitud   Solicitud @relation(fields: [solicitudId], references: [id], onDelete: Cascade)
+  adicionalId Int
+  adicional   Adicional @relation(fields: [adicionalId], references: [id])
+  montoCrc    Int?
+
+  @@id([solicitudId, adicionalId])
+  @@map("solicitud_adicional")
+}
+
+model SolicitudMedida {
+  id            Int         @id @default(autoincrement())
+  solicitudId   String      @db.Uuid
+  solicitud     Solicitud   @relation(fields: [solicitudId], references: [id], onDelete: Cascade)
+  campoMedidaId Int
+  campoMedida   CampoMedida @relation(fields: [campoMedidaId], references: [id])
+  valorCm       Decimal     @db.Decimal(5, 1)
+
+  @@unique([solicitudId, campoMedidaId])
+  @@map("solicitud_medida")
+}
+
+model SolicitudEnvio {
+  solicitudId String    @id @db.Uuid
+  solicitud   Solicitud @relation(fields: [solicitudId], references: [id], onDelete: Cascade)
+  distritoId  Int
+  distrito    Distrito  @relation(fields: [distritoId], references: [id])
+  senas       String    @db.VarChar(200)
+
+  @@map("solicitud_envio")
+}
