@@ -139,27 +139,27 @@
     {
       "id": "tela-superior",
       "nombre": "Tela de la parte de arriba",
-      "presentacion": "tarjetas",
+      "presentacion": "lista",
       "opciones": [
-        { "id": "brush", "nombre": "Brush" },
-        { "id": "satin", "nombre": "Satín", "descripcion": "Solo en piezas holgadas; requiere más tela." },
-        { "id": "satin-alicrado", "nombre": "Satín alicrado" },
-        { "id": "resorte", "nombre": "Resorte" },
-        { "id": "rib", "nombre": "Rib acanalado" },
-        { "id": "modal", "nombre": "Modal" }
+        { "id": "brush", "nombre": "Brush", "descripcion": "Tejido de punto suave y cepillado al tacto. Abriga ligeramente y es ideal para pijamas cómodas de uso diario.", "imagen": "/telas/brush.jpg" },
+        { "id": "satin", "nombre": "Satín", "descripcion": "Tela brillante y lisa con caída fluida. Fresca y elegante, perfecta para pijamas y batas de aspecto lujoso.", "imagen": "/telas/satin.jpg", "etiqueta": "Solo en piezas holgadas; requiere más tela." },
+        { "id": "satin-alicrado", "nombre": "Satín alicrado", "descripcion": "Satín con elasticidad que se adapta al cuerpo. Mantiene el brillo y la caída, y da mayor libertad de movimiento.", "imagen": "/telas/satin-alicrado.jpg" },
+        { "id": "resorte", "nombre": "Resorte", "descripcion": "Tejido acanalado muy elástico que se usa en puños, cuellos y pretinas para que ajusten sin apretar.", "imagen": "/telas/resorte.jpg" },
+        { "id": "rib", "nombre": "Rib acanalado", "descripcion": "Punto con canales verticales, elástico y suave. Se ciñe al cuerpo, abriga moderadamente y luce moderno.", "imagen": "/telas/rib.jpg" },
+        { "id": "modal", "nombre": "Modal", "descripcion": "Fibra ligera, sedosa y muy fresca, con excelente caída. Es transpirable e ideal para climas cálidos o para dormir.", "imagen": "/telas/modal.jpg" }
       ]
     },
     {
       "id": "tela-inferior",
       "nombre": "Tela de la parte de abajo",
-      "presentacion": "tarjetas",
+      "presentacion": "lista",
       "opciones": [
-        { "id": "brush", "nombre": "Brush" },
-        { "id": "satin", "nombre": "Satín", "descripcion": "Solo en piezas holgadas; requiere más tela." },
-        { "id": "satin-alicrado", "nombre": "Satín alicrado" },
-        { "id": "resorte", "nombre": "Resorte" },
-        { "id": "rib", "nombre": "Rib acanalado" },
-        { "id": "modal", "nombre": "Modal" }
+        { "id": "brush", "nombre": "Brush", "descripcion": "Tejido de punto suave y cepillado al tacto. Abriga ligeramente y es ideal para pijamas cómodas de uso diario.", "imagen": "/telas/brush.jpg" },
+        { "id": "satin", "nombre": "Satín", "descripcion": "Tela brillante y lisa con caída fluida. Fresca y elegante, perfecta para pijamas y batas de aspecto lujoso.", "imagen": "/telas/satin.jpg", "etiqueta": "Solo en piezas holgadas; requiere más tela." },
+        { "id": "satin-alicrado", "nombre": "Satín alicrado", "descripcion": "Satín con elasticidad que se adapta al cuerpo. Mantiene el brillo y la caída, y da mayor libertad de movimiento.", "imagen": "/telas/satin-alicrado.jpg" },
+        { "id": "resorte", "nombre": "Resorte", "descripcion": "Tejido acanalado muy elástico que se usa en puños, cuellos y pretinas para que ajusten sin apretar.", "imagen": "/telas/resorte.jpg" },
+        { "id": "rib", "nombre": "Rib acanalado", "descripcion": "Punto con canales verticales, elástico y suave. Se ciñe al cuerpo, abriga moderadamente y luce moderno.", "imagen": "/telas/rib.jpg" },
+        { "id": "modal", "nombre": "Modal", "descripcion": "Fibra ligera, sedosa y muy fresca, con excelente caída. Es transpirable e ideal para climas cálidos o para dormir.", "imagen": "/telas/modal.jpg" }
       ]
     },
     {

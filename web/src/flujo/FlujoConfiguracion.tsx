@@ -19,9 +19,11 @@ import {
   BarraInferiorFija,
   Boton,
   EncabezadoFlujo,
+  ListaOpciones,
   RejillaOpciones,
   SelectorSiNo,
   TarjetaOpcion,
+  TarjetaOpcionDetallada,
 } from '../components/ui'
 import { cx } from '../lib/cx'
 import { encuadrar, unirCajas, type Caja } from './encuadre'
@@ -114,6 +116,7 @@ export function FlujoConfiguracion({ configuracion }: FlujoConfiguracionProps) {
         <BarraInferiorFija
           className="sticky bottom-0"
           deshabilitada={!puedeSeguir}
+          ayuda={estado.conflictos.length > 0 ? 'Resuelve el aviso para continuar.' : undefined}
           textoBoton={indice === estado.pasos.length - 1 ? 'Revisar' : 'Siguiente'}
           onSiguiente={alSiguiente}
         />
@@ -169,6 +172,24 @@ function Paso({ configuracion, seleccion, estado, onElegir }: PasoProps) {
           onCambiar={(si) => onElegir(si ? 'si' : 'no')}
         />
       </>
+    )
+  }
+
+  if (paso.presentacion === 'lista') {
+    return (
+      <ListaOpciones etiqueta={paso.nombre}>
+        {opciones.map((opcion) => (
+          <TarjetaOpcionDetallada
+            key={opcion.id}
+            nombre={opcion.nombre}
+            descripcion={opcion.descripcion}
+            etiqueta={opcion.etiqueta}
+            imagen={<Miniatura opcion={opcion} ilustracion={vistas?.get(opcion.id) ?? null} cubrir />}
+            seleccionada={valor === opcion.id}
+            onSeleccionar={() => onElegir(opcion.id)}
+          />
+        ))}
+      </ListaOpciones>
     )
   }
 
@@ -243,11 +264,22 @@ interface MiniaturaProps {
   enfoque?: ReadonlySet<string>
   onMedir?: (caja: Caja | null) => void
   vista?: Caja | null
+  /** La foto llena el recuadro (lista) en lugar de ajustarse dentro. */
+  cubrir?: boolean
 }
 
 /** Fotografía de la opción si la configuración la trae (HU-06 CA4); si no, la prenda dibujada con esa opción. */
-function Miniatura({ opcion, ilustracion, enfoque, onMedir, vista }: MiniaturaProps) {
-  if (opcion.imagen) return <img src={opcion.imagen} alt="" className="h-full w-full object-contain" loading="lazy" />
+function Miniatura({ opcion, ilustracion, enfoque, onMedir, vista, cubrir = false }: MiniaturaProps) {
+  if (opcion.imagen) {
+    return (
+      <img
+        src={opcion.imagen}
+        alt=""
+        className={cx('h-full w-full', cubrir ? 'object-cover' : 'object-contain')}
+        loading="lazy"
+      />
+    )
+  }
   return (
     <IlustracionPrenda
       ilustracion={ilustracion}

@@ -20,6 +20,8 @@ const esquemaOpcion = z.strictObject({
   id: z.string().min(1),
   nombre: z.string().min(1),
   descripcion: z.string().optional(),
+  /** Aviso corto que acompaña a la opción (p. ej. una condición de confección). */
+  etiqueta: z.string().optional(),
   /** Ruta o URL de la fotografía de referencia (HU-06 CA4). */
   imagen: z.string().optional(),
 })
@@ -27,8 +29,11 @@ const esquemaOpcion = z.strictObject({
 const esquemaPaso = z.strictObject({
   id: z.string().min(1),
   nombre: z.string().min(1),
-  /** Cómo se presenta: tarjetas de opción o selector sí / no (opciones con id «si» y «no»). */
-  presentacion: z.enum(['tarjetas', 'si-no']),
+  /**
+   * Cómo se presenta: tarjetas en rejilla, lista con foto y descripción, o selector sí / no
+   * (opciones con id «si» y «no»).
+   */
+  presentacion: z.enum(['tarjetas', 'lista', 'si-no']),
   /** Texto fijo que se informa sin preguntar (p. ej. detalles que no se eligen). */
   nota: z.string().optional(),
   /** Al cambiar este paso se borran todas las elecciones posteriores (HU-04 CA3). */

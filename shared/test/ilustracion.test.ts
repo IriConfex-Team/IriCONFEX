@@ -80,6 +80,8 @@ describe('ilustración por capas (HU-06 CA4)', () => {
     explorar(iniciarSeleccion(configuracion), 0)
 
     const faltantes = [...pedidos].filter((archivo) => !existsSync(join(publica, 'ilustraciones', archivo)))
+    const imagenes = configuracion.pasos.flatMap((p) => p.opciones.flatMap((o) => (o.imagen ? [o.imagen] : [])))
+    faltantes.push(...imagenes.filter((ruta) => !existsSync(join(publica, ruta))))
     expect(combinaciones).toBeGreaterThan(1000)
     expect(faltantes).toEqual([])
   })
