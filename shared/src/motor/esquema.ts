@@ -20,15 +20,22 @@ const esquemaOpcion = z.strictObject({
   id: z.string().min(1),
   nombre: z.string().min(1),
   descripcion: z.string().optional(),
+  /** Aviso corto que acompaña a la opción (p. ej. una condición de confección). */
+  etiqueta: z.string().optional(),
   /** Ruta o URL de la fotografía de referencia (HU-06 CA4). */
   imagen: z.string().optional(),
+  /** Al elegirla se muestra la información del local (HU-15, HU-16). */
+  muestraInfoLocal: z.boolean().optional(),
 })
 
 const esquemaPaso = z.strictObject({
   id: z.string().min(1),
   nombre: z.string().min(1),
-  /** Cómo se presenta: tarjetas de opción o selector sí / no (opciones con id «si» y «no»). */
-  presentacion: z.enum(['tarjetas', 'si-no']),
+  /**
+   * Cómo se presenta: tarjetas en rejilla, lista con foto y descripción, o selector sí / no
+   * (opciones con id «si» y «no»).
+   */
+  presentacion: z.enum(['tarjetas', 'lista', 'si-no']),
   /** Texto fijo que se informa sin preguntar (p. ej. detalles que no se eligen). */
   nota: z.string().optional(),
   /** Al cambiar este paso se borran todas las elecciones posteriores (HU-04 CA3). */
@@ -94,6 +101,24 @@ const esquemaIlustracion = z.strictObject({
     .min(1),
 })
 
+/** Datos del negocio (HU-03). El teléfono son 8 dígitos de Costa Rica. */
+const esquemaNegocio = z.strictObject({
+  nombre: z.string().min(1),
+  direccion: z.string().min(1),
+  senas: z.string().optional(),
+  /** Enlace de mapas; si falta, se busca la dirección. */
+  mapa: z.string().optional(),
+  horario: z.array(z.strictObject({ dias: z.string().min(1), horas: z.string().min(1) })).min(1),
+  whatsapp: z.string().regex(/^[245678]\d{7}$/, 'debe tener 8 dígitos de Costa Rica'),
+  /** Datos que la clienta aún no confirma (solo para el equipo). */
+  pendientes: z.array(z.string()).optional(),
+})
+
+/** Agrupación de los pasos en el resumen y en el mensaje (HU-21, HU-22). Un paso sin sección va al final. */
+const esquemaResumen = z.strictObject({
+  secciones: z.array(z.strictObject({ titulo: z.string().min(1), pasos: z.array(z.string().min(1)).min(1) })).min(1),
+})
+
 export const esquemaConfiguracion = z.strictObject({
   $schema: z.string().optional(),
   version: z.literal(1),
@@ -103,6 +128,8 @@ export const esquemaConfiguracion = z.strictObject({
   pasos: z.array(esquemaPaso).min(1),
   reglas: z.array(esquemaRegla),
   ilustracion: esquemaIlustracion.optional(),
+  negocio: esquemaNegocio.optional(),
+  resumen: esquemaResumen.optional(),
 })
 
 export type Opcion = z.infer<typeof esquemaOpcion>
@@ -112,6 +139,8 @@ export type ReglaFijacion = z.infer<typeof esquemaReglaFijacion>
 export type Regla = z.infer<typeof esquemaRegla>
 export type ConfiguracionCategoria = z.infer<typeof esquemaConfiguracion>
 export type ConfiguracionIlustracion = z.infer<typeof esquemaIlustracion>
+export type Negocio = z.infer<typeof esquemaNegocio>
+export type ConfiguracionResumen = z.infer<typeof esquemaResumen>
 
 export class ErrorConfiguracion extends Error {
   readonly problemas: string[]
@@ -179,6 +208,9 @@ function verificarReferencias(configuracion: ConfiguracionCategoria): string[] {
   })
 
   if (configuracion.encabezado) revisarOpciones('encabezado', configuracion.encabezado.paso, [])
+  configuracion.resumen?.secciones.forEach((seccion) =>
+    seccion.pasos.forEach((paso) => revisarOpciones(`resumen, sección «${seccion.titulo}»`, paso, [])),
+  )
 
   const { ilustracion } = configuracion
   if (ilustracion) {

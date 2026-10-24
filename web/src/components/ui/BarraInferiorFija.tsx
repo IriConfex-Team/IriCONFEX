@@ -10,6 +10,8 @@ export interface BarraInferiorFijaProps {
   /** Deshabilita «Siguiente» hasta cumplir el paso. */
   deshabilitada?: boolean
   textoBoton?: string
+  /** Texto de ayuda cuando está deshabilitada (por defecto, «Elige una opción para continuar.»). */
+  ayuda?: string
   onSiguiente?: () => void
   className?: string
 }
@@ -22,6 +24,7 @@ export function BarraInferiorFija({
   precioEstimado,
   deshabilitada = false,
   textoBoton = 'Siguiente',
+  ayuda = 'Elige una opción para continuar.',
   onSiguiente,
   className,
 }: BarraInferiorFijaProps) {
@@ -34,7 +37,7 @@ export function BarraInferiorFija({
     >
       <div className="flex min-w-0 flex-1 flex-col gap-0.5" aria-live="polite">
         {precioEstimado === undefined ? (
-          deshabilitada && <p className="m-0 estilo-pequeno text-texto-secundario">Elige una opción para continuar.</p>
+          deshabilitada && <p className="m-0 estilo-pequeno text-texto-secundario">{ayuda}</p>
         ) : precioEstimado === null ? (
           <p className="m-0 estilo-cuerpo-fuerte text-texto">Precio a confirmar por la costurera</p>
         ) : (
@@ -42,7 +45,7 @@ export function BarraInferiorFija({
             <p className="m-0 estilo-pequeno text-texto-secundario">Precio estimado</p>
             <p className="m-0 estilo-precio text-texto">{formatColones(precioEstimado)}</p>
             <p className="m-0 estilo-pequeno text-texto-secundario">
-              {deshabilitada ? 'Elige una opción para continuar.' : 'Sujeto a confirmación, no incluye envío.'}
+              {deshabilitada ? ayuda : 'Sujeto a confirmación, no incluye envío.'}
             </p>
           </>
         )}

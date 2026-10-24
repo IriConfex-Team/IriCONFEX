@@ -1,5 +1,5 @@
 import { cumple, type Seleccion } from './condiciones'
-import type { ConfiguracionCategoria, ConfiguracionIlustracion } from './esquema'
+import type { Condicion, ConfiguracionCategoria, ConfiguracionIlustracion } from './esquema'
 import { elegir, ErrorMotor } from './motor'
 
 export interface PiezaIlustrada {
@@ -110,4 +110,38 @@ export function ilustrarOpcion(
 /** Dos ilustraciones dibujan exactamente lo mismo. */
 export function mismaIlustracion(a: Ilustracion | null, b: Ilustracion | null): boolean {
   return JSON.stringify(a) === JSON.stringify(b)
+}
+
+const pasosDibujados = new WeakMap<ConfiguracionCategoria, ReadonlySet<string>>()
+
+/** Pasos que cambian el dibujo: los que aparecen en condiciones o plantillas de la ilustración. */
+export function pasosQueDibujan(configuracion: ConfiguracionCategoria): ReadonlySet<string> {
+  const guardado = pasosDibujados.get(configuracion)
+  if (guardado) return guardado
+  const pasos = new Set<string>()
+  const ids = new Set(configuracion.pasos.map((p) => p.id))
+  const deCondicion = (c: Condicion): void => {
+    if ('todas' in c) c.todas.forEach(deCondicion)
+    else if ('alguna' in c) c.alguna.forEach(deCondicion)
+    else pasos.add(c.paso)
+  }
+  const dePlantilla = (texto: string) => {
+    for (const [, nombre] of texto.matchAll(marcador)) if (ids.has(nombre)) pasos.add(nombre)
+  }
+  const { ilustracion } = configuracion
+  if (ilustracion) {
+    for (const entrada of Object.values(ilustracion.variables ?? {}).flat()) {
+      dePlantilla(entrada.valor)
+      if (entrada.cuando) deCondicion(entrada.cuando)
+    }
+    for (const pieza of ilustracion.piezas) {
+      if (pieza.cuando) deCondicion(pieza.cuando)
+      for (const capa of pieza.capas) {
+        dePlantilla(capa.archivo)
+        if (capa.cuando) deCondicion(capa.cuando)
+      }
+    }
+  }
+  pasosDibujados.set(configuracion, pasos)
+  return pasos
 }

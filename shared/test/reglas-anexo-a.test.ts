@@ -27,13 +27,13 @@ const mujerBlusa: [string, string][] = [
 ]
 
 describe('nada se elige solo antes de tiempo', () => {
-  it('al iniciar no hay ninguna elección', () => {
-    expect(iniciarSeleccion(configuracion)).toEqual({})
+  it('al iniciar solo se fija lo que no depende de nada (la entrega, que tiene una sola opción)', () => {
+    expect(iniciarSeleccion(configuracion)).toEqual({ entrega: 'retiro' })
   })
 
   it('tras elegir perfil y base, el escote y los acabados siguen sin elegir', () => {
     const s = recorrer(['perfil', 'mujer'], ['base', 'dos-piezas'])
-    expect(s).toEqual({ perfil: 'mujer', base: 'dos-piezas' })
+    expect(s).toEqual({ perfil: 'mujer', base: 'dos-piezas', entrega: 'retiro' })
   })
 
   it('una fijación que solo depende de lo ya elegido sí se aplica de inmediato', () => {
@@ -183,6 +183,16 @@ describe('R6 · la tela se elige por pieza', () => {
     const s = recorrer(['perfil', 'hombre'], ['escote', 'redondo'], ['manga', 'corta'], ['tipo-inferior', 'short'], ['tela-superior', 'brush'], ['tela-inferior', 'satin'])
     expect(s['tela-superior']).toBe('brush')
     expect(s['tela-inferior']).toBe('satin')
+  })
+
+  it('cada tela trae foto y una descripción de 20 palabras o menos (HU-10 CA3); el satín lleva su etiqueta (CA5)', () => {
+    for (const paso of configuracion.pasos.filter((p) => p.id.startsWith('tela-'))) {
+      for (const tela of paso.opciones) {
+        expect(tela.imagen).toMatch(/^\/telas\/.+\.jpg$/)
+        expect(tela.descripcion?.split(/\s+/).length).toBeLessThanOrEqual(20)
+      }
+      expect(paso.opciones.find((t) => t.id === 'satin')?.etiqueta).toBe('Solo en piezas holgadas; requiere más tela.')
+    }
   })
 
   it('hombre ve cinco telas; mujer y niños, seis (HU-10 CA2)', () => {
