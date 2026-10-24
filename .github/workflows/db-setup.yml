@@ -1,0 +1,19 @@
+name: db-setup
+on:
+  push:
+    branches: [main]
+    paths:
+      - api/prisma/**
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run db:setup -w api
+        env:
+          DIRECT_URL: ${{ secrets.SUPABASE_DIRECT_URL }}
+          DATABASE_URL: ${{ secrets.SUPABASE_DIRECT_URL }}

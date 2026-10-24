@@ -30,6 +30,12 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Generar cliente de Prisma
+        run: npm run db:generate --workspace=api
+        env:
+          # prisma.config.ts exige DIRECT_URL al cargarse, aunque generate no se conecta a ninguna base
+          DIRECT_URL: postgresql://ci:ci@localhost:5432/ci
+
       - name: Compilar shared
         run: npm run build --workspace=shared
 

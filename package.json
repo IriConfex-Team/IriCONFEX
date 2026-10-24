@@ -13,6 +13,10 @@
     "build": "npm run build --workspaces",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose down",
+    "db:setup": "npm run db:setup -w api",
+    "db:reset": "npm run db:reset -w api"
   }
 }

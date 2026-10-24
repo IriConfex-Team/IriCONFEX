@@ -1,0 +1,35 @@
+name: iriconfex
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: iriconfex-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-iriconfex}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: ${POSTGRES_DB:-iriconfex}
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - iriconfex_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  db-setup:
+    build:
+      context: .
+      dockerfile: api/Dockerfile.db
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-iriconfex}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-iriconfex}
+      DIRECT_URL: postgresql://${POSTGRES_USER:-iriconfex}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-iriconfex}
+    restart: 'no'
+
+volumes:
+  iriconfex_pgdata:
