@@ -27,13 +27,13 @@ const mujerBlusa: [string, string][] = [
 ]
 
 describe('nada se elige solo antes de tiempo', () => {
-  it('al iniciar no hay ninguna elección', () => {
-    expect(iniciarSeleccion(configuracion)).toEqual({})
+  it('al iniciar solo se fija lo que no depende de nada (la entrega, que tiene una sola opción)', () => {
+    expect(iniciarSeleccion(configuracion)).toEqual({ entrega: 'retiro' })
   })
 
   it('tras elegir perfil y base, el escote y los acabados siguen sin elegir', () => {
     const s = recorrer(['perfil', 'mujer'], ['base', 'dos-piezas'])
-    expect(s).toEqual({ perfil: 'mujer', base: 'dos-piezas' })
+    expect(s).toEqual({ perfil: 'mujer', base: 'dos-piezas', entrega: 'retiro' })
   })
 
   it('una fijación que solo depende de lo ya elegido sí se aplica de inmediato', () => {

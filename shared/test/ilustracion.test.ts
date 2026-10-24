@@ -9,7 +9,7 @@ import {
   ilustrarOpcion,
   iniciarSeleccion,
   mismaIlustracion,
-  type Condicion,
+  pasosQueDibujan,
   type Seleccion,
 } from '../src'
 
@@ -27,36 +27,9 @@ function recorrer(...elecciones: [string, string][]): Seleccion {
 const nombres = (seleccion: Seleccion) =>
   ilustrar(configuracion, seleccion)?.piezas.flatMap((p) => p.archivos.map((a) => a.replace('/ilustraciones/', ''))) ?? []
 
-/** Pasos que cambian el dibujo: los que aparecen en condiciones o plantillas de la ilustración. */
-function pasosQueDibujan(): Set<string> {
-  const pasos = new Set<string>()
-  const ids = new Set(configuracion.pasos.map((p) => p.id))
-  const deCondicion = (c: Condicion): void => {
-    if ('todas' in c) c.todas.forEach(deCondicion)
-    else if ('alguna' in c) c.alguna.forEach(deCondicion)
-    else pasos.add(c.paso)
-  }
-  const dePlantilla = (texto: string) => {
-    for (const [, nombre] of texto.matchAll(/\{([^}]+)\}/g)) if (ids.has(nombre)) pasos.add(nombre)
-  }
-  const ilustracion = configuracion.ilustracion!
-  Object.values(ilustracion.variables ?? {}).flat().forEach((v) => {
-    dePlantilla(v.valor)
-    if (v.cuando) deCondicion(v.cuando)
-  })
-  for (const pieza of ilustracion.piezas) {
-    if (pieza.cuando) deCondicion(pieza.cuando)
-    for (const capa of pieza.capas) {
-      dePlantilla(capa.archivo)
-      if (capa.cuando) deCondicion(capa.cuando)
-    }
-  }
-  return pasos
-}
-
 describe('ilustración por capas (HU-06 CA4)', () => {
   it('toda combinación alcanzable en el flujo pide solo capas que existen', () => {
-    const dibujan = pasosQueDibujan()
+    const dibujan = pasosQueDibujan(configuracion)
     const ultimo = Math.max(...[...dibujan].map((id) => configuracion.pasos.findIndex((p) => p.id === id)))
     const pedidos = new Set<string>()
     let combinaciones = 0

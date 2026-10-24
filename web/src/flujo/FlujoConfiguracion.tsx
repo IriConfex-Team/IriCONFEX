@@ -5,15 +5,20 @@ import {
   ilustrarOpcion,
   iniciarSeleccion,
   mismaIlustracion,
+  normalizarTelefono,
+  pasosQueDibujan,
   textoEncabezado,
+  validarContacto,
   type ConfiguracionCategoria,
   type Conflicto,
   type EstadoPaso,
   type Ilustracion,
+  type Negocio,
   type Opcion,
   type Seleccion,
+  type SolicitudCotizacion,
 } from '@iriconfex/shared'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
   AvisoEnLinea,
   BarraInferiorFija,
@@ -24,42 +29,66 @@ import {
   SelectorSiNo,
   TarjetaOpcion,
   TarjetaOpcionDetallada,
+  type TipoAviso,
 } from '../components/ui'
 import { cx } from '../lib/cx'
 import { encuadrar, unirCajas, type Caja } from './encuadre'
 import { IlustracionPrenda } from './IlustracionPrenda'
+import { HojaInfoLocal, TarjetaInfoLocal } from './InfoLocal'
+import { PantallaContacto, type Contacto } from './PantallaContacto'
+import { PantallaResumen } from './PantallaResumen'
 
 export interface FlujoConfiguracionProps {
   configuracion: ConfiguracionCategoria
+  /** Envía la solicitud a la API (HU-22, HU-25). Sin valor, la solicitud queda lista pero no se envía. */
+  onSolicitar?: (solicitud: SolicitudCotizacion) => Promise<void>
 }
+
+/** Después de los pasos de la configuración: datos de contacto (HU-19) y resumen con el aviso (HU-20, HU-21). */
+type Fase = 'configurar' | 'contacto' | 'resumen'
 
 /**
  * Vista genérica del flujo (HU-23 CA2): muestra el siguiente paso visible, sus opciones válidas y las fijaciones.
  * No conoce ninguna prenda; todo sale de la configuración.
  */
-export function FlujoConfiguracion({ configuracion }: FlujoConfiguracionProps) {
+export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfiguracionProps) {
   const [seleccion, setSeleccion] = useState(() => iniciarSeleccion(configuracion))
   const [pasoActualId, setPasoActualId] = useState(configuracion.pasos[0].id)
   const [aviso, setAviso] = useState<string | null>(null)
-  const [terminado, setTerminado] = useState(false)
+  const [fase, setFase] = useState<Fase>('configurar')
+  const [vieneDelResumen, setVieneDelResumen] = useState(false)
+  const [contacto, setContacto] = useState<Contacto>({ nombre: '', telefono: '' })
+  const [intentoContacto, setIntentoContacto] = useState(false)
+  const [aceptado, setAceptado] = useState(false)
+  const [infoAbierta, setInfoAbierta] = useState(false)
+  const [enviando, setEnviando] = useState(false)
+  const [avisoEnvio, setAvisoEnvio] = useState<{ tipo: TipoAviso; texto: string } | null>(null)
 
+  const negocio = configuracion.negocio
   const estado = useMemo(() => evaluarFlujo(configuracion, seleccion), [configuracion, seleccion])
   const indice = Math.max(
     0,
     estado.pasos.findIndex((e) => e.paso.id === pasoActualId),
   )
   const actual = estado.pasos[indice]
+  const total = estado.pasos.length
   const nombreDelPaso = (id: string) => configuracion.pasos.find((p) => p.id === id)?.nombre ?? id
 
   const irA = (pasoId: string) => {
     setPasoActualId(pasoId)
     setAviso(null)
-    setTerminado(false)
+    setFase('configurar')
+  }
+
+  const editarDesdeResumen = (pasoId: string) => {
+    setVieneDelResumen(true)
+    irA(pasoId)
   }
 
   const alElegir = (opcionId: string) => {
     const resultado = elegir(configuracion, seleccion, actual.paso.id, opcionId)
     setSeleccion(resultado.seleccion)
+    setAvisoEnvio(null)
     if (resultado.reiniciado) setAviso('Se reinició la configuración.')
     else if (resultado.limpiados.length > 0) {
       setAviso(
@@ -68,59 +97,127 @@ export function FlujoConfiguracion({ configuracion }: FlujoConfiguracionProps) {
     } else setAviso(null)
   }
 
+  const irAlResumen = () => {
+    // Si algo quedó sin responder (p. ej. tras cambiar una elección), se vuelve a ese paso.
+    const pendiente = estado.pasos.find((e) => e.valor === undefined || e.conflictos.length > 0)
+    if (pendiente) irA(pendiente.paso.id)
+    else {
+      setVieneDelResumen(false)
+      setFase('resumen')
+    }
+  }
+
   const alSiguiente = () => {
+    if (fase === 'contacto') {
+      if (Object.keys(validarContacto(contacto)).length > 0) setIntentoContacto(true)
+      else irAlResumen()
+      return
+    }
     const siguiente = estado.pasos[indice + 1]
     if (siguiente) irA(siguiente.paso.id)
     else {
       setAviso(null)
-      setTerminado(true)
+      setFase('contacto')
     }
   }
 
   const alAtras = () => {
-    if (terminado) setTerminado(false)
+    if (fase === 'resumen') setFase('contacto')
+    else if (fase === 'contacto') irA(estado.pasos[total - 1].paso.id)
     else if (indice > 0) irA(estado.pasos[indice - 1].paso.id)
   }
 
+  const alSolicitar = async () => {
+    const solicitud: SolicitudCotizacion = {
+      categoria: configuracion.categoria.id,
+      seleccion,
+      contacto: { nombre: contacto.nombre.trim(), telefono: normalizarTelefono(contacto.telefono) },
+      consentimiento: { aceptado: true, fecha: new Date().toISOString() },
+    }
+    if (!onSolicitar) {
+      setAvisoEnvio({
+        tipo: 'info',
+        texto: 'Tu solicitud está lista. El envío por WhatsApp se activará cuando el servidor esté conectado.',
+      })
+      return
+    }
+    setEnviando(true)
+    try {
+      await onSolicitar(solicitud)
+      setAvisoEnvio({ tipo: 'exito', texto: 'Listo: tu solicitud de cotización se envió.' })
+    } catch {
+      setAvisoEnvio({ tipo: 'error', texto: 'No se pudo enviar la solicitud. Revisa tu conexión e intenta de nuevo.' })
+    } finally {
+      setEnviando(false)
+    }
+  }
+
   const encabezado = configuracion.encabezado
-  const puedeSeguir = actual.valor !== undefined && estado.conflictos.length === 0
+  const puedeSeguir =
+    fase === 'contacto' || (actual.valor !== undefined && estado.conflictos.length === 0)
+  const tituloFase = { configurar: actual.paso.nombre, contacto: 'Tus datos', resumen: 'Revisa tu solicitud' }[fase]
+  const numeroFase = { configurar: indice + 1, contacto: total + 1, resumen: total + 2 }[fase]
 
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-md flex-col bg-fondo">
       <EncabezadoFlujo
         perfil={textoEncabezado(configuracion, seleccion)}
-        paso={terminado ? 'Revisa tu elección' : actual.paso.nombre}
-        pasoActual={terminado ? estado.pasos.length : indice + 1}
-        totalPasos={estado.pasos.length}
+        paso={tituloFase}
+        pasoActual={numeroFase}
+        totalPasos={total + 2}
         onAtras={alAtras}
         onCambiarPerfil={encabezado ? () => irA(encabezado.paso) : undefined}
+        onInfoLocal={negocio ? () => setInfoAbierta(true) : undefined}
       />
 
       <main className="flex flex-1 flex-col gap-4 px-4 py-6">
-        {terminado ? (
+        {fase === 'resumen' && (
           <>
             <VistaPrenda ilustracion={ilustrar(configuracion, seleccion)} grande />
-            <Resumen pasos={estado.pasos} onEditar={irA} />
+            <PantallaResumen
+              configuracion={configuracion}
+              estado={estado}
+              contacto={contacto}
+              negocio={negocio}
+              aceptado={aceptado}
+              onAceptar={setAceptado}
+              onEditarPaso={editarDesdeResumen}
+              onEditarContacto={() => setFase('contacto')}
+              onSolicitar={alSolicitar}
+              enviando={enviando}
+            />
+            {avisoEnvio && <AvisoEnLinea tipo={avisoEnvio.tipo}>{avisoEnvio.texto}</AvisoEnLinea>}
           </>
-        ) : (
+        )}
+        {fase === 'contacto' && (
+          <PantallaContacto contacto={contacto} onCambiar={setContacto} mostrarErrores={intentoContacto} />
+        )}
+        {fase === 'configurar' && (
           <>
             {aviso && <AvisoEnLinea tipo="aviso">{aviso}</AvisoEnLinea>}
             <Conflictos conflictos={estado.conflictos} pasoActual={actual.paso.id} nombreDelPaso={nombreDelPaso} onIr={irA} />
             {actual.paso.nota && <AvisoEnLinea>{actual.paso.nota}</AvisoEnLinea>}
-            <Paso configuracion={configuracion} seleccion={seleccion} estado={actual} onElegir={alElegir} />
+            <Paso configuracion={configuracion} seleccion={seleccion} estado={actual} negocio={negocio} onElegir={alElegir} />
+            {vieneDelResumen && estado.completo && (
+              <Boton tipo="secundario" onClick={irAlResumen}>
+                Volver al resumen
+              </Boton>
+            )}
           </>
         )}
       </main>
 
-      {!terminado && (
+      {fase !== 'resumen' && (
         <BarraInferiorFija
           className="sticky bottom-0"
           deshabilitada={!puedeSeguir}
           ayuda={estado.conflictos.length > 0 ? 'Resuelve el aviso para continuar.' : undefined}
-          textoBoton={indice === estado.pasos.length - 1 ? 'Revisar' : 'Siguiente'}
+          textoBoton={fase === 'contacto' ? 'Revisar' : 'Siguiente'}
           onSiguiente={alSiguiente}
         />
       )}
+
+      {negocio && <HojaInfoLocal negocio={negocio} abierta={infoAbierta} onCerrar={() => setInfoAbierta(false)} />}
     </div>
   )
 }
@@ -129,10 +226,23 @@ interface PasoProps {
   configuracion: ConfiguracionCategoria
   seleccion: Seleccion
   estado: EstadoPaso
+  negocio?: Negocio
   onElegir: (opcionId: string) => void
 }
 
-function Paso({ configuracion, seleccion, estado, onElegir }: PasoProps) {
+/** Las opciones del paso y, si la elegida lo pide, la información del local (HU-15, HU-16). */
+function Paso({ negocio, ...props }: PasoProps) {
+  const { paso, fijada, valor } = props.estado
+  const elegida = paso.opciones.find((o) => o.id === (fijada?.opcion ?? valor))
+  return (
+    <>
+      <OpcionesDelPaso {...props} />
+      {negocio && elegida?.muestraInfoLocal && <TarjetaInfoLocal negocio={negocio} />}
+    </>
+  )
+}
+
+function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<PasoProps, 'negocio'>) {
   const { paso, fijada, opciones, valor } = estado
 
   // Cómo quedaría la prenda con cada opción. Si ninguna cambia el dibujo (p. ej. la talla), no se muestran.
@@ -153,7 +263,11 @@ function Paso({ configuracion, seleccion, estado, onElegir }: PasoProps) {
           {opcion && (
             <TarjetaOpcion
               nombre={opcion.nombre}
-              ilustracion={<Miniatura opcion={opcion} ilustracion={ilustrar(configuracion, seleccion)} />}
+              ilustracion={
+                pasosQueDibujan(configuracion).has(paso.id) || opcion.imagen ? (
+                  <Miniatura opcion={opcion} ilustracion={ilustrar(configuracion, seleccion)} />
+                ) : undefined
+              }
               seleccionada
             />
           )}
@@ -200,13 +314,15 @@ function Paso({ configuracion, seleccion, estado, onElegir }: PasoProps) {
           key={opcion.id}
           nombre={opcion.nombre}
           ilustracion={
-            <Miniatura
-              opcion={opcion}
-              ilustracion={vistas?.get(opcion.id) ?? null}
-              enfoque={vista.enfoque}
-              onMedir={vista.medidores.get(opcion.id)}
-              vista={vista.caja}
-            />
+            vistas || opcion.imagen ? (
+              <Miniatura
+                opcion={opcion}
+                ilustracion={vistas?.get(opcion.id) ?? null}
+                enfoque={vista.enfoque}
+                onMedir={vista.medidores.get(opcion.id)}
+                vista={vista.caja}
+              />
+            ) : undefined
           }
           seleccionada={valor === opcion.id}
           onSeleccionar={() => onElegir(opcion.id)}
@@ -291,12 +407,29 @@ function Miniatura({ opcion, ilustracion, enfoque, onMedir, vista, cubrir = fals
   )
 }
 
-/** La prenda armada hasta ahora, siempre sobre lienzo neutro. */
+/** La prenda armada hasta ahora, siempre sobre lienzo neutro, recortada al dibujo (sin lienzo vacío). */
 function VistaPrenda({ ilustracion, grande = false }: { ilustracion: Ilustracion | null; grande?: boolean }) {
+  const clave = JSON.stringify(ilustracion)
+  const capas = useMemo(
+    () => new Set(ilustracion?.piezas.flatMap((p) => p.archivos) ?? []) as ReadonlySet<string>,
+    // `clave` resume `ilustracion`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [clave],
+  )
+  const [recorte, setRecorte] = useState<{ clave: string; caja: Caja | null } | null>(null)
+  const alMedir = useCallback((caja: Caja | null) => setRecorte({ clave, caja }), [clave])
   if (!ilustracion) return null
+  const caja = recorte?.clave === clave && recorte.caja ? encuadrar(recorte.caja, 1) : null
   return (
-    <div className={cx('flex items-center justify-center rounded-tarjeta bg-lienzo', grande ? 'h-80 py-4' : 'h-48 py-3')}>
-      <IlustracionPrenda ilustracion={ilustracion} descripcion="Vista previa de tu elección" className="h-full w-full" />
+    <div className={cx('flex items-center justify-center rounded-tarjeta bg-lienzo', grande ? 'h-72 py-3' : 'h-48 py-3')}>
+      <IlustracionPrenda
+        ilustracion={ilustracion}
+        enfoque={capas}
+        onMedir={alMedir}
+        vista={caja}
+        descripcion="Vista previa de tu elección"
+        className="h-full w-full"
+      />
     </div>
   )
 }
@@ -329,29 +462,5 @@ function Conflictos({
         </Boton>
       ))}
     </div>
-  )
-}
-
-/** Resumen provisional hasta HU-21. */
-function Resumen({ pasos, onEditar }: { pasos: EstadoPaso[]; onEditar: (pasoId: string) => void }) {
-  return (
-    <ul className="m-0 flex list-none flex-col gap-2 p-0">
-        {pasos.map(({ paso, valor }) => (
-          <li key={paso.id} className="flex items-center justify-between gap-3 rounded-campo bg-superficie px-4 py-3 shadow-1">
-            <span className="flex flex-col">
-              <span className="estilo-pequeno text-texto-secundario">{paso.nombre}</span>
-              <span className="estilo-cuerpo-fuerte text-texto">{paso.opciones.find((o) => o.id === valor)?.nombre}</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => onEditar(paso.id)}
-              aria-label={`Cambiar ${paso.nombre}`}
-              className="cursor-pointer estilo-cuerpo-fuerte text-primario underline"
-            >
-              cambiar
-            </button>
-          </li>
-        ))}
-    </ul>
   )
 }

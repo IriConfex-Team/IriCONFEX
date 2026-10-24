@@ -169,7 +169,7 @@
       "opciones": [
         { "id": "universal", "nombre": "Talla estándar" },
         { "id": "medida", "nombre": "Mis medidas" },
-        { "id": "presencial", "nombre": "Medición presencial" }
+        { "id": "presencial", "nombre": "Medición presencial", "muestraInfoLocal": true }
       ]
     },
     {
@@ -261,6 +261,12 @@
         { "id": "encaje", "nombre": "Encaje" },
         { "id": "con-vivo", "nombre": "Con vivo" }
       ]
+    },
+    {
+      "id": "entrega",
+      "nombre": "¿Cómo recibes tu pijama?",
+      "presentacion": "tarjetas",
+      "opciones": [{ "id": "retiro", "nombre": "Retiro en el local", "muestraInfoLocal": true }]
     }
   ],
   "reglas": [
@@ -666,6 +672,29 @@
       "cuando": { "paso": "bata-salida", "en": ["si"] }
     }
   ],
+  "negocio": {
+    "nombre": "IriConfex",
+    "direccion": "Cerro Cortés, Aguas Zarcas",
+    "senas": "Frente a la plaza de deportes",
+    "horario": [
+      { "dias": "Lunes a viernes", "horas": "9:00 a 17:00" },
+      { "dias": "Sábado", "horas": "9:00 a 12:00" }
+    ],
+    "whatsapp": "83413594",
+    "pendientes": ["dirección y señas por confirmar", "enlace de mapas", "horario"]
+  },
+  "resumen": {
+    "secciones": [
+      { "titulo": "Perfil", "pasos": ["perfil", "es-nina"] },
+      { "titulo": "Base", "pasos": ["base"] },
+      { "titulo": "Parte superior", "pasos": ["escote", "manga", "botones", "largo", "aberturas", "acabado-superior"] },
+      { "titulo": "Parte inferior", "pasos": ["tipo-inferior", "abertura-lateral", "acabado-inferior"] },
+      { "titulo": "Telas", "pasos": ["tela-superior", "tela-inferior"] },
+      { "titulo": "Bata de salida", "pasos": ["bata-salida", "bata-salida-manga", "bata-salida-acabado"] },
+      { "titulo": "Tallaje", "pasos": ["modalidad-talla", "grupo-talla", "talla-superior", "talla-inferior"] },
+      { "titulo": "Entrega", "pasos": ["entrega"] }
+    ]
+  },
   "ilustracion": {
     "carpeta": "/ilustraciones",
     "relleno": [

@@ -23,6 +23,12 @@ describe('TarjetaOpcion', () => {
     expect(onSeleccionar).toHaveBeenCalledOnce()
   })
 
+  it('sin imagen se muestra compacta, sin el área de ilustración', () => {
+    const { container } = render(<TarjetaOpcion nombre="M" seleccionada />)
+    expect(container.querySelector('.bg-lienzo')).toBeNull()
+    expect(screen.getByRole('radio', { name: 'M' })).toHaveAttribute('aria-checked', 'true')
+  })
+
   it('deshabilitada muestra el motivo y no se puede elegir', async () => {
     const onSeleccionar = vi.fn()
     render(<TarjetaOpcion nombre="Manga larga" deshabilitada onSeleccionar={onSeleccionar} />)

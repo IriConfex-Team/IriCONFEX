@@ -27,6 +27,8 @@ export function TarjetaOpcion({
   onSeleccionar,
   className,
 }: TarjetaOpcionProps) {
+  // Sin imagen (p. ej. tallas): tarjeta compacta, solo el nombre.
+  const compacta = ilustracion === undefined || ilustracion === null
   return (
     <button
       type="button"
@@ -35,7 +37,8 @@ export function TarjetaOpcion({
       disabled={deshabilitada}
       onClick={onSeleccionar}
       className={cx(
-        'flex h-44.5 w-full flex-col overflow-hidden rounded-tarjeta bg-superficie text-left',
+        'flex w-full flex-col overflow-hidden rounded-tarjeta bg-superficie text-left',
+        compacta ? 'min-h-14' : 'h-44.5',
         'focus-visible:outline-none focus-visible:border-3 focus-visible:border-primario',
         deshabilitada
           ? 'cursor-not-allowed border border-dashed border-borde'
@@ -45,20 +48,20 @@ export function TarjetaOpcion({
         className,
       )}
     >
-      <span className="relative flex h-30 w-full shrink-0 items-center justify-center bg-lienzo">
-        {ilustracion}
-        {seleccionada && (
-          <span className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-boton bg-primario">
-            <img src={iconoCheck} alt="" width={16} height={16} />
-          </span>
-        )}
-      </span>
+      {!compacta && (
+        <span className="relative flex h-30 w-full shrink-0 items-center justify-center bg-lienzo">
+          {ilustracion}
+          {seleccionada && <MarcaSeleccion className="absolute top-2 right-2" />}
+        </span>
+      )}
       <span
         className={cx(
-          'flex w-full flex-1 flex-col gap-0.5 p-3.5',
+          'relative flex w-full flex-1 flex-col justify-center gap-0.5 p-3.5',
+          compacta && seleccionada && 'pr-11',
           seleccionada && !deshabilitada ? 'bg-primario-suave' : 'bg-superficie',
         )}
       >
+        {compacta && seleccionada && <MarcaSeleccion className="absolute top-1/2 right-3 -translate-y-1/2" />}
         <span
           className={cx(
             'estilo-cuerpo-fuerte',
@@ -70,6 +73,14 @@ export function TarjetaOpcion({
         {deshabilitada && <span className="estilo-pequeno text-texto-secundario">{motivo}</span>}
       </span>
     </button>
+  )
+}
+
+function MarcaSeleccion({ className }: { className: string }) {
+  return (
+    <span className={cx('flex size-6 items-center justify-center rounded-boton bg-primario', className)}>
+      <img src={iconoCheck} alt="" width={16} height={16} />
+    </span>
   )
 }
 
