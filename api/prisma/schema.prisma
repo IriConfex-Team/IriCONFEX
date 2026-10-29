@@ -187,20 +187,25 @@ model Tela {
 }
 
 model Color {
-  id             Int              @id @default(autoincrement())
-  telaId         Int
-  tela           Tela             @relation(fields: [telaId], references: [id], onDelete: Cascade)
-  tipo           TipoColor
-  codigoCatalogo String?          @db.VarChar(20)
-  nombre         String           @db.VarChar(60)
-  familia        String?          @db.VarChar(30)
-  tonoHex        String?          @db.Char(7)
-  miniaturaUrl   String?          @db.VarChar(255)
-  ofrecer        Boolean          @default(true)
-  orden          Int              @default(0)
-  piezas         SolicitudPieza[]
+  id              Int              @id @default(autoincrement())
+  telaId          Int
+  tela            Tela             @relation(fields: [telaId], references: [id], onDelete: Cascade)
+  clave           String           @db.VarChar(80)
+  tipo            TipoColor
+  variante        String?          @db.VarChar(20)
+  codigoCatalogo  String?          @db.VarChar(20)
+  nombre          String           @db.VarChar(60)
+  familia         String?          @db.VarChar(30)
+  tonoHex         String?          @db.Char(7)
+  miniaturaUrl    String?          @db.VarChar(255)
+  archivoOrigen   String?          @db.VarChar(120)
+  disenos         Int?
+  mostrarImagenes Boolean          @default(true)
+  ofrecer         Boolean          @default(true)
+  orden           Int              @default(0)
+  piezas          SolicitudPieza[]
 
-  @@unique([telaId, tipo, nombre])
+  @@unique([telaId, clave])
   @@map("color")
 }
 

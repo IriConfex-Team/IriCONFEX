@@ -2,9 +2,11 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client';
+import { cargarColores } from './seed-colores.js';
 
 // CAMBIA ESTA LÍNEA: ruta del pijamas.json del motor, relativa a la carpeta api/
 const RUTA_PIJAMAS = '../datos/categorias/pijamas.json';
+const RUTA_COLORES = '../datos/colores_por_tela.json';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
@@ -340,6 +342,8 @@ async function cargarGeo() {
 
 async function main() {
   await cargarCatalogo();
+  const enlacesColores = JSON.parse(leerTexto('enlaces.json'));
+  await cargarColores(prisma, RUTA_COLORES, enlacesColores.alias?.tela ?? {});
   await cargarMotor();
   await cargarAviso();
   await cargarGeo();

@@ -1,0 +1,1575 @@
+{
+  "version": "1.0",
+  "fecha": "2026-09-28",
+  "fuente": "Catálogo del proveedor enviado por la clienta",
+  "otro_color": {
+    "habilitado": true,
+    "rotulo": "Color de referencia: la costurera confirmará si lo consigue"
+  },
+  "telas": [
+    {
+      "id": "brush",
+      "nombre": "Brush",
+      "lisos": [
+        {
+          "id": "blanco_hueso",
+          "codigo": null,
+          "nombre": "Blanco Hueso",
+          "tono": "#E8E1D9",
+          "archivo": " BLANCO HUESO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c1_rosado_claro",
+          "codigo": "C1",
+          "nombre": "Rosado Claro",
+          "tono": "#FFCCDB",
+          "archivo": " C1 ROSADO CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c11_mostaza",
+          "codigo": "C11",
+          "nombre": "Mostaza",
+          "tono": "#BD8236",
+          "archivo": " C11 MOSTAZA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c12_verde_claro",
+          "codigo": "C12",
+          "nombre": "Verde Claro",
+          "tono": "#25B458",
+          "archivo": " C12 VERDE CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c15_verde_musgo",
+          "codigo": "C15",
+          "nombre": "Verde Musgo",
+          "tono": "#3B4731",
+          "archivo": " C15 VERDE MUSGO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c18_rojo",
+          "codigo": "C18",
+          "nombre": "Rojo",
+          "tono": "#A60506",
+          "archivo": " C18 ROJO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c22_gasolina",
+          "codigo": "C22",
+          "nombre": "Gasolina",
+          "tono": "#397290",
+          "archivo": " C22 GASOLINA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c23_negro",
+          "codigo": "C23",
+          "nombre": "Negro",
+          "tono": "#030303",
+          "archivo": " C23 NEGRO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c24_blanco",
+          "codigo": "C24",
+          "nombre": "Blanco",
+          "tono": "#FFFFFF",
+          "archivo": " C24 BLANCO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c29_palo_rosa_claro",
+          "codigo": "C29",
+          "nombre": "Palo Rosa Claro",
+          "tono": "#BE8895",
+          "archivo": " C29 PALO ROSA CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c32_agua",
+          "codigo": "C32",
+          "nombre": "Agua",
+          "tono": "#8EEBE3",
+          "archivo": " C32 AGUA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c33_turquesa",
+          "codigo": "C33",
+          "nombre": "Turquesa",
+          "tono": "#0093F2",
+          "archivo": " C33 TURQUESA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c34_menta_claro",
+          "codigo": "C34",
+          "nombre": "Menta Claro",
+          "tono": "#9AFBDA",
+          "archivo": " C34 MENTA CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c35_verde",
+          "codigo": "C35",
+          "nombre": "Verde",
+          "tono": "#125D25",
+          "archivo": " C35 VERDE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c38_amarillo_oro",
+          "codigo": "C38",
+          "nombre": "Amarillo Oro",
+          "tono": "#FFCA40",
+          "archivo": " C38 AMARILLO ORO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c39_gris_jaspeado_claro",
+          "codigo": "C39",
+          "nombre": "Gris Jaspeado Claro",
+          "tono": "#868686",
+          "archivo": " C39 GRIS JASPEADO CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c4_coral_claro",
+          "codigo": "C4",
+          "nombre": "Coral Claro",
+          "tono": "#F8AC9F",
+          "archivo": " C4 CORAL CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c40_gris_jaspeado_oscuro",
+          "codigo": "C40",
+          "nombre": "Gris Jaspeado Oscuro",
+          "tono": "#3B3B3B",
+          "archivo": " C40 GRIS JASPEADO OSCURO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c41_lavanda",
+          "codigo": "C41",
+          "nombre": "Lavanda",
+          "tono": "#DAC1FB",
+          "archivo": " C41 LAVANDA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c42_lilac",
+          "codigo": "C42",
+          "nombre": "Lilac",
+          "tono": "#BDA0F0",
+          "archivo": " C42 LILAC.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c43_morado",
+          "codigo": "C43",
+          "nombre": "Morado",
+          "tono": "#411341",
+          "archivo": " C43 MORADO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c44_olivo",
+          "codigo": "C44",
+          "nombre": "Olivo",
+          "tono": "#95A686",
+          "archivo": " C44 OLIVO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c45_celeste",
+          "codigo": "C45",
+          "nombre": "Celeste",
+          "tono": "#A3CFF4",
+          "archivo": " C45 CELESTE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c46_gris_oscuro",
+          "codigo": "C46",
+          "nombre": "Gris Oscuro",
+          "tono": "#4A4A4A",
+          "archivo": " C46 GRIS OSCURO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c5_vino_claro",
+          "codigo": "C5",
+          "nombre": "Vino Claro",
+          "tono": "#570C35",
+          "archivo": " C5 VINO CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c52_terracota",
+          "codigo": "C52",
+          "nombre": "Terracota",
+          "tono": "#9E4E35",
+          "archivo": " C52 TERRACOTA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c6_palo_rosa_intermedio",
+          "codigo": "C6",
+          "nombre": "Palo Rosa Intermedio",
+          "tono": "#BF8287",
+          "archivo": " C6 PALO ROSA INTERMEDIO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c7_palo_rosa_oscuro",
+          "codigo": "C7",
+          "nombre": "Palo Rosa Oscuro",
+          "tono": "#895762",
+          "archivo": " C7 PALO ROSA OSCURO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c8_coral",
+          "codigo": "C8",
+          "nombre": "Coral",
+          "tono": "#FE7471",
+          "archivo": " C8 CORAL.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c9_fucsia",
+          "codigo": "C9",
+          "nombre": "Fucsia",
+          "tono": "#D93268",
+          "archivo": " C9 FUCSIA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c61_magenta",
+          "codigo": "C61",
+          "nombre": "Magenta",
+          "tono": "#CE10A4",
+          "archivo": "C#61 MAGENTA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c109_rojo_quemado",
+          "codigo": "C109",
+          "nombre": "Rojo Quemado",
+          "tono": "#410C16",
+          "archivo": "C109 ROJO QUEMADO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c112_tabaco",
+          "codigo": "C112",
+          "nombre": "Tabaco",
+          "tono": "#A06F46",
+          "archivo": "C112 TABACO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c114_azul_escolar",
+          "codigo": "C114",
+          "nombre": "Azul Escolar",
+          "tono": "#000E2A",
+          "archivo": "C114 AZUL ESCOLAR.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c13_jade",
+          "codigo": "C13",
+          "nombre": "Jade",
+          "tono": "#0A928C",
+          "archivo": "C13 JADE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c14_verde_botella",
+          "codigo": "C14",
+          "nombre": "Verde Botella",
+          "tono": "#16393D",
+          "archivo": "C14 VERDE BOTELLA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c19_azul_rey",
+          "codigo": "C19",
+          "nombre": "Azul Rey",
+          "tono": "#010080",
+          "archivo": "C19 AZUL REY.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c20_cafe",
+          "codigo": "C20",
+          "nombre": "Café",
+          "tono": "#311F1B",
+          "archivo": "C20 CAFE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c30_vino_oscuro",
+          "codigo": "C30",
+          "nombre": "Vino Oscuro",
+          "tono": "#4D0814",
+          "archivo": "C30 VINO OSCURO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c49_piel",
+          "codigo": "C49",
+          "nombre": "Piel",
+          "tono": "#E8D9C4",
+          "archivo": "C49 PIEL.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c54_gris_claro",
+          "codigo": "C54",
+          "nombre": "Gris Claro",
+          "tono": "#AEAFB1",
+          "archivo": "C54 GRIS CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c55_amarillo_pastel",
+          "codigo": "C55",
+          "nombre": "Amarillo Pastel",
+          "tono": "#FFFF85",
+          "archivo": "C55 AMARILLO PASTEL.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c56_rosado_bebe",
+          "codigo": "C56",
+          "nombre": "Rosado Bebé",
+          "tono": "#FEBCE0",
+          "archivo": "C56 ROSADO BEBE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c57_fucsia_neon",
+          "codigo": "C57",
+          "nombre": "Fucsia Neón",
+          "tono": "#FE0595",
+          "archivo": "C57 FUCSIA NEON.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c58_naranja_neon",
+          "codigo": "C58",
+          "nombre": "Naranja Neón",
+          "tono": "#FF4105",
+          "archivo": "C58 NARANJA NEON.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c59_amarillo_neon",
+          "codigo": "C59",
+          "nombre": "Amarillo Neón",
+          "tono": "#C8F536",
+          "archivo": "C59 AMARILLO NEON.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c60_rosa_neon",
+          "codigo": "C60",
+          "nombre": "Rosa Neón",
+          "tono": "#EA407C",
+          "archivo": "C60 ROSA NEON.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c62_purpura",
+          "codigo": "C62",
+          "nombre": "Púrpura",
+          "tono": "#BC34BA",
+          "archivo": "C62 PURPURA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c63_mint_new",
+          "codigo": "C63",
+          "nombre": "Mint New",
+          "tono": "#6ED1CC",
+          "archivo": "C63 MINT NEW.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c64_lime",
+          "codigo": "C64",
+          "nombre": "Lime",
+          "tono": "#C3D738",
+          "archivo": "C64 LIME.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c65_ruby",
+          "codigo": "C65",
+          "nombre": "Ruby",
+          "tono": "#880018",
+          "archivo": "C65 RUBY.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c67_naranja",
+          "codigo": "C67",
+          "nombre": "Naranja",
+          "tono": "#FF6300",
+          "archivo": "C67 NARANJA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c68_amarillo_fuerte",
+          "codigo": "C68",
+          "nombre": "Amarillo Fuerte",
+          "tono": "#FFF005",
+          "archivo": "C68 AMARILLO FUERTE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c69_beige",
+          "codigo": "C69",
+          "nombre": "Beige",
+          "tono": "#D3BCAC",
+          "archivo": "C69 BEIGE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c71_mocha",
+          "codigo": "C71",
+          "nombre": "Mocha",
+          "tono": "#796C64",
+          "archivo": "C71 MOCHA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c82_papaya",
+          "codigo": "C82",
+          "nombre": "Papaya",
+          "tono": "#FFBF81",
+          "archivo": "C82 PAPAYA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c85_verde_pastel",
+          "codigo": "C85",
+          "nombre": "Verde Pastel",
+          "tono": "#CBFF98",
+          "archivo": "C85 VERDE PASTEL.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c88_sky",
+          "codigo": "C88",
+          "nombre": "Sky",
+          "tono": "#B9E0FF",
+          "archivo": "C88 SKY.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c90_lavanda_pastel",
+          "codigo": "C90",
+          "nombre": "Lavanda Pastel",
+          "tono": "#C982E2",
+          "archivo": "C90 LAVANDA PASTEL .jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "c95_lima_pastel",
+          "codigo": "C95",
+          "nombre": "Lima Pastel",
+          "tono": "#8AB04B",
+          "archivo": "C95 LIMA PASTEL.jpeg",
+          "ofrecer": true
+        }
+      ],
+      "estampados": [
+        {
+          "id": "afrocaribenas",
+          "nombre": "Afrocaribeñas",
+          "disenos": 17,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "animados",
+          "nombre": "Animados",
+          "disenos": 540,
+          "mostrar_imagenes": false,
+          "ofrecer": true
+        },
+        {
+          "id": "animal_print",
+          "nombre": "Animal Print",
+          "disenos": 29,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "cartoon",
+          "nombre": "Cartoon",
+          "disenos": 146,
+          "mostrar_imagenes": false,
+          "ofrecer": true
+        },
+        {
+          "id": "flores",
+          "nombre": "Flores",
+          "disenos": 473,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "frentes",
+          "nombre": "Frentes",
+          "disenos": 376,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "marcas",
+          "nombre": "Marcas",
+          "disenos": 162,
+          "mostrar_imagenes": false,
+          "ofrecer": true
+        },
+        {
+          "id": "mariposas",
+          "nombre": "Mariposas",
+          "disenos": 35,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "navidad_estampado",
+          "nombre": "Navidad Estampado",
+          "disenos": 77,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "navidad_puerta",
+          "nombre": "Navidad Puerta",
+          "disenos": 7,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "patrios",
+          "nombre": "Patrios",
+          "disenos": 18,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "promocion_navidad",
+          "nombre": "Promoción Navidad",
+          "disenos": 10,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "rayas",
+          "nombre": "Rayas",
+          "disenos": 35,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "varios",
+          "nombre": "Varios",
+          "disenos": 68,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        }
+      ]
+    },
+    {
+      "id": "satin",
+      "nombre": "Satín",
+      "lisos": [],
+      "nota": "Sin lisos en el catálogo; un color liso se pide con Otro color.",
+      "estampados": [
+        {
+          "id": "st_29",
+          "nombre": "ST-29",
+          "disenos": 1,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "st_30",
+          "nombre": "ST-30",
+          "disenos": 1,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "st_31",
+          "nombre": "ST-31",
+          "disenos": 1,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "st_32",
+          "nombre": "ST-32",
+          "disenos": 1,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "st_42",
+          "nombre": "ST-42",
+          "disenos": 1,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "st_43",
+          "nombre": "ST-43",
+          "disenos": 1,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "st_44",
+          "nombre": "ST-44",
+          "disenos": 1,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "st_46",
+          "nombre": "ST-46",
+          "disenos": 1,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        },
+        {
+          "id": "st_47",
+          "nombre": "ST-47",
+          "disenos": 1,
+          "mostrar_imagenes": true,
+          "ofrecer": true
+        }
+      ]
+    },
+    {
+      "id": "satin_alicrado",
+      "nombre": "Satín alicrado",
+      "lisos": [
+        {
+          "id": "beige",
+          "codigo": null,
+          "nombre": "Beige",
+          "tono": "#927E69",
+          "archivo": "Satin Beige.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "blanco",
+          "codigo": null,
+          "nombre": "Blanco",
+          "tono": "#DEE5F4",
+          "archivo": "Satin Blanco.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "fucsia",
+          "codigo": null,
+          "nombre": "Fucsia",
+          "tono": "#DF378B",
+          "archivo": "Satin Fucsia.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "lila",
+          "codigo": null,
+          "nombre": "Lila",
+          "tono": "#B99FC0",
+          "archivo": "Satin Lila.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "marfil",
+          "codigo": null,
+          "nombre": "Marfil",
+          "tono": "#D6DBD1",
+          "archivo": "Satin Marfil.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "menta",
+          "codigo": null,
+          "nombre": "Menta",
+          "tono": "#72C9BE",
+          "archivo": "Satin Menta.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "negro",
+          "codigo": null,
+          "nombre": "Negro",
+          "tono": "#1E1E1E",
+          "archivo": "Satin Negro.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "palo_rosa",
+          "codigo": null,
+          "nombre": "Palo Rosa",
+          "tono": "#C9A7AD",
+          "archivo": "Satin Palo Rosa.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "rojo",
+          "codigo": null,
+          "nombre": "Rojo",
+          "tono": "#AF0203",
+          "archivo": "Satin Rojo.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "verde_botella",
+          "codigo": null,
+          "nombre": "Verde Botella",
+          "tono": "#036150",
+          "archivo": "Satin Verde Botella.jpeg",
+          "ofrecer": true
+        }
+      ],
+      "estampados": []
+    },
+    {
+      "id": "resorte",
+      "nombre": "Resorte",
+      "lisos": [
+        {
+          "id": "blush",
+          "codigo": null,
+          "nombre": "Blush",
+          "tono": "#C27465",
+          "archivo": "RE-BLUSH.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "mostaza",
+          "codigo": null,
+          "nombre": "Mostaza",
+          "tono": "#935E1E",
+          "archivo": "RE-MOSTAZA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "olivo",
+          "codigo": null,
+          "nombre": "Olivo",
+          "tono": "#686C5C",
+          "archivo": "RE-OLIVO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "rojo",
+          "codigo": null,
+          "nombre": "Rojo",
+          "tono": "#77131C",
+          "archivo": "RE-ROJO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "rosado_bebe",
+          "codigo": null,
+          "nombre": "Rosado Bebé",
+          "tono": "#B48994",
+          "archivo": "RE-ROSADO BEBE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "agua",
+          "codigo": null,
+          "nombre": "Agua",
+          "tono": "#70C1BA",
+          "archivo": "RESORTE AGUA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "amarillo_neon",
+          "codigo": null,
+          "nombre": "Amarillo Neón",
+          "tono": "#ACBC40",
+          "archivo": "RESORTE AMARILLO NEON.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "amarillo_oro",
+          "codigo": null,
+          "nombre": "Amarillo Oro",
+          "tono": "#BF940A",
+          "archivo": "RESORTE AMARILLO ORO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "amarillo",
+          "codigo": null,
+          "nombre": "Amarillo",
+          "tono": "#B9A70B",
+          "archivo": "RESORTE AMARILLO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "azul_escolar",
+          "codigo": null,
+          "nombre": "Azul Escolar",
+          "tono": "#2C3249",
+          "archivo": "RESORTE AZUL ESCOLAR.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "azul_rey",
+          "codigo": null,
+          "nombre": "Azul Rey",
+          "tono": "#143175",
+          "archivo": "RESORTE AZUL REY.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "beige_claro",
+          "codigo": null,
+          "nombre": "Beige Claro",
+          "tono": "#9B968C",
+          "archivo": "RESORTE BEIGE CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "blanco",
+          "codigo": null,
+          "nombre": "Blanco",
+          "tono": "#E5E8E9",
+          "archivo": "RESORTE BLANCO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "cafe",
+          "codigo": null,
+          "nombre": "Café",
+          "tono": "#2E221F",
+          "archivo": "RESORTE CAFE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "celeste",
+          "codigo": null,
+          "nombre": "Celeste",
+          "tono": "#7D9CD0",
+          "archivo": "RESORTE CELESTE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "fucsia_neon",
+          "codigo": null,
+          "nombre": "Fucsia Neón",
+          "tono": "#C53193",
+          "archivo": "RESORTE FUCSIA NEON.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "fucsia",
+          "codigo": null,
+          "nombre": "Fucsia",
+          "tono": "#A32774",
+          "archivo": "RESORTE FUCSIA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "gasolina",
+          "codigo": null,
+          "nombre": "Gasolina",
+          "tono": "#12385B",
+          "archivo": "RESORTE GASOLINA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "gris_claro_jaspeado",
+          "codigo": null,
+          "nombre": "Gris Claro Jaspeado",
+          "tono": "#75747B",
+          "archivo": "RESORTE GRIS CLARO JASPEADO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "gris_claro",
+          "codigo": null,
+          "nombre": "Gris Claro",
+          "tono": "#7C7F8C",
+          "archivo": "RESORTE GRIS CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "gris_oscuro_jaspeado",
+          "codigo": null,
+          "nombre": "Gris Oscuro Jaspeado",
+          "tono": "#211F1E",
+          "archivo": "RESORTE GRIS OSCURO JASPEADO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "gris_oscuro",
+          "codigo": null,
+          "nombre": "Gris Oscuro",
+          "tono": "#343A48",
+          "archivo": "RESORTE GRIS OSCURO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "khaki",
+          "codigo": null,
+          "nombre": "Khaki",
+          "tono": "#8D7B6B",
+          "archivo": "RESORTE KHAKI.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "lila",
+          "codigo": null,
+          "nombre": "Lila",
+          "tono": "#827AA5",
+          "archivo": "RESORTE LILA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "marfil",
+          "codigo": null,
+          "nombre": "Marfil",
+          "tono": "#A7AEB0",
+          "archivo": "RESORTE MARFIL.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "mint_light",
+          "codigo": null,
+          "nombre": "Mint Light",
+          "tono": "#A5EEE0",
+          "archivo": "RESORTE MINT LIGHT.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "mint_new",
+          "codigo": null,
+          "nombre": "Mint New",
+          "tono": "#62A0AE",
+          "archivo": "RESORTE MINT NEW.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "mocha",
+          "codigo": null,
+          "nombre": "Mocha",
+          "tono": "#504E55",
+          "archivo": "RESORTE MOCHA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "negro",
+          "codigo": null,
+          "nombre": "Negro",
+          "tono": "#131313",
+          "archivo": "RESORTE NEGRO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "olivo_jaspeado",
+          "codigo": null,
+          "nombre": "Olivo Jaspeado",
+          "tono": "#8D8C81",
+          "archivo": "RESORTE OLIVO JASPEADO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "olivo_claro",
+          "codigo": null,
+          "nombre": "Olivo Claro",
+          "tono": "#798E84",
+          "archivo": "RESORTE OLIVO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "palo_rosa_claro",
+          "codigo": null,
+          "nombre": "Palo Rosa Claro",
+          "tono": "#94708C",
+          "archivo": "RESORTE PALO ROSA CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "papaya",
+          "codigo": null,
+          "nombre": "Papaya",
+          "tono": "#B07A7D",
+          "archivo": "RESORTE PAPAYA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "rojo_quemado",
+          "codigo": null,
+          "nombre": "Rojo Quemado",
+          "tono": "#4E172C",
+          "archivo": "RESORTE ROJO QUEMADO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "rosado",
+          "codigo": null,
+          "nombre": "Rosado",
+          "tono": "#CC9FB8",
+          "archivo": "RESORTE ROSADO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "terracota",
+          "codigo": null,
+          "nombre": "Terracota",
+          "tono": "#7C3920",
+          "archivo": "RESORTE TERRACOTA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "verde_botella",
+          "codigo": null,
+          "nombre": "Verde Botella",
+          "tono": "#131F28",
+          "archivo": "RESORTE VERDE BOTELLA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "verde_musgo",
+          "codigo": null,
+          "nombre": "Verde Musgo",
+          "tono": "#323832",
+          "archivo": "RESORTE VERDE MUSGO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "vino",
+          "codigo": null,
+          "nombre": "Vino",
+          "tono": "#3C1823",
+          "archivo": "RESORTE VINO.jpeg",
+          "ofrecer": true
+        }
+      ],
+      "variantes": {
+        "grueso": [
+          {
+            "id": "rojo_quemado",
+            "codigo": null,
+            "nombre": "Rojo Quemado",
+            "tono": "#751520",
+            "archivo": "RE-GRUESO 1.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "blanco",
+            "codigo": null,
+            "nombre": "Blanco",
+            "tono": "#FAFAFA",
+            "archivo": "RE-GRUESO BLANCO.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "gris",
+            "codigo": null,
+            "nombre": "Gris",
+            "tono": "#737373",
+            "archivo": "RE-GRUESO GRIS.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "azul_rey",
+            "codigo": null,
+            "nombre": "Azul Rey",
+            "tono": "#152B69",
+            "archivo": "RESORTE GRUESO AZUL REY.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "fucsia",
+            "codigo": null,
+            "nombre": "Fucsia",
+            "tono": "#B61F6C",
+            "archivo": "RESORTE GRUESO FUCSIA.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "khaki",
+            "codigo": null,
+            "nombre": "Khaki",
+            "tono": "#7E6855",
+            "archivo": "RESORTE GRUESO KHAKI.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "lila",
+            "codigo": null,
+            "nombre": "Lila",
+            "tono": "#83768C",
+            "archivo": "RESORTE GRUESO LILA.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "negro",
+            "codigo": null,
+            "nombre": "Negro",
+            "tono": "#1A1917",
+            "archivo": "RESORTE GRUESO NEGRO.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "papaya",
+            "codigo": null,
+            "nombre": "Papaya",
+            "tono": "#BC7974",
+            "archivo": "RESORTE GRUESO PAPAYA.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "rojo",
+            "codigo": null,
+            "nombre": "Rojo",
+            "tono": "#851723",
+            "archivo": "RESORTE GRUESO ROJO.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "tabaco",
+            "codigo": null,
+            "nombre": "Tabaco",
+            "tono": "#8B5A3B",
+            "archivo": "RESORTE GRUESO TABACO.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "verde_botella",
+            "codigo": null,
+            "nombre": "Verde Botella",
+            "tono": "#254344",
+            "archivo": "RESORTE GRUESO VERDE BOTELLA.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "vino_claro",
+            "codigo": null,
+            "nombre": "Vino Claro",
+            "tono": "#671B35",
+            "archivo": "RESORTE GRUESO VINO CLARO.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "vino_oscuro",
+            "codigo": null,
+            "nombre": "Vino Oscuro",
+            "tono": "#451517",
+            "archivo": "RESORTE GRUESO VINO OSCURO.jpeg",
+            "ofrecer": true
+          }
+        ],
+        "rayas": [
+          {
+            "id": "coral",
+            "codigo": null,
+            "nombre": "Coral",
+            "tono": "#C07467",
+            "archivo": "RE-RAYAS CORAL .jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "negro",
+            "codigo": null,
+            "nombre": "Negro",
+            "tono": "#1E1D1B",
+            "archivo": "RE-RAYAS NEGRO .jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "rojo",
+            "codigo": null,
+            "nombre": "Rojo",
+            "tono": "#A01011",
+            "archivo": "RE-RAYAS ROJO.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "sage",
+            "codigo": null,
+            "nombre": "Sage",
+            "tono": "#73756A",
+            "archivo": "RE-RAYAS SAGE.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "azul_escolar",
+            "codigo": null,
+            "nombre": "Azul Escolar",
+            "tono": "#292C39",
+            "archivo": "RESORTE RAYAS AZUL ESCOLAR.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "fucsia",
+            "codigo": null,
+            "nombre": "Fucsia",
+            "tono": "#CC3E68",
+            "archivo": "RESORTE RAYAS FUCSIA.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "khaki",
+            "codigo": null,
+            "nombre": "Khaki",
+            "tono": "#88765F",
+            "archivo": "RESORTE RAYAS KHAKI.jpeg",
+            "ofrecer": true
+          },
+          {
+            "id": "verde_musgo",
+            "codigo": null,
+            "nombre": "Verde Musgo",
+            "tono": "#404533",
+            "archivo": "RESORTE RAYAS VERDE MUSGO.jpeg",
+            "ofrecer": true
+          }
+        ]
+      },
+      "estampados": [],
+      "nota": "Confirmar si grueso y rayas son la misma tela a efectos de precio."
+    },
+    {
+      "id": "rib",
+      "nombre": "Rib acanalado",
+      "lisos": [
+        {
+          "id": "azul_rey",
+          "codigo": null,
+          "nombre": "Azul Rey",
+          "tono": "#254299",
+          "archivo": "RIB AZUL REY.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "blanco_hueso",
+          "codigo": null,
+          "nombre": "Blanco Hueso",
+          "tono": "#A6A299",
+          "archivo": "RIB BLANCO HUESO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "blanco",
+          "codigo": null,
+          "nombre": "Blanco",
+          "tono": "#D9DAD8",
+          "archivo": "RIB BLANCO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "fucsia",
+          "codigo": null,
+          "nombre": "Fucsia",
+          "tono": "#DB4481",
+          "archivo": "RIB FUCSIA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "gris",
+          "codigo": null,
+          "nombre": "Gris",
+          "tono": "#646568",
+          "archivo": "RIB GRIS.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "kakhi",
+          "codigo": null,
+          "nombre": "Kakhi",
+          "tono": "#6A4D3C",
+          "archivo": "RIB KAKHI.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "magenta",
+          "codigo": null,
+          "nombre": "Magenta",
+          "tono": "#9D417F",
+          "archivo": "RIB MAGENTA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "menta",
+          "codigo": null,
+          "nombre": "Menta",
+          "tono": "#83ABA9",
+          "archivo": "RIB MENTA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "negro",
+          "codigo": null,
+          "nombre": "Negro",
+          "tono": "#23221F",
+          "archivo": "RIB NEGRO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "rojo_claro",
+          "codigo": null,
+          "nombre": "Rojo Claro",
+          "tono": "#78120E",
+          "archivo": "RIB ROJO CLARO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "rosado",
+          "codigo": null,
+          "nombre": "Rosado",
+          "tono": "#EC9CB6",
+          "archivo": "RIB ROSADO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "tabaco",
+          "codigo": null,
+          "nombre": "Tabaco",
+          "tono": "#5D482C",
+          "archivo": "RIB TABACO.jpeg",
+          "ofrecer": true
+        }
+      ],
+      "estampados": []
+    },
+    {
+      "id": "modal",
+      "nombre": "Modal",
+      "lisos": [
+        {
+          "id": "blanco",
+          "codigo": null,
+          "nombre": "Blanco",
+          "tono": "#FFFFFF",
+          "archivo": "BLANCO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "blue_ligth",
+          "codigo": null,
+          "nombre": "Blue Ligth",
+          "tono": "#A3CFF4",
+          "archivo": "BLUE LIGTH .jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "cafe",
+          "codigo": null,
+          "nombre": "Café",
+          "tono": "#311F1B",
+          "archivo": "CAFE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "charcoal",
+          "codigo": null,
+          "nombre": "Charcoal",
+          "tono": "#4A4A4A",
+          "archivo": "CHARCOAL.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "dark_melange",
+          "codigo": null,
+          "nombre": "Dark Melange",
+          "tono": "#3E3E3E",
+          "archivo": "DARK MELANGE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "fuchia",
+          "codigo": null,
+          "nombre": "Fuchia",
+          "tono": "#FA008A",
+          "archivo": "FUCHIA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "ivory",
+          "codigo": null,
+          "nombre": "Ivory",
+          "tono": "#E9E0DB",
+          "archivo": "IVORY.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "khaki",
+          "codigo": null,
+          "nombre": "Khaki",
+          "tono": "#A68B77",
+          "archivo": "KHAKI.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "ladrillo",
+          "codigo": null,
+          "nombre": "Ladrillo",
+          "tono": "#932F2F",
+          "archivo": "LADRILLO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "lilac",
+          "codigo": null,
+          "nombre": "Lilac",
+          "tono": "#BDA0F0",
+          "archivo": "LILAC.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "mauve_dark",
+          "codigo": null,
+          "nombre": "Mauve Dark",
+          "tono": "#8A5863",
+          "archivo": "MAUVE DARK.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "mauve",
+          "codigo": null,
+          "nombre": "Mauve",
+          "tono": "#BF8287",
+          "archivo": "MAUVE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "mocha",
+          "codigo": null,
+          "nombre": "Mocha",
+          "tono": "#796C64",
+          "archivo": "MOCHA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "mora_en_leche",
+          "codigo": null,
+          "nombre": "Mora En Leche",
+          "tono": "#A0709A",
+          "archivo": "MORA EN LECHE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "mustard",
+          "codigo": null,
+          "nombre": "Mustard",
+          "tono": "#BE8337",
+          "archivo": "MUSTARD.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "navy",
+          "codigo": null,
+          "nombre": "Navy",
+          "tono": "#161D47",
+          "archivo": "NAVY.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "olivo",
+          "codigo": null,
+          "nombre": "Olivo",
+          "tono": "#3B4731",
+          "archivo": "OLIVO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "red_bright",
+          "codigo": null,
+          "nombre": "Red Bright",
+          "tono": "#A70507",
+          "archivo": "RED BRIGHT.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "royal",
+          "codigo": null,
+          "nombre": "Royal",
+          "tono": "#010080",
+          "archivo": "ROYAL.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "silver",
+          "codigo": null,
+          "nombre": "Silver",
+          "tono": "#AEAFB1",
+          "archivo": "SILVER.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "tabaco",
+          "codigo": null,
+          "nombre": "Tabaco",
+          "tono": "#A06F46",
+          "archivo": "TABACO.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "taupe",
+          "codigo": null,
+          "nombre": "Taupe",
+          "tono": "#E8D9C4",
+          "archivo": "TAUPE.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "teal",
+          "codigo": null,
+          "nombre": "Teal",
+          "tono": "#065363",
+          "archivo": "TEAL.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "terracota",
+          "codigo": null,
+          "nombre": "Terracota",
+          "tono": "#9E4E35",
+          "archivo": "TERRACOTA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "verde_oscuro_botella",
+          "codigo": null,
+          "nombre": "Verde Oscuro Botella",
+          "tono": "#16393D",
+          "archivo": "VERDE OSCURO BOTELLA.jpeg",
+          "ofrecer": true
+        },
+        {
+          "id": "wine",
+          "codigo": null,
+          "nombre": "Wine",
+          "tono": "#300010",
+          "archivo": "WINE.jpeg",
+          "ofrecer": true
+        }
+      ],
+      "estampados": []
+    }
+  ]
+}
