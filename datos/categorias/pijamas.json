@@ -665,5 +665,167 @@
       "objetivo": { "paso": "bata-salida-acabado" },
       "cuando": { "paso": "bata-salida", "en": ["si"] }
     }
-  ]
+  ],
+  "ilustracion": {
+    "carpeta": "/ilustraciones",
+    "relleno": [
+      { "paso": "base", "opcion": "dos-piezas" },
+      { "paso": "escote", "opcion": "redondo" },
+      { "paso": "manga", "opcion": "corta" },
+      { "paso": "largo", "opcion": "rodilla", "cuando": { "paso": "base", "en": ["una-pieza"] } },
+      { "paso": "largo", "opcion": "cadera" },
+      { "paso": "tipo-inferior", "opcion": "pantalon-largo" }
+    ],
+    "variables": {
+      "ajuste-sup": [
+        { "valor": "holgado", "cuando": { "paso": "tela-superior", "en": ["satin"] } },
+        { "valor": "ajustado" }
+      ],
+      "escote-capa": [
+        { "valor": "cuello-camisero", "cuando": { "paso": "escote", "en": ["camisero"] } },
+        { "valor": "bralette", "cuando": { "paso": "escote", "en": ["bralette"] } },
+        { "valor": "{escote}--tirantes", "cuando": { "paso": "manga", "en": ["tirantes"] } },
+        { "valor": "{escote}" }
+      ],
+      "abertura-capa": [
+        { "valor": "frente", "cuando": { "paso": "aberturas", "en": ["al-frente"] } },
+        { "valor": "laterales", "cuando": { "paso": "aberturas", "en": ["laterales"] } }
+      ]
+    },
+    "piezas": [
+      {
+        "id": "mujer-inferior",
+        "ancho": 400,
+        "alto": 600,
+        "desplazamiento": 200,
+        "cuando": { "todas": [{ "paso": "perfil", "en": ["mujer"] }, { "paso": "base", "en": ["dos-piezas"] }] },
+        "capas": [
+          { "archivo": "mujer/inf/pretina/elastico.svg" },
+          { "archivo": "mujer/inf/tipo/{tipo-inferior}.svg" },
+          { "archivo": "mujer/inf/abertura/lateral-{tipo-inferior}.svg", "cuando": { "paso": "abertura-lateral", "en": ["si"] } },
+          {
+            "archivo": "mujer/inf/acabado-ruedo/{acabado-inferior}-short.svg",
+            "cuando": { "paso": "acabado-inferior", "en": ["encaje", "repulgo", "vuelitos"] }
+          }
+        ]
+      },
+      {
+        "id": "mujer-blusa",
+        "ancho": 400,
+        "alto": 480,
+        "cuando": { "todas": [{ "paso": "perfil", "en": ["mujer"] }, { "paso": "base", "en": ["dos-piezas"] }] },
+        "capas": [
+          { "archivo": "mujer/sup/cuerpo/{largo}--{ajuste-sup}.svg" },
+          { "archivo": "mujer/sup/manga/{manga}--{ajuste-sup}.svg" },
+          { "archivo": "mujer/sup/escote/{escote-capa}.svg" },
+          { "archivo": "mujer/sup/botones/medio-pecho--{escote}.svg", "cuando": { "paso": "botones", "en": ["si"] } },
+          {
+            "archivo": "mujer/sup/acabado-ruedo/{acabado-superior}-{largo}--{ajuste-sup}.svg",
+            "cuando": { "paso": "acabado-superior", "en": ["encaje", "repulgo", "vuelitos"] }
+          },
+          {
+            "archivo": "mujer/sup/acabado-manga/{acabado-superior}-{manga}--{ajuste-sup}.svg",
+            "cuando": { "paso": "acabado-superior", "en": ["encaje", "repulgo", "vuelitos"] }
+          },
+          {
+            "archivo": "mujer/sup/acabado-escote/{acabado-superior}-{escote-capa}.svg",
+            "cuando": {
+              "todas": [
+                { "paso": "acabado-superior", "en": ["encaje", "repulgo", "vuelitos"] },
+                { "paso": "manga", "en": ["tirantes"] }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "mujer-bata",
+        "ancho": 400,
+        "alto": 620,
+        "cuando": { "todas": [{ "paso": "perfil", "en": ["mujer"] }, { "paso": "base", "en": ["una-pieza"] }] },
+        "capas": [
+          { "archivo": "mujer/bata/cuerpo/{largo}--{ajuste-sup}.svg" },
+          { "archivo": "mujer/sup/manga/{manga}--{ajuste-sup}.svg" },
+          { "archivo": "mujer/sup/escote/{escote-capa}.svg" },
+          { "archivo": "mujer/sup/botones/medio-pecho--{escote}.svg", "cuando": { "paso": "botones", "en": ["si"] } },
+          { "archivo": "mujer/bata/aberturas/{abertura-capa}-{largo}--{ajuste-sup}.svg" },
+          {
+            "archivo": "mujer/bata/acabado-ruedo/{acabado-superior}-{largo}--{ajuste-sup}.svg",
+            "cuando": { "paso": "acabado-superior", "en": ["encaje", "repulgo", "vuelitos"] }
+          },
+          {
+            "archivo": "mujer/sup/acabado-manga/{acabado-superior}-{manga}--{ajuste-sup}.svg",
+            "cuando": { "paso": "acabado-superior", "en": ["encaje", "repulgo", "vuelitos"] }
+          },
+          {
+            "archivo": "mujer/sup/acabado-escote/{acabado-superior}-{escote-capa}.svg",
+            "cuando": {
+              "todas": [
+                { "paso": "acabado-superior", "en": ["encaje", "repulgo", "vuelitos"] },
+                { "paso": "manga", "en": ["tirantes"] }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "hombre-inferior",
+        "ancho": 400,
+        "alto": 600,
+        "desplazamiento": 260,
+        "cuando": { "paso": "perfil", "en": ["hombre"] },
+        "capas": [{ "archivo": "hombre/inf/pretina/elastico.svg" }, { "archivo": "hombre/inf/tipo/{tipo-inferior}.svg" }]
+      },
+      {
+        "id": "hombre-superior",
+        "ancho": 400,
+        "alto": 480,
+        "cuando": { "paso": "perfil", "en": ["hombre"] },
+        "capas": [
+          { "archivo": "hombre/sup/cuerpo/cadera.svg" },
+          { "archivo": "hombre/sup/manga/{manga}.svg" },
+          { "archivo": "hombre/sup/escote/{escote-capa}.svg" }
+        ]
+      },
+      {
+        "id": "nino-inferior",
+        "ancho": 400,
+        "alto": 600,
+        "desplazamiento": 186,
+        "cuando": { "paso": "perfil", "en": ["nino"] },
+        "capas": [
+          { "archivo": "nino/inf/pretina/elastico.svg" },
+          { "archivo": "nino/inf/tipo/{tipo-inferior}.svg" },
+          { "archivo": "nino/inf/borde/jogger.svg", "cuando": { "paso": "acabado-inferior", "en": ["jogger"] } },
+          { "archivo": "nino/inf/acabado-ruedo/vuelitos-short.svg", "cuando": { "paso": "acabado-inferior", "en": ["vuelitos"] } }
+        ]
+      },
+      {
+        "id": "bebe-inferior",
+        "ancho": 400,
+        "alto": 600,
+        "desplazamiento": 140,
+        "cuando": { "paso": "perfil", "en": ["bebe"] },
+        "capas": [
+          { "archivo": "bebe/inf/pretina/elastico.svg" },
+          { "archivo": "bebe/inf/tipo/{tipo-inferior}.svg" },
+          { "archivo": "bebe/inf/borde/jogger.svg", "cuando": { "paso": "acabado-inferior", "en": ["jogger"] } },
+          { "archivo": "bebe/inf/acabado-ruedo/vuelitos-short.svg", "cuando": { "paso": "acabado-inferior", "en": ["vuelitos"] } }
+        ]
+      },
+      {
+        "id": "ninos-superior",
+        "ancho": 400,
+        "alto": 480,
+        "cuando": { "paso": "perfil", "en": ["nino", "bebe"] },
+        "capas": [
+          { "archivo": "{perfil}/sup/cuerpo/cadera.svg" },
+          { "archivo": "{perfil}/sup/manga/{manga}.svg" },
+          { "archivo": "{perfil}/sup/escote/{escote-capa}.svg" },
+          { "archivo": "{perfil}/sup/acabado-ruedo/vuelitos.svg", "cuando": { "paso": "acabado-superior", "en": ["vuelitos"] } },
+          { "archivo": "{perfil}/sup/acabado-manga/vuelitos-{manga}.svg", "cuando": { "paso": "acabado-superior", "en": ["vuelitos"] } }
+        ]
+      }
+    ]
+  }
 }

@@ -1,12 +1,17 @@
 import {
   elegir,
   evaluarFlujo,
+  ilustrar,
+  ilustrarOpcion,
   iniciarSeleccion,
+  mismaIlustracion,
   textoEncabezado,
   type ConfiguracionCategoria,
   type Conflicto,
   type EstadoPaso,
+  type Ilustracion,
   type Opcion,
+  type Seleccion,
 } from '@iriconfex/shared'
 import { useMemo, useState } from 'react'
 import {
@@ -18,6 +23,9 @@ import {
   SelectorSiNo,
   TarjetaOpcion,
 } from '../components/ui'
+import { cx } from '../lib/cx'
+import { encuadrar, unirCajas, type Caja } from './encuadre'
+import { IlustracionPrenda } from './IlustracionPrenda'
 
 export interface FlujoConfiguracionProps {
   configuracion: ConfiguracionCategoria
@@ -88,13 +96,16 @@ export function FlujoConfiguracion({ configuracion }: FlujoConfiguracionProps) {
 
       <main className="flex flex-1 flex-col gap-4 px-4 py-6">
         {terminado ? (
-          <Resumen pasos={estado.pasos} onEditar={irA} />
+          <>
+            <VistaPrenda ilustracion={ilustrar(configuracion, seleccion)} grande />
+            <Resumen pasos={estado.pasos} onEditar={irA} />
+          </>
         ) : (
           <>
             {aviso && <AvisoEnLinea tipo="aviso">{aviso}</AvisoEnLinea>}
             <Conflictos conflictos={estado.conflictos} pasoActual={actual.paso.id} nombreDelPaso={nombreDelPaso} onIr={irA} />
             {actual.paso.nota && <AvisoEnLinea>{actual.paso.nota}</AvisoEnLinea>}
-            <Paso estado={actual} onElegir={alElegir} />
+            <Paso configuracion={configuracion} seleccion={seleccion} estado={actual} onElegir={alElegir} />
           </>
         )}
       </main>
@@ -111,8 +122,24 @@ export function FlujoConfiguracion({ configuracion }: FlujoConfiguracionProps) {
   )
 }
 
-function Paso({ estado, onElegir }: { estado: EstadoPaso; onElegir: (opcionId: string) => void }) {
+interface PasoProps {
+  configuracion: ConfiguracionCategoria
+  seleccion: Seleccion
+  estado: EstadoPaso
+  onElegir: (opcionId: string) => void
+}
+
+function Paso({ configuracion, seleccion, estado, onElegir }: PasoProps) {
   const { paso, fijada, opciones, valor } = estado
+
+  // Cómo quedaría la prenda con cada opción. Si ninguna cambia el dibujo (p. ej. la talla), no se muestran.
+  const vistas = useMemo(() => {
+    const porOpcion = new Map(opciones.map((o) => [o.id, ilustrarOpcion(configuracion, seleccion, paso.id, o.id)]))
+    const primera = porOpcion.get(opciones[0]?.id)
+    const cambian = [...porOpcion.values()].some((vista) => !mismaIlustracion(vista, primera ?? null))
+    return cambian ? porOpcion : null
+  }, [configuracion, seleccion, paso.id, opciones])
+  const vista = useEncuadreComun(paso.id, vistas)
 
   if (fijada) {
     const opcion = paso.opciones.find((o) => o.id === fijada.opcion)
@@ -120,7 +147,13 @@ function Paso({ estado, onElegir }: { estado: EstadoPaso; onElegir: (opcionId: s
       <>
         {fijada.mensaje && <AvisoEnLinea>{fijada.mensaje}</AvisoEnLinea>}
         <RejillaOpciones etiqueta={paso.nombre}>
-          {opcion && <TarjetaOpcion nombre={opcion.nombre} ilustracion={<Imagen opcion={opcion} />} seleccionada />}
+          {opcion && (
+            <TarjetaOpcion
+              nombre={opcion.nombre}
+              ilustracion={<Miniatura opcion={opcion} ilustracion={ilustrar(configuracion, seleccion)} />}
+              seleccionada
+            />
+          )}
         </RejillaOpciones>
       </>
     )
@@ -128,11 +161,14 @@ function Paso({ estado, onElegir }: { estado: EstadoPaso; onElegir: (opcionId: s
 
   if (paso.presentacion === 'si-no') {
     return (
-      <SelectorSiNo
-        etiqueta={paso.nombre}
-        valor={valor === undefined ? null : valor === 'si'}
-        onCambiar={(si) => onElegir(si ? 'si' : 'no')}
-      />
+      <>
+        <VistaPrenda ilustracion={ilustrar(configuracion, seleccion)} />
+        <SelectorSiNo
+          etiqueta={paso.nombre}
+          valor={valor === undefined ? null : valor === 'si'}
+          onCambiar={(si) => onElegir(si ? 'si' : 'no')}
+        />
+      </>
     )
   }
 
@@ -142,7 +178,15 @@ function Paso({ estado, onElegir }: { estado: EstadoPaso; onElegir: (opcionId: s
         <TarjetaOpcion
           key={opcion.id}
           nombre={opcion.nombre}
-          ilustracion={<Imagen opcion={opcion} />}
+          ilustracion={
+            <Miniatura
+              opcion={opcion}
+              ilustracion={vistas?.get(opcion.id) ?? null}
+              enfoque={vista.enfoque}
+              onMedir={vista.medidores.get(opcion.id)}
+              vista={vista.caja}
+            />
+          }
           seleccionada={valor === opcion.id}
           onSeleccionar={() => onElegir(opcion.id)}
         />
@@ -151,8 +195,78 @@ function Paso({ estado, onElegir }: { estado: EstadoPaso; onElegir: (opcionId: s
   )
 }
 
-function Imagen({ opcion }: { opcion: Opcion }) {
-  return opcion.imagen ? <img src={opcion.imagen} alt="" className="h-full w-full object-contain" loading="lazy" /> : null
+/** Proporción del área de ilustración de la tarjeta (ancho / alto). */
+const PROPORCION_TARJETA = 1.45
+
+/**
+ * Acerca las miniaturas de un paso a lo que cambia entre sus opciones (p. ej. el escote), con el mismo encuadre
+ * para todas las tarjetas, para que se puedan comparar. Se calcula con las capas que no son comunes a todas.
+ */
+function useEncuadreComun(pasoId: string, vistas: Map<string, Ilustracion | null> | null) {
+  const { clave, enfoque } = useMemo(() => {
+    if (!vistas) return { clave: '', enfoque: undefined }
+    const listas = [...vistas.values()].map((v) => new Set(v?.piezas.flatMap((p) => p.archivos) ?? []))
+    const todas = new Set(listas.flatMap((l) => [...l]))
+    const distintas = new Set([...todas].filter((url) => !listas.every((l) => l.has(url))))
+    return distintas.size > 0
+      ? { clave: `${pasoId}|${[...distintas].sort().join()}`, enfoque: distintas as ReadonlySet<string> }
+      : { clave: '', enfoque: undefined }
+  }, [pasoId, vistas])
+
+  const [medidas, setMedidas] = useState<{ clave: string; cajas: Map<string, Caja | null> }>({ clave: '', cajas: new Map() })
+
+  const medidores = useMemo(() => {
+    const mapa = new Map<string, (caja: Caja | null) => void>()
+    for (const id of vistas?.keys() ?? []) {
+      mapa.set(id, (caja) =>
+        setMedidas((previas) => {
+          const cajas = new Map(previas.clave === clave ? previas.cajas : [])
+          cajas.set(id, caja)
+          return { clave, cajas }
+        }),
+      )
+    }
+    return mapa
+  }, [vistas, clave])
+
+  // Solo cuando todas las tarjetas se midieron, para que no salte el encuadre mientras cargan.
+  const completas = vistas !== null && enfoque !== undefined && medidas.clave === clave && medidas.cajas.size >= vistas.size
+  const medidasValidas = completas ? [...medidas.cajas.values()].filter((c): c is Caja => c !== null) : []
+  const caja = medidasValidas.length > 0 ? encuadrar(medidasValidas.reduce(unirCajas), PROPORCION_TARJETA) : null
+
+  return { enfoque, medidores, caja }
+}
+
+interface MiniaturaProps {
+  opcion: Opcion
+  ilustracion: Ilustracion | null
+  enfoque?: ReadonlySet<string>
+  onMedir?: (caja: Caja | null) => void
+  vista?: Caja | null
+}
+
+/** Fotografía de la opción si la configuración la trae (HU-06 CA4); si no, la prenda dibujada con esa opción. */
+function Miniatura({ opcion, ilustracion, enfoque, onMedir, vista }: MiniaturaProps) {
+  if (opcion.imagen) return <img src={opcion.imagen} alt="" className="h-full w-full object-contain" loading="lazy" />
+  return (
+    <IlustracionPrenda
+      ilustracion={ilustracion}
+      enfoque={enfoque}
+      onMedir={onMedir}
+      vista={vista}
+      className={vista ? 'h-full w-full' : 'h-full w-full py-2'}
+    />
+  )
+}
+
+/** La prenda armada hasta ahora, siempre sobre lienzo neutro. */
+function VistaPrenda({ ilustracion, grande = false }: { ilustracion: Ilustracion | null; grande?: boolean }) {
+  if (!ilustracion) return null
+  return (
+    <div className={cx('flex items-center justify-center rounded-tarjeta bg-lienzo', grande ? 'h-80 py-4' : 'h-48 py-3')}>
+      <IlustracionPrenda ilustracion={ilustracion} descripcion="Vista previa de tu elección" className="h-full w-full" />
+    </div>
+  )
 }
 
 /** Una elección posterior contradice otra anterior (HU-06 CA7): se explica y se ofrece cambiarla. */

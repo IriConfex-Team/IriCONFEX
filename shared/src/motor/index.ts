@@ -4,6 +4,7 @@ export {
   esquemaConfiguracion,
   type Condicion,
   type ConfiguracionCategoria,
+  type ConfiguracionIlustracion,
   type Opcion,
   type Paso,
   type Regla,
@@ -26,3 +27,4 @@ export {
   type Seleccion,
   type TipoErrorSeleccion,
 } from './motor'
+export { ilustrar, ilustrarOpcion, mismaIlustracion, type Ilustracion, type PiezaIlustrada } from './ilustracion'

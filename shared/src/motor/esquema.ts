@@ -65,6 +65,35 @@ const esquemaReglaFijacion = z.strictObject({
 
 const esquemaRegla = z.discriminatedUnion('tipo', [esquemaReglaVisibilidad, esquemaReglaFijacion])
 
+/**
+ * Ilustración por capas (HU-06 CA4). Las rutas son plantillas: `{x}` se reemplaza por la variable `x`
+ * o por la opción elegida en el paso `x`; si algo no tiene valor, la capa no se dibuja.
+ */
+const esquemaIlustracion = z.strictObject({
+  /** Carpeta pública de los SVG, p. ej. «/ilustraciones». */
+  carpeta: z.string().min(1),
+  /** Elecciones supuestas solo para dibujar mientras el paso no se ha respondido. */
+  relleno: z.array(z.strictObject({ paso: z.string().min(1), opcion: z.string().min(1), cuando: esquemaCondicion.optional() })).optional(),
+  /** Valores derivados: se usa la primera entrada cuya condición se cumple y cuyas plantillas tienen valor. */
+  variables: z
+    .record(z.string().min(1), z.array(z.strictObject({ valor: z.string(), cuando: esquemaCondicion.optional() })).min(1))
+    .optional(),
+  /** Piezas en orden de dibujo (la de abajo primero). Cada una tiene su propio lienzo y su propia silueta. */
+  piezas: z
+    .array(
+      z.strictObject({
+        id: z.string().min(1),
+        ancho: z.number().positive(),
+        alto: z.number().positive(),
+        /** Cuánto baja la pieza dentro del conjunto. */
+        desplazamiento: z.number().min(0).optional(),
+        cuando: esquemaCondicion.optional(),
+        capas: z.array(z.strictObject({ archivo: z.string().min(1), cuando: esquemaCondicion.optional() })).min(1),
+      }),
+    )
+    .min(1),
+})
+
 export const esquemaConfiguracion = z.strictObject({
   $schema: z.string().optional(),
   version: z.literal(1),
@@ -73,6 +102,7 @@ export const esquemaConfiguracion = z.strictObject({
   encabezado: z.strictObject({ paso: z.string().min(1), plantilla: z.string().min(1) }).optional(),
   pasos: z.array(esquemaPaso).min(1),
   reglas: z.array(esquemaRegla),
+  ilustracion: esquemaIlustracion.optional(),
 })
 
 export type Opcion = z.infer<typeof esquemaOpcion>
@@ -81,6 +111,7 @@ export type ReglaVisibilidad = z.infer<typeof esquemaReglaVisibilidad>
 export type ReglaFijacion = z.infer<typeof esquemaReglaFijacion>
 export type Regla = z.infer<typeof esquemaRegla>
 export type ConfiguracionCategoria = z.infer<typeof esquemaConfiguracion>
+export type ConfiguracionIlustracion = z.infer<typeof esquemaIlustracion>
 
 export class ErrorConfiguracion extends Error {
   readonly problemas: string[]
@@ -148,6 +179,37 @@ function verificarReferencias(configuracion: ConfiguracionCategoria): string[] {
   })
 
   if (configuracion.encabezado) revisarOpciones('encabezado', configuracion.encabezado.paso, [])
+
+  const { ilustracion } = configuracion
+  if (ilustracion) {
+    const variables = new Set(Object.keys(ilustracion.variables ?? {}))
+    const revisarPlantilla = (donde: string, plantilla: string) => {
+      for (const [, nombre] of plantilla.matchAll(/\{([^}]+)\}/g)) {
+        if (!variables.has(nombre) && !opcionesPorPaso.has(nombre)) {
+          problemas.push(`${donde}: «{${nombre}}» no es una variable ni un paso`)
+        }
+      }
+    }
+    ilustracion.relleno?.forEach((relleno, i) => {
+      revisarOpciones(`ilustración, relleno ${i}`, relleno.paso, [relleno.opcion])
+      if (relleno.cuando) revisarCondicion(`ilustración, relleno ${i}`, relleno.cuando)
+    })
+    for (const [nombre, entradas] of Object.entries(ilustracion.variables ?? {})) {
+      entradas.forEach((entrada, i) => {
+        const donde = `ilustración, variable ${nombre}[${i}]`
+        revisarPlantilla(donde, entrada.valor)
+        if (entrada.cuando) revisarCondicion(donde, entrada.cuando)
+      })
+    }
+    for (const pieza of ilustracion.piezas) {
+      if (pieza.cuando) revisarCondicion(`ilustración, pieza ${pieza.id}`, pieza.cuando)
+      pieza.capas.forEach((capa, i) => {
+        const donde = `ilustración, pieza ${pieza.id}, capa ${i}`
+        revisarPlantilla(donde, capa.archivo)
+        if (capa.cuando) revisarCondicion(donde, capa.cuando)
+      })
+    }
+  }
 
   return problemas
 }
