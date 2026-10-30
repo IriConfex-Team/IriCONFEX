@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../generated/prisma/client';
+import { PrismaClient } from '../generated/prisma/client.js';
 import { cargarColores } from './seed-colores.js';
 
 // CAMBIA ESTA LÍNEA: ruta del pijamas.json del motor, relativa a la carpeta api/

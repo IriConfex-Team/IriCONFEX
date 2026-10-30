@@ -1,4 +1,4 @@
-import { prisma } from '../db';
+import { prisma } from '../db.js';
 
 export async function eliminarSolicitudesVencidas(): Promise<number> {
   const { count } = await prisma.solicitud.deleteMany({
