@@ -73,6 +73,7 @@ model Categoria {
   versionConfiguracion String        @db.VarChar(20)
   encabezado           Json?
   ilustracion          Json?
+  resumen              Json?
   activa               Boolean       @default(true)
   orden                Int           @default(0)
   perfiles             Perfil[]
@@ -126,6 +127,8 @@ model Opcion {
   nombre           String                @db.VarChar(80)
   descripcion      String?               @db.VarChar(255)
   imagenUrl        String?               @db.VarChar(255)
+  etiqueta         String?               @db.VarChar(80)
+  muestraInfoLocal Boolean               @default(false)
   orden            Int                   @default(0)
   activa           Boolean               @default(true)
   perfilId         Int?
@@ -136,6 +139,8 @@ model Opcion {
   tipoPieza        TipoPieza?            @relation(fields: [tipoPiezaId], references: [id])
   grupoTallaId     Int?
   grupoTalla       GrupoTalla?           @relation(fields: [grupoTallaId], references: [id])
+  tallaId          Int?
+  talla            Talla?                @relation(fields: [tallaId], references: [id])
   adicionalId      Int?
   adicional        Adicional?            @relation(fields: [adicionalId], references: [id])
   reglasAfectada   ReglaOpcionAfectada[]
@@ -296,6 +301,7 @@ model Talla {
   orden           Int              @default(0)
   medidasRef      TallaMedidaRef[]
   piezas          SolicitudPieza[]
+  opciones        Opcion[]
 
   @@unique([grupoTallaId, codigo])
   @@map("talla")
@@ -324,6 +330,7 @@ model CampoMedida {
   unidad          String           @default("cm") @db.VarChar(5)
   valorMin        Decimal          @db.Decimal(5, 1)
   valorMax        Decimal          @db.Decimal(5, 1)
+  provisional     Boolean           @default(false)
   orden           Int              @default(0)
   referencias     TallaMedidaRef[]
   medidas         SolicitudMedida[]
@@ -348,7 +355,7 @@ model Negocio {
   nombre    String  @db.VarChar(80)
   direccion String  @db.VarChar(200)
   senas     String? @db.VarChar(200)
-  horario   String  @db.VarChar(200)
+  horario   Json
   whatsapp  String  @db.VarChar(8)
   urlMapa   String? @db.VarChar(255)
 
