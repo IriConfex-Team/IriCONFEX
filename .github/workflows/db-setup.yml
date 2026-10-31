@@ -1,19 +1,43 @@
-name: db-setup
+name: DB setup
+
 on:
   push:
     branches: [main]
     paths:
       - api/prisma/**
+      - datos/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-setup
+  cancel-in-progress: false
+
 jobs:
-  migrate:
-    runs-on: ubuntu-latest
+  db-setup:
+    name: db-setup
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Node 24 + caché de npm
+        uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - run: npm ci
-      - run: npm run db:setup -w api
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar shared
+        run: npm run build --workspace=shared
+
+      - name: Migraciones y seed en Supabase
+        run: npm run db:setup --workspace=api
         env:
           DIRECT_URL: ${{ secrets.SUPABASE_DIRECT_URL }}
           DATABASE_URL: ${{ secrets.SUPABASE_DIRECT_URL }}
