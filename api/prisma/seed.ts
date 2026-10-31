@@ -1,10 +1,11 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { cargarConfiguracion } from '@iriconfex/shared';
 import { PrismaClient } from '../generated/prisma/client.js';
 import { cargarColores } from './seed-colores.js';
 
-// CAMBIA ESTA LÍNEA: ruta del pijamas.json del motor, relativa a la carpeta api/
+// CAMBIA ESTAS DOS LÍNEAS si tus archivos están en otra carpeta (rutas relativas a api/)
 const RUTA_PIJAMAS = '../datos/categorias/pijamas.json';
 const RUTA_COLORES = '../datos/colores_por_tela.json';
 
@@ -40,6 +41,12 @@ function leerCsv(nombre: string): Record<string, string>[] {
 
 const mapa = <T extends { codigo: string; id: number }>(filas: T[]) =>
   new Map(filas.map((f) => [f.codigo, f.id] as [string, number]));
+
+// Los ids de las tallas del motor son "<grupo>-<talla>": adulto-s, plus-2xl, bebe-0-3, nino-12
+function claveTalla(id: string): string {
+  const i = id.indexOf('-');
+  return id.slice(0, i) + ':' + id.slice(i + 1).toUpperCase();
+}
 
 // Valida que cada condición (con sus todas / alguna anidadas) apunte a opciones que existen
 function validar(c: any, opciones: Map<string, number>, regla: string): void {
@@ -153,20 +160,26 @@ async function cargarCatalogo() {
 
 async function cargarMotor() {
   const cfg = JSON.parse(leerRuta(RUTA_PIJAMAS));
+  cargarConfiguracion(cfg); // valida TODO el esquema del archivo; si algo está mal, lanza error aquí
   const enl = JSON.parse(leerTexto('enlaces.json'));
 
+  const extra = {
+    ...(cfg.encabezado ? { encabezado: cfg.encabezado } : {}),
+    ...(cfg.ilustracion ? { ilustracion: cfg.ilustracion } : {}),
+    ...(cfg.resumen ? { resumen: cfg.resumen } : {}),
+  };
   const cat = await prisma.categoria.upsert({
     where: { codigo: cfg.categoria.id },
     update: {
       nombre: cfg.categoria.nombre,
       versionConfiguracion: String(cfg.version),
-      ...(cfg.encabezado ? { encabezado: cfg.encabezado } : {}),
+      ...extra,
     },
     create: {
       codigo: cfg.categoria.id,
       nombre: cfg.categoria.nombre,
       versionConfiguracion: String(cfg.version),
-      ...(cfg.encabezado ? { encabezado: cfg.encabezado } : {}),
+      ...extra,
     },
   });
 
@@ -199,6 +212,7 @@ async function cargarMotor() {
       soloConManga: r.soloConManga === 'true',
       valorMin: r.min,
       valorMax: r.max,
+      provisional: r.provisional === 'true',
       orden: i,
     };
     await prisma.campoMedida.upsert({
@@ -208,12 +222,19 @@ async function cargarMotor() {
     });
   }
 
+  // Tallas por clave "grupo:talla" (adulto:S, bebe:0-3, nino:12...)
+  const tallas = new Map(
+    (await prisma.talla.findMany({ include: { grupoTalla: true } })).map(
+      (t) => [t.grupoTalla.codigo + ':' + t.codigo, t.id] as [string, number],
+    ),
+  );
   const catalogos: Record<string, Map<string, number>> = {
     perfil: perfiles,
     grupoTalla: grupos,
     tela: mapa(await prisma.tela.findMany()),
     tipoPieza: mapa(await prisma.tipoPieza.findMany()),
     adicional: mapa(await prisma.adicional.findMany()),
+    talla: tallas,
   };
 
   // Pasos y opciones de pijamas.json
@@ -238,7 +259,8 @@ async function cargarMotor() {
     for (const [j, o] of p.opciones.entries()) {
       let idCat: number | null = null;
       if (tipoCat) {
-        const clave = enl.alias?.[tipoCat]?.[o.id] ?? o.id;
+        const clave =
+          tipoCat === 'talla' ? claveTalla(o.id) : enl.alias?.[tipoCat]?.[o.id] ?? o.id;
         const id = catalogos[tipoCat].get(clave);
         if (id === undefined) {
           throw new Error('Sin catálogo para ' + p.id + ':' + o.id + ' (' + clave + ')');
@@ -249,11 +271,15 @@ async function cargarMotor() {
       const datos = {
         nombre: o.nombre,
         descripcion: o.descripcion ?? null,
+        imagenUrl: o.imagen ?? null,
+        etiqueta: o.etiqueta ?? null,
+        muestraInfoLocal: o.muestraInfoLocal ?? false,
         orden: j,
         perfilId: tipoCat === 'perfil' ? idCat : null,
         telaId: tipoCat === 'tela' ? idCat : null,
         tipoPiezaId: tipoCat === 'tipoPieza' ? idCat : null,
         grupoTallaId: tipoCat === 'grupoTalla' ? idCat : null,
+        tallaId: tipoCat === 'talla' ? idCat : null,
         adicionalId: adicional ? catalogos.adicional.get(adicional)! : null,
       };
       const op = await prisma.opcion.upsert({
@@ -293,6 +319,30 @@ async function cargarMotor() {
         }),
       });
     }
+  }
+
+  await cargarNegocio(cfg.negocio);
+}
+
+// Información del local (HU-03). Ajusta los nombres de la derecha a los del bloque "negocio" de tu pijamas.json
+async function cargarNegocio(n: any) {
+  if (!n) {
+    console.log('pijamas.json no trae "negocio": se omite');
+    return;
+  }
+  const datos = {
+    nombre: n.nombre ?? 'Negocio',
+    direccion: n.direccion ?? '',
+    senas: n.senas ?? null,
+    horario: n.horario ?? [],
+    whatsapp: String(n.whatsapp ?? ''),
+    urlMapa: n.urlMapa ?? null,
+  };
+  const existente = await prisma.negocio.findFirst();
+  if (existente) {
+    await prisma.negocio.update({ where: { id: existente.id }, data: datos });
+  } else {
+    await prisma.negocio.create({ data: datos });
   }
 }
 
@@ -342,8 +392,8 @@ async function cargarGeo() {
 
 async function main() {
   await cargarCatalogo();
-  const enlacesColores = JSON.parse(leerTexto('enlaces.json'));
-  await cargarColores(prisma, RUTA_COLORES, enlacesColores.alias?.tela ?? {});
+  const enl = JSON.parse(leerTexto('enlaces.json'));
+  await cargarColores(prisma, RUTA_COLORES, enl.alias?.tela ?? {});
   await cargarMotor();
   await cargarAviso();
   await cargarGeo();
