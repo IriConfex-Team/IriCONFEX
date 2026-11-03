@@ -1,0 +1,38 @@
+name: Eliminar solicitudes vencidas
+
+on:
+  schedule:
+    # 08:00 UTC = 02:00 en Costa Rica (UTC-6, sin horario de verano)
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  eliminar:
+    name: eliminar
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Node 24 + caché de npm
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar cliente de Prisma
+        run: npm run db:generate --workspace=api
+        env:
+          DIRECT_URL: ${{ secrets.SUPABASE_DIRECT_URL }}
+
+      - name: Eliminar solicitudes con más de 90 días
+        run: npm run job:eliminar-vencidas --workspace=api
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DIRECT_URL }}

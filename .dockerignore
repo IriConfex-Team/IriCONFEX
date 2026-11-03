@@ -1,0 +1,6 @@
+**/node_modules
+.env
+.git
+api/generated
+web/dist
+web/.next

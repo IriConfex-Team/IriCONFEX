@@ -1,0 +1,25 @@
+{
+  "pasos": {
+    "perfil": "perfil",
+    "base": "tipoPieza",
+    "tela-superior": "tela",
+    "tela-inferior": "tela",
+    "grupo-talla": "grupoTalla",
+    "tipo-inferior": "tipoPieza",
+    "talla-superior": "talla",
+    "talla-inferior": "talla"
+  },
+  "alias": {
+    "perfil": { "nino": "nino_nina" },
+    "tela": { "satin-alicrado": "satin_alicrado", "rib": "rib_acanalado" },
+    "tipoPieza": {
+      "pantalon-largo": "pantalon_largo",
+      "una-pieza": "bata",
+      "dos-piezas": "blusa_camisa"
+    }
+  },
+  "adicionales": {
+    "escote:camisero": "cuello_camisero",
+    "bata-salida:si": "bata_salida"
+  }
+}

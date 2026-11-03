@@ -1,0 +1,5 @@
+codigo,nombre,permiteMedida,grupos
+mujer,Mujer,true,adulto|plus
+hombre,Hombre,true,adulto|plus
+nino_nina,Niño/niña,false,nino
+bebe,Bebé,false,bebe
