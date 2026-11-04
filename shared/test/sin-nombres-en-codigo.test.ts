@@ -6,6 +6,8 @@ import { describe, expect, it } from 'vitest'
 // Los nombres salen de los archivos de datos; aquí se buscan en el código fuente (sin contar pruebas).
 const raiz = join(__dirname, '../..')
 const carpetasDeCodigo = ['shared/src', 'web/src/flujo']
+// Palabras técnicas que coinciden con un nombre de los datos pero no lo son (la tela «Modal» vs. aria-modal).
+const terminosTecnicos = [/aria-modal/g]
 
 function archivosFuente(carpeta: string): string[] {
   return readdirSync(carpeta).flatMap((nombre) => {
@@ -43,7 +45,7 @@ describe('HU-23 CA1 · sin nombres de la configuración en el código', () => {
     const hallazgos = archivos
       .filter((archivo) => archivo.startsWith(join(raiz, carpeta)))
       .flatMap((archivo) => {
-        const contenido = readFileSync(archivo, 'utf8').toLowerCase()
+        const contenido = terminosTecnicos.reduce((texto, termino) => texto.replace(termino, ''), readFileSync(archivo, 'utf8').toLowerCase())
         return nombres
           .filter((nombre) => new RegExp(`(^|[^\\p{L}])${nombre.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}($|[^\\p{L}])`, 'u').test(contenido))
           .map((nombre) => `${archivo.slice(raiz.length + 1)}: «${nombre}»`)

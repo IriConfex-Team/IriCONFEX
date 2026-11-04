@@ -84,6 +84,8 @@ describe('FlujoConfiguracion (con la configuración de datos/categorias)', () =>
     await elegirYSeguir('Short corto')
     await userEvent.click(screen.getByRole('button', { name: 'Siguiente' })) // acabado inferior único
     await userEvent.click(screen.getByRole('radio', { name: 'Satín' }))
+    expect(screen.getByText('Solo en piezas holgadas; requiere más tela.')).toBeInTheDocument()
+    expect(screen.getByText('Resuelve el aviso para continuar.')).toBeInTheDocument()
     expect(screen.getByText('El satín puro solo se confecciona en piezas holgadas.')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Siguiente' })).toBeDisabled()
     await userEvent.click(screen.getByRole('button', { name: 'Cambiar escote' }))

@@ -8,3 +8,5 @@ export function esNombreValido(nombre: string): boolean {
 }
 
 export * from './motor';
+
+export * from './solicitud';

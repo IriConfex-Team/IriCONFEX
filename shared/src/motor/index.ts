@@ -5,6 +5,8 @@ export {
   type Condicion,
   type ConfiguracionCategoria,
   type ConfiguracionIlustracion,
+  type ConfiguracionResumen,
+  type Negocio,
   type Opcion,
   type Paso,
   type Regla,
@@ -27,4 +29,11 @@ export {
   type Seleccion,
   type TipoErrorSeleccion,
 } from './motor'
-export { ilustrar, ilustrarOpcion, mismaIlustracion, type Ilustracion, type PiezaIlustrada } from './ilustracion'
+export {
+  ilustrar,
+  ilustrarOpcion,
+  mismaIlustracion,
+  pasosQueDibujan,
+  type Ilustracion,
+  type PiezaIlustrada,
+} from './ilustracion'
