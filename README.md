@@ -200,6 +200,18 @@ Scripts (en api/):
 Para probar desde un celular en la misma red, abre http://IP-DE-TU-PC:3000/api/docs
 (el puerto 3000 debe estar permitido en el firewall de Windows).
 
+## Despliegue (Render + GitHub Actions)
+
+- **API:** servicio web de Render construido desde `api/Dockerfile` (contexto: raíz del repo).
+  URL: https://TU-API.onrender.com · Salud: `/api/health` · Docs: `/api/docs`
+- **Variables en Render:** `NODE_ENV=production`, `DATABASE_URL` (Session pooler de Supabase),
+  `CORS_ORIGINS` (solo el dominio https del frontend, sin "/" final).
+- **Keep-alive:** `.github/workflows/keep-alive.yml` llama a `/api/health` cada 10 min
+  (evita la suspensión de Render a los 15 min y la de Supabase a los 7 días).
+  Requiere la variable de repositorio `API_HEALTH_URL`.
+- **Probar la imagen en local:**
+  `docker build -f api/Dockerfile -t iriconfex-api .`
+
 ## Pendiente
 
 - Medidas de referencia por talla y rangos reales de los campos de medida.
