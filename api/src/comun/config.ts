@@ -23,12 +23,30 @@ export function leerConfig(entorno: NodeJS.ProcessEnv = process.env): Config {
     throw new Error('Configuración inválida: ' + problemas);
   }
   const e = resultado.data;
+
+  const origenesCors = e.CORS_ORIGINS.split(',')
+    .map((origen) => origen.trim())
+    .filter((origen) => origen !== '');
+
+  if (e.NODE_ENV === 'production') {
+    if (origenesCors.length === 0) {
+      throw new Error('Configuración inválida: CORS_ORIGINS es obligatorio en producción');
+    }
+    // Un origen válido es https://dominio (sin barra final, sin ruta, sin comodín)
+    const invalidos = origenesCors.filter((o) => !/^https:\/\/[^/\s*]+$/.test(o));
+    if (invalidos.length > 0) {
+      throw new Error(
+        'Configuración inválida: CORS_ORIGINS en producción debe ser https://dominio sin "/" final ni "*" (' +
+          invalidos.join(', ') +
+          ')',
+      );
+    }
+  }
+
   return {
     puerto: e.PORT,
     entorno: e.NODE_ENV,
-    origenesCors: e.CORS_ORIGINS.split(',')
-      .map((origen) => origen.trim())
-      .filter((origen) => origen !== ''),
+    origenesCors,
     databaseUrl: e.DATABASE_URL,
   };
 }

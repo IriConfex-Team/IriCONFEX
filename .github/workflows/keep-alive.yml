@@ -1,0 +1,35 @@
+name: Keep alive (Render + Supabase)
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # cada 10 min: margen sobre los 15 min de Render
+  workflow_dispatch:          # permite ejecutarlo a mano desde la pestaña Actions
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Llamar a /api/health
+        env:
+          HEALTH_URL: ${{ vars.API_HEALTH_URL }}
+        run: |
+          set -u
+          if [ -z "$HEALTH_URL" ]; then
+            echo "::error::Falta la variable de repositorio API_HEALTH_URL"
+            exit 1
+          fi
+          # Render tarda ~30-60 s en despertar: se reintenta antes de dar error
+          for intento in 1 2 3 4; do
+            codigo=$(curl -s -o respuesta.json -w '%{http_code}' --max-time 60 "$HEALTH_URL" || true)
+            echo "Intento $intento: HTTP $codigo"
+            if [ "$codigo" = "200" ]; then
+              cat respuesta.json
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::/api/health no respondió 200 (API o base caída)"
+          exit 1

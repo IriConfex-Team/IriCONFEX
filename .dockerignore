@@ -4,3 +4,13 @@
 api/generated
 web/dist
 web/.next
+**/node_modules
+**/dist
+api/generated
+.git
+.github
+.env
+.env.*
+!.env.example
+web/*
+!web/package.json
