@@ -175,9 +175,33 @@ El workflow `.github/workflows/db-setup.yml` corre `npm run db:setup` contra Sup
 | `Sin catálogo para ...` | El id de la opción no coincide con ningún código de los CSV; agrega la línea en `alias` de `enlaces.json`. |
 | `Regla X: no existe la opción ...` | Una condición del `pijamas.json` apunta a un paso u opción con un id mal escrito. |
 
+## API (T-05)
+
+Express 5 + Zod + OpenAPI, organizada en rutas, controladores, servicios y repositorios
+(api/src/modulos/<modulo>/).
+
+Endpoints:
+- GET /api/health            Estado de la API y de la base de datos (200 o 503)
+- GET /api/categorias        Lista de categorías activas
+- GET /api/categorias/:codigo  Una categoría por su código
+- GET /api/docs              Documentación interactiva (Swagger UI)
+- GET /api/openapi.json      Especificación OpenAPI 3.1
+
+Variables de entorno (en el .env de la raíz):
+- DATABASE_URL   conexión a PostgreSQL (obligatoria)
+- PORT           puerto de la API (3000 por defecto)
+- CORS_ORIGINS   orígenes permitidos separados por coma (vacío = ninguno)
+
+Scripts (en api/):
+- npm run dev -w api     servidor con recarga automática
+- npm run start -w api   servidor compilado (requiere npm run build -w api)
+- npm test -w api        pruebas con Vitest y Supertest
+
+Para probar desde un celular en la misma red, abre http://IP-DE-TU-PC:3000/api/docs
+(el puerto 3000 debe estar permitido en el firewall de Windows).
+
 ## Pendiente
 
-- Colores y estampados por tela (`colores.csv`).
 - Medidas de referencia por talla y rangos reales de los campos de medida.
 - Datos del local, fotos de la galería y descripciones e imágenes de las telas.
 - Cantones y distritos (`geo-cr.json`).
