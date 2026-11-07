@@ -43,6 +43,8 @@ export function validarContacto(contacto: { nombre: string; telefono: string }):
 export const esquemaSolicitud = z.strictObject({
   categoria: z.string().min(1),
   seleccion: z.record(z.string(), z.string()),
+  /** HU-14 CA6: medidas propias (id del campo → número); solo cuando la selección las pide. Se revalidan con `validarMedidas`. */
+  medidas: z.record(z.string(), z.number().positive()).optional(),
   contacto: z.strictObject({
     nombre: z.string().trim().min(1).max(LIMITE_NOMBRE),
     telefono: z.string().refine(esTelefonoValido, 'teléfono de Costa Rica de 8 dígitos').transform(normalizarTelefono),

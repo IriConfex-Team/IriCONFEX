@@ -140,6 +140,10 @@
       "id": "tela-superior",
       "nombre": "Tela de la parte de arriba",
       "presentacion": "lista",
+      "parte": [
+        { "cuando": {"paso": "base", "en": ["una-pieza"]}, "nombre": "Bata", "texto": "Tu pijama es de una pieza: esta es la tela de la bata.", "piezas": ["mujer-bata"] },
+        { "nombre": "Parte de arriba", "texto": "Primero eliges la tela de arriba y después la de abajo. Pueden ser distintas.", "piezas": ["mujer-blusa", "hombre-superior", "ninos-superior"] }
+      ],
       "opciones": [
         { "id": "brush", "nombre": "Brush", "descripcion": "Tejido de punto suave y cepillado al tacto. Abriga ligeramente y es ideal para pijamas cómodas de uso diario.", "imagen": "/telas/brush.jpg" },
         { "id": "satin", "nombre": "Satín", "descripcion": "Tela brillante y lisa con caída fluida. Fresca y elegante, perfecta para pijamas y batas de aspecto lujoso.", "imagen": "/telas/satin.jpg", "etiqueta": "Solo en piezas holgadas; requiere más tela." },
@@ -153,6 +157,7 @@
       "id": "tela-inferior",
       "nombre": "Tela de la parte de abajo",
       "presentacion": "lista",
+      "parte": [{ "nombre": "Parte de abajo", "texto": "Ahora la tela de la parte de abajo.", "piezas": ["mujer-inferior", "hombre-inferior", "nino-inferior", "bebe-inferior"] }],
       "opciones": [
         { "id": "brush", "nombre": "Brush", "descripcion": "Tejido de punto suave y cepillado al tacto. Abriga ligeramente y es ideal para pijamas cómodas de uso diario.", "imagen": "/telas/brush.jpg" },
         { "id": "satin", "nombre": "Satín", "descripcion": "Tela brillante y lisa con caída fluida. Fresca y elegante, perfecta para pijamas y batas de aspecto lujoso.", "imagen": "/telas/satin.jpg", "etiqueta": "Solo en piezas holgadas; requiere más tela." },
@@ -187,6 +192,88 @@
       "id": "talla-superior",
       "nombre": "Talla de la parte de arriba",
       "presentacion": "tarjetas",
+      "parte": [
+        { "cuando": {"paso": "base", "en": ["una-pieza"]}, "nombre": "Bata", "texto": "Tu pijama es de una pieza: esta es la talla de la bata.", "piezas": ["mujer-bata"] },
+        { "nombre": "Parte de arriba", "texto": "Primero eliges la talla de arriba y después la de abajo. Pueden ser distintas.", "piezas": ["mujer-blusa", "hombre-superior", "ninos-superior"] }
+      ],
+      "guia": [
+        {
+          "cuando": { "paso": "perfil", "en": ["mujer"] },
+          "titulo": "¿Cuál es mi talla?",
+          "imagen": "/tallas/mujer-arriba.svg",
+          "medidas": [
+            { "nombre": "Busto", "como": "Rodea la parte más llena del busto, con la cinta derecha por la espalda." },
+            { "nombre": "Cintura", "como": "Rodea la parte más angosta de la cintura, sin apretar." }
+          ],
+          "columnas": ["Busto", "Cintura"],
+          "filas": [
+            { "opcion": "adulto-s", "valores": ["86–90", "66–70"] },
+            { "opcion": "adulto-m", "valores": ["91–95", "71–75"] },
+            { "opcion": "adulto-l", "valores": ["96–101", "76–81"] },
+            { "opcion": "adulto-xl", "valores": ["102–107", "82–87"] },
+            { "opcion": "plus-2xl", "valores": ["108–112", "88–93"] },
+            { "opcion": "plus-3xl", "valores": ["113–118", "94–99"] },
+            { "opcion": "plus-4xl", "valores": ["119–124", "100–105"] },
+            { "opcion": "plus-5xl", "valores": ["125–130", "106–111"] }
+          ],
+          "nota": "Medidas del cuerpo, en centímetros. Si estás entre dos tallas, elige la más grande."
+        },
+        {
+          "cuando": { "paso": "perfil", "en": ["hombre"] },
+          "titulo": "¿Cuál es mi talla?",
+          "imagen": "/tallas/hombre-arriba.svg",
+          "medidas": [
+            { "nombre": "Pecho", "como": "Rodea el pecho por debajo de las axilas, con la cinta derecha por la espalda." },
+            { "nombre": "Cintura", "como": "Rodea la cintura a la altura del ombligo, sin apretar." }
+          ],
+          "columnas": ["Pecho", "Cintura"],
+          "filas": [
+            { "opcion": "adulto-s", "valores": ["88–95", "74–81"] },
+            { "opcion": "adulto-m", "valores": ["96–103", "82–89"] },
+            { "opcion": "adulto-l", "valores": ["104–111", "90–97"] },
+            { "opcion": "adulto-xl", "valores": ["112–119", "98–105"] },
+            { "opcion": "plus-2xl", "valores": ["120–127", "106–113"] },
+            { "opcion": "plus-3xl", "valores": ["128–135", "114–121"] },
+            { "opcion": "plus-4xl", "valores": ["136–143", "122–129"] },
+            { "opcion": "plus-5xl", "valores": ["144–151", "130–137"] }
+          ],
+          "nota": "Medidas del cuerpo, en centímetros. Si estás entre dos tallas, elige la más grande."
+        },
+        {
+          "cuando": { "paso": "perfil", "en": ["nino"] },
+          "titulo": "¿Cuál es mi talla?",
+          "medidas": [
+            { "nombre": "Estatura", "como": "De pie, sin zapatos y con la espalda contra la pared: desde el piso hasta la coronilla." },
+            { "nombre": "Pecho", "como": "Rodea el pecho por debajo de las axilas, sin apretar." }
+          ],
+          "columnas": ["Estatura", "Pecho"],
+          "filas": [
+            { "opcion": "nino-2", "valores": ["87–92", "50–53"] },
+            { "opcion": "nino-4", "valores": ["93–104", "54–57"] },
+            { "opcion": "nino-6", "valores": ["105–116", "58–61"] },
+            { "opcion": "nino-8", "valores": ["117–128", "62–66"] },
+            { "opcion": "nino-10", "valores": ["129–140", "67–72"] },
+            { "opcion": "nino-12", "valores": ["141–152", "73–78"] }
+          ],
+          "nota": "Medidas del cuerpo, en centímetros. Si está entre dos tallas, elige la más grande."
+        },
+        {
+          "cuando": { "paso": "perfil", "en": ["bebe"] },
+          "titulo": "¿Cuál es mi talla?",
+          "medidas": [
+            { "nombre": "Estatura (cm)", "como": "Acostado boca arriba con las piernas estiradas: desde la coronilla hasta los talones." },
+            { "nombre": "Peso (kg)", "como": "El de su último control o en una balanza." }
+          ],
+          "columnas": ["Estatura (cm)", "Peso (kg)"],
+          "filas": [
+            { "opcion": "bebe-0-3", "valores": ["50–62", "3–6"] },
+            { "opcion": "bebe-3-6", "valores": ["63–68", "6–7,5"] },
+            { "opcion": "bebe-6-9", "valores": ["69–74", "7,5–9"] },
+            { "opcion": "bebe-9-12", "valores": ["75–80", "9–10,5"] }
+          ],
+          "nota": "Si está entre dos tallas, elige la más grande: los bebés crecen rápido."
+        }
+      ],
       "opciones": [
         { "id": "bebe-0-3", "nombre": "0-3 meses" },
         { "id": "bebe-3-6", "nombre": "3-6 meses" },
@@ -212,6 +299,86 @@
       "id": "talla-inferior",
       "nombre": "Talla de la parte de abajo",
       "presentacion": "tarjetas",
+      "parte": [{ "nombre": "Parte de abajo", "texto": "Ahora la talla de la parte de abajo.", "piezas": ["mujer-inferior", "hombre-inferior", "nino-inferior", "bebe-inferior"] }],
+      "guia": [
+        {
+          "cuando": { "paso": "perfil", "en": ["mujer"] },
+          "titulo": "¿Cuál es mi talla?",
+          "imagen": "/tallas/mujer-abajo.svg",
+          "medidas": [
+            { "nombre": "Cintura", "como": "Rodea la parte más angosta de la cintura, sin apretar." },
+            { "nombre": "Cadera", "como": "Con los pies juntos, rodea la parte más ancha de los glúteos." }
+          ],
+          "columnas": ["Cintura", "Cadera"],
+          "filas": [
+            { "opcion": "adulto-s", "valores": ["66–70", "92–96"] },
+            { "opcion": "adulto-m", "valores": ["71–75", "97–101"] },
+            { "opcion": "adulto-l", "valores": ["76–81", "102–107"] },
+            { "opcion": "adulto-xl", "valores": ["82–87", "108–113"] },
+            { "opcion": "plus-2xl", "valores": ["88–93", "114–119"] },
+            { "opcion": "plus-3xl", "valores": ["94–99", "120–125"] },
+            { "opcion": "plus-4xl", "valores": ["100–105", "126–131"] },
+            { "opcion": "plus-5xl", "valores": ["106–111", "132–137"] }
+          ],
+          "nota": "Medidas del cuerpo, en centímetros. Si estás entre dos tallas, elige la más grande."
+        },
+        {
+          "cuando": { "paso": "perfil", "en": ["hombre"] },
+          "titulo": "¿Cuál es mi talla?",
+          "imagen": "/tallas/hombre-abajo.svg",
+          "medidas": [
+            { "nombre": "Cintura", "como": "Rodea la cintura a la altura del ombligo, sin apretar." },
+            { "nombre": "Cadera", "como": "Con los pies juntos, rodea la parte más ancha de los glúteos." }
+          ],
+          "columnas": ["Cintura", "Cadera"],
+          "filas": [
+            { "opcion": "adulto-s", "valores": ["74–81", "90–97"] },
+            { "opcion": "adulto-m", "valores": ["82–89", "98–105"] },
+            { "opcion": "adulto-l", "valores": ["90–97", "106–113"] },
+            { "opcion": "adulto-xl", "valores": ["98–105", "114–121"] },
+            { "opcion": "plus-2xl", "valores": ["106–113", "122–129"] },
+            { "opcion": "plus-3xl", "valores": ["114–121", "130–137"] },
+            { "opcion": "plus-4xl", "valores": ["122–129", "138–145"] },
+            { "opcion": "plus-5xl", "valores": ["130–137", "146–153"] }
+          ],
+          "nota": "Medidas del cuerpo, en centímetros. Si estás entre dos tallas, elige la más grande."
+        },
+        {
+          "cuando": { "paso": "perfil", "en": ["nino"] },
+          "titulo": "¿Cuál es mi talla?",
+          "medidas": [
+            { "nombre": "Estatura", "como": "De pie, sin zapatos y con la espalda contra la pared: desde el piso hasta la coronilla." },
+            { "nombre": "Cintura", "como": "Rodea la cintura a la altura del ombligo, sin apretar." },
+            { "nombre": "Cadera", "como": "Con los pies juntos, rodea la parte más ancha de la cadera." }
+          ],
+          "columnas": ["Estatura", "Cintura", "Cadera"],
+          "filas": [
+            { "opcion": "nino-2", "valores": ["87–92", "49–51", "55–58"] },
+            { "opcion": "nino-4", "valores": ["93–104", "52–54", "59–62"] },
+            { "opcion": "nino-6", "valores": ["105–116", "55–57", "63–66"] },
+            { "opcion": "nino-8", "valores": ["117–128", "58–60", "67–70"] },
+            { "opcion": "nino-10", "valores": ["129–140", "61–63", "71–75"] },
+            { "opcion": "nino-12", "valores": ["141–152", "64–67", "76–81"] }
+          ],
+          "nota": "Medidas del cuerpo, en centímetros. Si está entre dos tallas, elige la más grande."
+        },
+        {
+          "cuando": { "paso": "perfil", "en": ["bebe"] },
+          "titulo": "¿Cuál es mi talla?",
+          "medidas": [
+            { "nombre": "Estatura (cm)", "como": "Acostado boca arriba con las piernas estiradas: desde la coronilla hasta los talones." },
+            { "nombre": "Peso (kg)", "como": "El de su último control o en una balanza." }
+          ],
+          "columnas": ["Estatura (cm)", "Peso (kg)"],
+          "filas": [
+            { "opcion": "bebe-0-3", "valores": ["50–62", "3–6"] },
+            { "opcion": "bebe-3-6", "valores": ["63–68", "6–7,5"] },
+            { "opcion": "bebe-6-9", "valores": ["69–74", "7,5–9"] },
+            { "opcion": "bebe-9-12", "valores": ["75–80", "9–10,5"] }
+          ],
+          "nota": "Si está entre dos tallas, elige la más grande: los bebés crecen rápido."
+        }
+      ],
       "opciones": [
         { "id": "bebe-0-3", "nombre": "0-3 meses" },
         { "id": "bebe-3-6", "nombre": "3-6 meses" },
@@ -674,14 +841,13 @@
   ],
   "negocio": {
     "nombre": "IriConfex",
-    "direccion": "Cerro Cortés, Aguas Zarcas",
-    "senas": "Frente a la plaza de deportes",
+    "direccion": "Cerro Cortés, Aguas Zarcas, San Carlos",
+    "senas": "25 m al este de la escuela",
     "horario": [
       { "dias": "Lunes a viernes", "horas": "9:00 a 17:00" },
       { "dias": "Sábado", "horas": "9:00 a 12:00" }
     ],
-    "whatsapp": "83413594",
-    "pendientes": ["dirección y señas por confirmar", "enlace de mapas", "horario"]
+    "whatsapp": "83413594"
   },
   "resumen": {
     "secciones": [
@@ -693,6 +859,158 @@
       { "titulo": "Bata de salida", "pasos": ["bata-salida", "bata-salida-manga", "bata-salida-acabado"] },
       { "titulo": "Tallaje", "pasos": ["modalidad-talla", "grupo-talla", "talla-superior", "talla-inferior"] },
       { "titulo": "Entrega", "pasos": ["entrega"] }
+    ]
+  },
+  "medidas": {
+    "cuando": { "paso": "modalidad-talla", "en": ["medida"] },
+    "antesDe": "entrega",
+    "titulo": "Tus medidas",
+    "unidad": "cm",
+    "indicaciones": [
+      "Usa una cinta métrica, sin apretar, sobre ropa delgada.",
+      "Ponte de pie, con la espalda recta y los brazos sueltos. Pide ayuda si puedes, sobre todo para la espalda.",
+      "Amarra un cordón en la cintura, en la parte más angosta: te sirve de guía para varias medidas."
+    ],
+    "grupos": [
+      {
+        "titulo": "Parte de arriba",
+        "campos": [
+          {
+            "id": "ancho-espalda",
+            "nombre": "Ancho de espalda",
+            "como": "Por la espalda, de la punta de un hombro a la punta del otro.",
+            "min": 28,
+            "max": 65,
+            "imagen": "/medidas/{perfil}/ancho-espalda.svg"
+          },
+          {
+            "id": "contorno-busto",
+            "nombre": "Contorno de busto o pecho",
+            "como": "Rodea la parte más llena del busto o del pecho, pasando bajo los brazos. La cinta va derecha por la espalda.",
+            "min": 65,
+            "max": 175,
+            "imagen": "/medidas/{perfil}/contorno-busto.svg"
+          },
+          {
+            "id": "separacion-busto",
+            "nombre": "Separación de busto",
+            "como": "En línea recta, de la punta de un busto a la punta del otro (de pezón a pezón).",
+            "min": 10,
+            "max": 32,
+            "imagen": "/medidas/{perfil}/separacion-busto.svg",
+            "cuando": { "paso": "perfil", "en": ["mujer"] }
+          },
+          {
+            "id": "altura-busto",
+            "nombre": "Altura de busto",
+            "como": "Desde donde el hombro se une con el cuello hasta la punta del busto.",
+            "min": 15,
+            "max": 42,
+            "imagen": "/medidas/{perfil}/altura-busto.svg",
+            "cuando": { "paso": "perfil", "en": ["mujer"] }
+          },
+          {
+            "id": "largo-talle",
+            "nombre": "Largo de talle",
+            "como": "Por delante: desde donde el hombro se une con el cuello, pasando por la parte más alta del busto o del pecho, hasta el cordón de la cintura.",
+            "min": 32,
+            "max": 60,
+            "imagen": "/medidas/{perfil}/largo-talle.svg"
+          },
+          {
+            "id": "largo-total",
+            "nombre": "Largo total",
+            "como": "Desde la base del cuello hasta donde quieres que termine la prenda de arriba o la bata.",
+            "min": 35,
+            "max": 150,
+            "imagen": "/medidas/{perfil}/largo-total.svg"
+          },
+          {
+            "id": "largo-manga",
+            "nombre": "Largo de manga",
+            "como": "Desde la punta del hombro, con el brazo un poco doblado, hasta donde quieres que termine la manga.",
+            "min": 10,
+            "max": 75,
+            "imagen": "/medidas/{perfil}/largo-manga.svg",
+            "cuando": {
+              "alguna": [
+                { "paso": "manga", "en": ["corta", "tres-cuartos", "larga"] },
+                { "paso": "bata-salida", "en": ["si"] }
+              ]
+            }
+          },
+          {
+            "id": "ancho-manga",
+            "nombre": "Ancho de manga",
+            "como": "Rodea la parte más gruesa del brazo, arriba del codo.",
+            "min": 18,
+            "max": 60,
+            "imagen": "/medidas/{perfil}/ancho-manga.svg",
+            "cuando": {
+              "alguna": [
+                { "paso": "manga", "en": ["corta", "tres-cuartos", "larga"] },
+                { "paso": "bata-salida", "en": ["si"] }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titulo": "Parte de abajo",
+        "cuando": { "paso": "base", "en": ["dos-piezas"] },
+        "campos": [
+          {
+            "id": "contorno-cintura",
+            "nombre": "Contorno de cintura",
+            "como": "Rodea la cintura por donde está el cordón, sin meter el estómago.",
+            "min": 50,
+            "max": 165,
+            "imagen": "/medidas/{perfil}/contorno-cintura.svg"
+          },
+          {
+            "id": "contorno-cadera",
+            "nombre": "Contorno de cadera",
+            "como": "Con los pies juntos, rodea la parte más ancha de los glúteos. La cinta va derecha, sin bajar por detrás.",
+            "min": 70,
+            "max": 180,
+            "imagen": "/medidas/{perfil}/contorno-cadera.svg"
+          },
+          {
+            "id": "altura-cadera",
+            "nombre": "Altura de cadera",
+            "como": "Por el costado, desde el cordón de la cintura hasta la parte más ancha de la cadera.",
+            "min": 12,
+            "max": 32,
+            "imagen": "/medidas/{perfil}/altura-cadera.svg"
+          },
+          {
+            "id": "largo-tiro",
+            "nombre": "Largo de tiro",
+            "como": "Siéntate con la espalda recta en una silla firme. Por el costado, mide desde el cordón de la cintura hasta el asiento.",
+            "min": 18,
+            "max": 45,
+            "imagen": "/medidas/{perfil}/largo-tiro.svg"
+          },
+          {
+            "id": "largo-short",
+            "nombre": "Largo de short",
+            "como": "Por el costado, desde el cordón de la cintura hasta donde quieres que termine el short.",
+            "min": 20,
+            "max": 60,
+            "imagen": "/medidas/{perfil}/largo-short.svg",
+            "cuando": { "paso": "tipo-inferior", "en": ["short"] }
+          },
+          {
+            "id": "largo-pantalon",
+            "nombre": "Largo de pantalón o capri",
+            "como": "Por el costado, desde el cordón de la cintura hasta donde quieres que termine: el tobillo para pantalón largo, debajo de la rodilla para capri.",
+            "min": 40,
+            "max": 120,
+            "imagen": "/medidas/{perfil}/largo-pantalon.svg",
+            "cuando": { "paso": "tipo-inferior", "en": ["pantalon-largo", "capri"] }
+          }
+        ]
+      }
     ]
   },
   "ilustracion": {

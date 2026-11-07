@@ -6,18 +6,39 @@ export interface CampoMedidaProps extends Omit<InputHTMLAttributes<HTMLInputElem
   unidad?: string
   /** Mensaje de error; si existe, el campo se marca inválido. */
   error?: string
+  /** Indicación bajo la etiqueta (p. ej. cómo tomar la medida). */
+  ayuda?: string
+  /** Etiqueta en negrita, como título del campo. */
+  etiquetaFuerte?: boolean
 }
 
 /** Figma 02 · Campo de medida (3:8640). Los rangos por campo vienen de la configuración (HU-14). */
-export function CampoMedida({ etiqueta, unidad = 'cm', error, disabled, className, id, ...resto }: CampoMedidaProps) {
+export function CampoMedida({
+  etiqueta,
+  unidad = 'cm',
+  error,
+  ayuda,
+  etiquetaFuerte = false,
+  disabled,
+  className,
+  id,
+  ...resto
+}: CampoMedidaProps) {
   const idGenerado = useId()
   const idCampo = id ?? idGenerado
   const idError = `${idCampo}-error`
+  const idAyuda = `${idCampo}-ayuda`
+  const descripcion = [ayuda && idAyuda, error && idError].filter(Boolean).join(' ') || undefined
   return (
     <div className={cx('flex flex-col gap-1', className)}>
-      <label htmlFor={idCampo} className="estilo-pequeno text-texto">
+      <label htmlFor={idCampo} className={cx(etiquetaFuerte ? 'estilo-cuerpo-fuerte' : 'estilo-pequeno', 'text-texto')}>
         {etiqueta}
       </label>
+      {ayuda && (
+        <p id={idAyuda} className="m-0 estilo-pequeno text-texto-secundario">
+          {ayuda}
+        </p>
+      )}
       <div
         className={cx(
           'flex h-12 items-center justify-between gap-2 rounded-campo px-3.5',
@@ -34,7 +55,7 @@ export function CampoMedida({ etiqueta, unidad = 'cm', error, disabled, classNam
           inputMode="decimal"
           disabled={disabled}
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? idError : undefined}
+          aria-describedby={descripcion}
           className="w-full min-w-0 bg-transparent estilo-cuerpo text-texto outline-none placeholder:text-texto-secundario disabled:text-texto-secundario"
           {...resto}
         />

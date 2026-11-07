@@ -12,8 +12,17 @@ interface Fila {
   onCambiar?: () => void
 }
 
+export interface GrupoResumen {
+  titulo: string
+  filas: Fila[]
+}
+
 /** Agrupa los pasos respondidos según `resumen.secciones`; lo que no está en ninguna sección va al final. */
-function agrupar(configuracion: ConfiguracionCategoria, estado: EstadoFlujo, onEditarPaso: (id: string) => void) {
+function agrupar(
+  configuracion: ConfiguracionCategoria,
+  estado: EstadoFlujo,
+  onEditarPaso: (id: string) => void,
+): GrupoResumen[] {
   const respondidos = estado.pasos.filter((e) => e.valor !== undefined)
   const fila = (e: EstadoPaso): Fila => ({
     id: e.paso.id,
@@ -65,6 +74,8 @@ export interface PantallaResumenProps {
   configuracion: ConfiguracionCategoria
   estado: EstadoFlujo
   contacto: Contacto
+  /** Medidas propias (HU-14), después de las elecciones. */
+  medidas?: GrupoResumen
   negocio?: Negocio
   aceptado: boolean
   onAceptar: (aceptado: boolean) => void
@@ -79,6 +90,7 @@ export function PantallaResumen({
   configuracion,
   estado,
   contacto,
+  medidas,
   negocio,
   aceptado,
   onAceptar,
@@ -100,6 +112,7 @@ export function PantallaResumen({
       {agrupar(configuracion, estado, onEditarPaso).map((g) => (
         <Grupo key={g.titulo} titulo={g.titulo} filas={g.filas} />
       ))}
+      {medidas && medidas.filas.length > 0 && <Grupo titulo={medidas.titulo} filas={medidas.filas} />}
 
       <section className="flex flex-col gap-0.5 rounded-tarjeta bg-superficie-beige px-4 py-3">
         <p className="m-0 estilo-pequeno text-texto-secundario">Precio estimado</p>
