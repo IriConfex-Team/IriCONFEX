@@ -112,6 +112,8 @@ export interface IlustracionPrendaProps {
   vista?: Caja | null
   /** Color de la tela (HU-12a). Sin elegir: gris neutro. */
   color?: string
+  /** Ids de las piezas que se destacan; las demás se dibujan atenuadas. Sin valor, todas iguales. */
+  resaltar?: ReadonlySet<string>
   /** Texto alternativo; vacío si la imagen es decorativa. */
   descripcion?: string
   className?: string
@@ -124,13 +126,15 @@ export function IlustracionPrenda({
   onMedir,
   vista,
   color,
+  resaltar,
   descripcion,
   className,
 }: IlustracionPrendaProps) {
   const prefijo = useId().replace(/[^a-zA-Z0-9_-]/g, '')
   const referencia = useRef<SVGSVGElement>(null)
   const [marcado, setMarcado] = useState<{ clave: string; html: string } | null>(null)
-  const clave = JSON.stringify(ilustracion)
+  const destacadas = resaltar ? [...resaltar].sort().join() : null
+  const clave = JSON.stringify([ilustracion, destacadas])
 
   useEffect(() => {
     if (!ilustracion) return
@@ -139,7 +143,8 @@ export function IlustracionPrenda({
       ilustracion.piezas.map(async (pieza, i) => {
         const capas = await Promise.all(pieza.archivos.map(async (url) => ({ url, svg: await cargarCapa(url) })))
         const contenido = armarPieza(capas, `${prefijo}-m${i}`, pieza.ancho, pieza.alto)
-        return `<g transform="translate(0 ${pieza.desplazamiento})" data-desplazamiento="${pieza.desplazamiento}">${contenido}</g>`
+        const atenuada = resaltar && !resaltar.has(pieza.id) ? ' opacity="0.25"' : ''
+        return `<g transform="translate(0 ${pieza.desplazamiento})" data-desplazamiento="${pieza.desplazamiento}"${atenuada}>${contenido}</g>`
       }),
     ).then((piezas) => {
       if (vigente) setMarcado({ clave, html: piezas.join('') })
@@ -147,7 +152,7 @@ export function IlustracionPrenda({
     return () => {
       vigente = false
     }
-    // `clave` resume `ilustracion`; así no se vuelve a armar con cada render.
+    // `clave` resume `ilustracion` y `resaltar`; así no se vuelve a armar con cada render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clave, prefijo])
 

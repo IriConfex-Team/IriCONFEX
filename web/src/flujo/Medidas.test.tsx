@@ -87,6 +87,36 @@ describe('HU-14 · medidas propias con guía visual', () => {
     expect(solicitud.medidas).toMatchObject({ 'ancho-espalda': 38.5, 'largo-short': 45 })
   })
 
+  it('talla estándar: se ve qué parte se elige y la guía de tallas resalta la elegida (HU-13)', async () => {
+    render(<FlujoConfiguracion configuracion={configuracion} />)
+    await elegirYSeguir('Mujer')
+    await elegirYSeguir('2 piezas')
+    await elegirYSeguir('Redondo')
+    await elegirYSeguir('Manga corta')
+    await elegirYSeguir('No')
+    await elegirYSeguir('A la cadera')
+    await elegirYSeguir('Simple')
+    await elegirYSeguir('Pantalón largo')
+    await elegirYSeguir('Simple')
+    expect(screen.getByText('Parte de arriba')).toBeInTheDocument()
+    await elegirYSeguir('Brush')
+    expect(screen.getByText('Parte de abajo')).toBeInTheDocument()
+    await elegirYSeguir('Brush')
+    await elegirYSeguir('Talla estándar')
+    await elegirYSeguir(/^Adulto/)
+
+    expect(screen.getByText('Parte de arriba')).toBeInTheDocument()
+    const tabla = screen.getByRole('table')
+    expect(screen.getAllByRole('columnheader').map((c) => c.textContent)).toEqual(['Talla', 'Busto', 'Cintura'])
+    expect(screen.getAllByRole('rowheader').map((c) => c.textContent)).toEqual(['S', 'M', 'L', 'XL'])
+    await userEvent.click(screen.getByRole('radio', { name: 'M' }))
+    expect(tabla.querySelector('[aria-current="true"] th')?.textContent).toBe('M')
+
+    await siguiente()
+    expect(screen.getByText('Parte de abajo')).toBeInTheDocument()
+    expect(screen.getAllByRole('columnheader').map((c) => c.textContent)).toEqual(['Talla', 'Cintura', 'Cadera'])
+  })
+
   it('con talla estándar no aparece la pantalla de medidas ni se envían medidas', async () => {
     const onSolicitar = vi.fn(async () => {})
     render(<FlujoConfiguracion configuracion={configuracion} onSolicitar={onSolicitar} />)

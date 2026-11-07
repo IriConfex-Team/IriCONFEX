@@ -95,7 +95,7 @@ Notas de la hoja: el largo del pantalón varía según la moda, la estatura y el
 ## Cómo se usan en la aplicación
 
 - **HU-14 (medidas propias):** los rangos de `medidas` en `datos/categorias/pijamas.json` salen de estas tablas (de XS a XL), ampliados para cubrir Plus (2XL a 5XL) y a personas fuera de la tabla. Al cliente solo se le piden medidas del cuerpo, no las de trazo (sisa, escote, cabeza de manga, entrar y subir, avance de tiro, pinzas).
-- **HU-13 (talla estándar):** la tabla de referencia para la cliente puede mostrar busto, cintura y cadera por letra.
+- **HU-13 (talla estándar):** la guía de tallas de mujer adulto (`guia` en `talla-superior` y `talla-inferior`) muestra busto, cintura y cadera por letra, uniendo las dos tallas numéricas de cada letra (S = 11 y 12, M = 13 y 14, L = 15 y 16, XL = 17 y 18), como dice la hoja. **Es provisional** hasta que la clienta confirme la equivalencia (punto 2). Hombre, niño, bebé y Plus no muestran tabla hasta tener sus datos.
 
 ## Pendiente de confirmar con la clienta
 

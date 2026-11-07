@@ -28,6 +28,30 @@ const esquemaOpcion = z.strictObject({
   muestraInfoLocal: z.boolean().optional(),
 })
 
+/**
+ * A qué parte de la prenda se refiere el paso (p. ej. la talla de arriba y luego la de abajo).
+ * Se usa la primera variante cuya condición se cumple; `piezas` son ids de `ilustracion.piezas` que se resaltan.
+ */
+const esquemaParte = z.strictObject({
+  nombre: z.string().min(1),
+  texto: z.string().optional(),
+  piezas: z.array(z.string().min(1)).min(1),
+  cuando: esquemaCondicion.optional(),
+})
+
+/** Tabla de referencia para elegir entre las opciones del paso (HU-13), con imagen de dónde medir. */
+const esquemaGuiaOpciones = z.strictObject({
+  cuando: esquemaCondicion.optional(),
+  titulo: z.string().min(1),
+  imagen: z.string().optional(),
+  /** Qué medir, en el orden en que aparecen en la imagen (de arriba abajo). */
+  medidas: z.array(z.strictObject({ nombre: z.string().min(1), como: z.string().min(1) })).optional(),
+  columnas: z.array(z.string().min(1)).min(1),
+  /** Una fila por opción del paso; solo se muestran las que se ofrecen en ese momento. */
+  filas: z.array(z.strictObject({ opcion: z.string().min(1), valores: z.array(z.string()) })).min(1),
+  nota: z.string().optional(),
+})
+
 const esquemaPaso = z.strictObject({
   id: z.string().min(1),
   nombre: z.string().min(1),
@@ -40,6 +64,8 @@ const esquemaPaso = z.strictObject({
   nota: z.string().optional(),
   /** Al cambiar este paso se borran todas las elecciones posteriores (HU-04 CA3). */
   reiniciaAlCambiar: z.boolean().optional(),
+  parte: z.array(esquemaParte).min(1).optional(),
+  guia: z.array(esquemaGuiaOpciones).min(1).optional(),
   opciones: z.array(esquemaOpcion).min(1),
 })
 
@@ -170,6 +196,8 @@ export const esquemaConfiguracion = z.strictObject({
 
 export type Opcion = z.infer<typeof esquemaOpcion>
 export type Paso = z.infer<typeof esquemaPaso>
+export type ParteDelPaso = z.infer<typeof esquemaParte>
+export type GuiaOpciones = z.infer<typeof esquemaGuiaOpciones>
 export type ReglaVisibilidad = z.infer<typeof esquemaReglaVisibilidad>
 export type ReglaFijacion = z.infer<typeof esquemaReglaFijacion>
 export type Regla = z.infer<typeof esquemaRegla>
@@ -244,6 +272,27 @@ function verificarReferencias(configuracion: ConfiguracionCategoria): string[] {
     else revisarOpciones(donde, regla.paso, [regla.opcion])
     revisarCondicion(donde, regla.cuando)
   })
+
+  const piezas = new Set(configuracion.ilustracion?.piezas.map((p) => p.id) ?? [])
+  for (const paso of configuracion.pasos) {
+    paso.parte?.forEach((parte, i) => {
+      const donde = `paso «${paso.id}», parte ${i}`
+      if (parte.cuando) revisarCondicion(donde, parte.cuando)
+      for (const pieza of parte.piezas) {
+        if (!piezas.has(pieza)) problemas.push(`${donde}: la pieza «${pieza}» no está en la ilustración`)
+      }
+    })
+    paso.guia?.forEach((guia, i) => {
+      const donde = `paso «${paso.id}», guía ${i}`
+      if (guia.cuando) revisarCondicion(donde, guia.cuando)
+      revisarOpciones(donde, paso.id, guia.filas.map((f) => f.opcion))
+      for (const fila of guia.filas) {
+        if (fila.valores.length !== guia.columnas.length) {
+          problemas.push(`${donde}: la fila «${fila.opcion}» tiene ${fila.valores.length} valores y hay ${guia.columnas.length} columnas`)
+        }
+      }
+    })
+  }
 
   if (configuracion.encabezado) revisarOpciones('encabezado', configuracion.encabezado.paso, [])
   configuracion.resumen?.secciones.forEach((seccion) =>

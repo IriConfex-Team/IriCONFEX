@@ -3,11 +3,13 @@ import {
   elegir,
   evaluarFlujo,
   formatoNumero,
+  guiaDelPaso,
   ilustrar,
   ilustrarOpcion,
   iniciarSeleccion,
   mismaIlustracion,
   normalizarTelefono,
+  parteDelPaso,
   pasosQueDibujan,
   pideMedidas,
   revisarMedidasEscritas,
@@ -22,7 +24,7 @@ import {
   type Seleccion,
   type SolicitudCotizacion,
 } from '@iriconfex/shared'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   AvisoEnLinea,
   BarraInferiorFija,
@@ -37,11 +39,13 @@ import {
 } from '../components/ui'
 import { cx } from '../lib/cx'
 import { encuadrar, unirCajas, type Caja } from './encuadre'
+import { EncabezadoParte, GuiaDeOpciones } from './GuiasDelPaso'
 import { IlustracionPrenda } from './IlustracionPrenda'
 import { HojaInfoLocal, TarjetaInfoLocal } from './InfoLocal'
 import { PantallaContacto, type Contacto } from './PantallaContacto'
 import { PantallaMedidas, type MedidasEscritas } from './PantallaMedidas'
 import { PantallaResumen, type GrupoResumen } from './PantallaResumen'
+import { VistaPrenda } from './VistaPrenda'
 
 export interface FlujoConfiguracionProps {
   configuracion: ConfiguracionCategoria
@@ -184,6 +188,8 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
   const encabezado = configuracion.encabezado
   const puedeSeguir =
     fase === 'contacto' || ((enMedidas || actual?.valor !== undefined) && estado.conflictos.length === 0)
+  const parteActual = actual ? parteDelPaso(actual.paso, seleccion) : undefined
+  const guiaActual = actual ? guiaDelPaso(actual.paso, seleccion, actual.opciones) : undefined
   const tituloPaso = enMedidas ? (configuracion.medidas?.titulo ?? '') : (actual?.paso.nombre ?? '')
   const tituloFase = { configurar: tituloPaso, contacto: 'Tus datos', resumen: 'Revisa tu solicitud' }[fase]
   const numeroFase = { configurar: indice + 1, contacto: total + 1, resumen: total + 2 }[fase]
@@ -241,6 +247,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
         )}
         {fase === 'configurar' && (
           <>
+            {parteActual && <EncabezadoParte parte={parteActual} ilustracion={ilustrar(configuracion, seleccion)} />}
             {aviso && <AvisoEnLinea tipo="aviso">{aviso}</AvisoEnLinea>}
             <Conflictos conflictos={estado.conflictos} pasoActual={recorrido[indice]} nombreDelPaso={nombreDelPaso} onIr={irA} />
             {enMedidas && (
@@ -256,6 +263,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
             {actual && (
               <Paso configuracion={configuracion} seleccion={seleccion} estado={actual} negocio={negocio} onElegir={alElegir} />
             )}
+            {actual && guiaActual && <GuiaDeOpciones guia={guiaActual} elegida={actual.fijada?.opcion ?? actual.valor} />}
             {vieneDelResumen && estado.completo && medidasCompletas && (
               <Boton tipo="secundario" onClick={irAlResumen}>
                 Volver al resumen
@@ -462,33 +470,6 @@ function Miniatura({ opcion, ilustracion, enfoque, onMedir, vista, cubrir = fals
       vista={vista}
       className={vista ? 'h-full w-full' : 'h-full w-full py-2'}
     />
-  )
-}
-
-/** La prenda armada hasta ahora, siempre sobre lienzo neutro, recortada al dibujo (sin lienzo vacío). */
-function VistaPrenda({ ilustracion, grande = false }: { ilustracion: Ilustracion | null; grande?: boolean }) {
-  const clave = JSON.stringify(ilustracion)
-  const capas = useMemo(
-    () => new Set(ilustracion?.piezas.flatMap((p) => p.archivos) ?? []) as ReadonlySet<string>,
-    // `clave` resume `ilustracion`.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [clave],
-  )
-  const [recorte, setRecorte] = useState<{ clave: string; caja: Caja | null } | null>(null)
-  const alMedir = useCallback((caja: Caja | null) => setRecorte({ clave, caja }), [clave])
-  if (!ilustracion) return null
-  const caja = recorte?.clave === clave && recorte.caja ? encuadrar(recorte.caja, 1) : null
-  return (
-    <div className={cx('flex items-center justify-center rounded-tarjeta bg-lienzo', grande ? 'h-72 py-3' : 'h-48 py-3')}>
-      <IlustracionPrenda
-        ilustracion={ilustracion}
-        enfoque={capas}
-        onMedir={alMedir}
-        vista={caja}
-        descripcion="Vista previa de tu elección"
-        className="h-full w-full"
-      />
-    </div>
   )
 }
 

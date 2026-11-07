@@ -7,6 +7,8 @@ export {
   type CampoMedidas,
   type ConfiguracionIlustracion,
   type ConfiguracionMedidas,
+  type GuiaOpciones,
+  type ParteDelPaso,
   type ConfiguracionResumen,
   type Negocio,
   type Opcion,
@@ -31,6 +33,7 @@ export {
   type Seleccion,
   type TipoErrorSeleccion,
 } from './motor'
+export { guiaDelPaso, parteDelPaso, type FilaGuia, type GuiaVisible } from './guias'
 export {
   camposQueAplican,
   formatoNumero,

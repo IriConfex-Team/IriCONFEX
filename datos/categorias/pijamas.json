@@ -140,6 +140,10 @@
       "id": "tela-superior",
       "nombre": "Tela de la parte de arriba",
       "presentacion": "lista",
+      "parte": [
+        { "cuando": {"paso": "base", "en": ["una-pieza"]}, "nombre": "Bata", "texto": "Tu pijama es de una pieza: esta es la tela de la bata.", "piezas": ["mujer-bata"] },
+        { "nombre": "Parte de arriba", "texto": "Primero eliges la tela de arriba y después la de abajo. Pueden ser distintas.", "piezas": ["mujer-blusa", "hombre-superior", "ninos-superior"] }
+      ],
       "opciones": [
         { "id": "brush", "nombre": "Brush", "descripcion": "Tejido de punto suave y cepillado al tacto. Abriga ligeramente y es ideal para pijamas cómodas de uso diario.", "imagen": "/telas/brush.jpg" },
         { "id": "satin", "nombre": "Satín", "descripcion": "Tela brillante y lisa con caída fluida. Fresca y elegante, perfecta para pijamas y batas de aspecto lujoso.", "imagen": "/telas/satin.jpg", "etiqueta": "Solo en piezas holgadas; requiere más tela." },
@@ -153,6 +157,7 @@
       "id": "tela-inferior",
       "nombre": "Tela de la parte de abajo",
       "presentacion": "lista",
+      "parte": [{ "nombre": "Parte de abajo", "texto": "Ahora la tela de la parte de abajo.", "piezas": ["mujer-inferior", "hombre-inferior", "nino-inferior", "bebe-inferior"] }],
       "opciones": [
         { "id": "brush", "nombre": "Brush", "descripcion": "Tejido de punto suave y cepillado al tacto. Abriga ligeramente y es ideal para pijamas cómodas de uso diario.", "imagen": "/telas/brush.jpg" },
         { "id": "satin", "nombre": "Satín", "descripcion": "Tela brillante y lisa con caída fluida. Fresca y elegante, perfecta para pijamas y batas de aspecto lujoso.", "imagen": "/telas/satin.jpg", "etiqueta": "Solo en piezas holgadas; requiere más tela." },
@@ -187,6 +192,29 @@
       "id": "talla-superior",
       "nombre": "Talla de la parte de arriba",
       "presentacion": "tarjetas",
+      "parte": [
+        { "cuando": {"paso": "base", "en": ["una-pieza"]}, "nombre": "Bata", "texto": "Tu pijama es de una pieza: esta es la talla de la bata.", "piezas": ["mujer-bata"] },
+        { "nombre": "Parte de arriba", "texto": "Primero eliges la talla de arriba y después la de abajo. Pueden ser distintas.", "piezas": ["mujer-blusa", "hombre-superior", "ninos-superior"] }
+      ],
+      "guia": [
+        {
+          "cuando": {"paso": "perfil", "en": ["mujer"]},
+          "titulo": "¿Cuál es mi talla?",
+          "imagen": "/tallas/mujer-arriba.svg",
+          "medidas": [
+            { "nombre": "Busto", "como": "Rodea la parte más llena del busto, con la cinta derecha por la espalda." },
+            { "nombre": "Cintura", "como": "Rodea la parte más angosta de la cintura, sin apretar." }
+          ],
+          "columnas": ["Busto", "Cintura"],
+          "filas": [
+            { "opcion": "adulto-s", "valores": ["95–100", "70–74"] },
+            { "opcion": "adulto-m", "valores": ["105–110", "78–82"] },
+            { "opcion": "adulto-l", "valores": ["115–120", "86–90"] },
+            { "opcion": "adulto-xl", "valores": ["125–130", "94–98"] }
+          ],
+          "nota": "Medidas del cuerpo, en centímetros. Si estás entre dos tallas, elige la más grande."
+        }
+      ],
       "opciones": [
         { "id": "bebe-0-3", "nombre": "0-3 meses" },
         { "id": "bebe-3-6", "nombre": "3-6 meses" },
@@ -212,6 +240,26 @@
       "id": "talla-inferior",
       "nombre": "Talla de la parte de abajo",
       "presentacion": "tarjetas",
+      "parte": [{ "nombre": "Parte de abajo", "texto": "Ahora la talla de la parte de abajo.", "piezas": ["mujer-inferior", "hombre-inferior", "nino-inferior", "bebe-inferior"] }],
+      "guia": [
+        {
+          "cuando": {"paso": "perfil", "en": ["mujer"]},
+          "titulo": "¿Cuál es mi talla?",
+          "imagen": "/tallas/mujer-abajo.svg",
+          "medidas": [
+            { "nombre": "Cintura", "como": "Rodea la parte más angosta de la cintura, sin apretar." },
+            { "nombre": "Cadera", "como": "Con los pies juntos, rodea la parte más ancha de los glúteos." }
+          ],
+          "columnas": ["Cintura", "Cadera"],
+          "filas": [
+            { "opcion": "adulto-s", "valores": ["70–74", "95–100"] },
+            { "opcion": "adulto-m", "valores": ["78–82", "105–110"] },
+            { "opcion": "adulto-l", "valores": ["86–90", "115–120"] },
+            { "opcion": "adulto-xl", "valores": ["94–98", "125–130"] }
+          ],
+          "nota": "Medidas del cuerpo, en centímetros. Si estás entre dos tallas, elige la más grande."
+        }
+      ],
       "opciones": [
         { "id": "bebe-0-3", "nombre": "0-3 meses" },
         { "id": "bebe-3-6", "nombre": "3-6 meses" },
