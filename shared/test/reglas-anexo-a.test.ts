@@ -327,3 +327,20 @@ describe('flujo completo', () => {
     expect(validarSeleccion(configuracion, s)).toEqual({ valida: true, errores: [] })
   })
 })
+
+describe('HU-04 · perfil visible y cambiable', () => {
+  it('volver a elegir el mismo perfil no reinicia nada', () => {
+    const s = recorrer(['perfil', 'mujer'], ['base', 'dos-piezas'], ['escote', 'v'])
+    const r = elegir(configuracion, s, 'perfil', 'mujer')
+    expect(r.reiniciado).toBe(false)
+    expect(r.seleccion).toEqual(s)
+  })
+
+  it('cambiar de perfil reinicia todo lo posterior', () => {
+    const s = recorrer(['perfil', 'mujer'], ['base', 'dos-piezas'], ['escote', 'v'])
+    const r = elegir(configuracion, s, 'perfil', 'hombre')
+    expect(r.reiniciado).toBe(true)
+    expect(r.seleccion.perfil).toBe('hombre')
+    expect(r.seleccion.escote).toBeUndefined()
+  })
+})
