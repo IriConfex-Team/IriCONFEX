@@ -119,6 +119,41 @@ const esquemaResumen = z.strictObject({
   secciones: z.array(z.strictObject({ titulo: z.string().min(1), pasos: z.array(z.string().min(1)).min(1) })).min(1),
 })
 
+/** Un campo de medidas propias (HU-14 CA3–CA5). */
+const esquemaCampoMedidas = z
+  .strictObject({
+    id: z.string().min(1),
+    nombre: z.string().min(1),
+    /** Cómo tomarla, en palabras de la clienta (HU-14 CA4). */
+    como: z.string().min(1),
+    /** Rango aceptado, en la unidad de la sección (HU-14 CA5). */
+    min: z.number().positive(),
+    max: z.number().positive(),
+    /** Guía visual. Plantilla: `{x}` se reemplaza por la opción elegida en el paso `x`. */
+    imagen: z.string().optional(),
+    cuando: esquemaCondicion.optional(),
+  })
+  .refine((campo) => campo.min < campo.max, { message: 'min debe ser menor que max' })
+
+/** Pantalla de medidas propias (HU-14): aparece antes del paso `antesDe` cuando se cumple `cuando`. */
+const esquemaMedidas = z.strictObject({
+  cuando: esquemaCondicion,
+  antesDe: z.string().min(1),
+  titulo: z.string().min(1),
+  unidad: z.string().min(1),
+  /** Consejos generales que se muestran arriba de los campos. */
+  indicaciones: z.array(z.string().min(1)).optional(),
+  grupos: z
+    .array(
+      z.strictObject({
+        titulo: z.string().min(1),
+        cuando: esquemaCondicion.optional(),
+        campos: z.array(esquemaCampoMedidas).min(1),
+      }),
+    )
+    .min(1),
+})
+
 export const esquemaConfiguracion = z.strictObject({
   $schema: z.string().optional(),
   version: z.literal(1),
@@ -130,6 +165,7 @@ export const esquemaConfiguracion = z.strictObject({
   ilustracion: esquemaIlustracion.optional(),
   negocio: esquemaNegocio.optional(),
   resumen: esquemaResumen.optional(),
+  medidas: esquemaMedidas.optional(),
 })
 
 export type Opcion = z.infer<typeof esquemaOpcion>
@@ -141,6 +177,8 @@ export type ConfiguracionCategoria = z.infer<typeof esquemaConfiguracion>
 export type ConfiguracionIlustracion = z.infer<typeof esquemaIlustracion>
 export type Negocio = z.infer<typeof esquemaNegocio>
 export type ConfiguracionResumen = z.infer<typeof esquemaResumen>
+export type ConfiguracionMedidas = z.infer<typeof esquemaMedidas>
+export type CampoMedidas = z.infer<typeof esquemaCampoMedidas>
 
 export class ErrorConfiguracion extends Error {
   readonly problemas: string[]
@@ -240,6 +278,25 @@ function verificarReferencias(configuracion: ConfiguracionCategoria): string[] {
         revisarPlantilla(donde, capa.archivo)
         if (capa.cuando) revisarCondicion(donde, capa.cuando)
       })
+    }
+  }
+
+  const { medidas } = configuracion
+  if (medidas) {
+    revisarCondicion('medidas', medidas.cuando)
+    revisarOpciones('medidas, antesDe', medidas.antesDe, [])
+    const ids = new Set<string>()
+    for (const grupo of medidas.grupos) {
+      if (grupo.cuando) revisarCondicion(`medidas, grupo «${grupo.titulo}»`, grupo.cuando)
+      for (const campo of grupo.campos) {
+        const donde = `medidas, campo «${campo.id}»`
+        if (ids.has(campo.id)) problemas.push(`${donde}: repetido`)
+        ids.add(campo.id)
+        if (campo.cuando) revisarCondicion(donde, campo.cuando)
+        for (const [, paso] of campo.imagen?.matchAll(/\{([^}]+)\}/g) ?? []) {
+          if (!opcionesPorPaso.has(paso)) problemas.push(`${donde}: «{${paso}}» no es un paso`)
+        }
+      }
     }
   }
 

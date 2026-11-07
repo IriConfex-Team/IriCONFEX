@@ -674,14 +674,13 @@
   ],
   "negocio": {
     "nombre": "IriConfex",
-    "direccion": "Cerro Cortés, Aguas Zarcas",
-    "senas": "Frente a la plaza de deportes",
+    "direccion": "Cerro Cortés, Aguas Zarcas, San Carlos",
+    "senas": "25 m al este de la escuela",
     "horario": [
       { "dias": "Lunes a viernes", "horas": "9:00 a 17:00" },
       { "dias": "Sábado", "horas": "9:00 a 12:00" }
     ],
-    "whatsapp": "83413594",
-    "pendientes": ["dirección y señas por confirmar", "enlace de mapas", "horario"]
+    "whatsapp": "83413594"
   },
   "resumen": {
     "secciones": [
@@ -693,6 +692,147 @@
       { "titulo": "Bata de salida", "pasos": ["bata-salida", "bata-salida-manga", "bata-salida-acabado"] },
       { "titulo": "Tallaje", "pasos": ["modalidad-talla", "grupo-talla", "talla-superior", "talla-inferior"] },
       { "titulo": "Entrega", "pasos": ["entrega"] }
+    ]
+  },
+  "medidas": {
+    "cuando": { "paso": "modalidad-talla", "en": ["medida"] },
+    "antesDe": "entrega",
+    "titulo": "Tus medidas",
+    "unidad": "cm",
+    "indicaciones": [
+      "Usa una cinta métrica, sin apretar, sobre ropa delgada.",
+      "Ponte de pie, con la espalda recta y los brazos sueltos. Pide ayuda si puedes, sobre todo para la espalda.",
+      "Amarra un cordón en la cintura, en la parte más angosta: te sirve de guía para varias medidas."
+    ],
+    "grupos": [
+      {
+        "titulo": "Parte de arriba",
+        "campos": [
+          {
+            "id": "ancho-espalda",
+            "nombre": "Ancho de espalda",
+            "como": "Por la espalda, de la punta de un hombro a la punta del otro.",
+            "min": 28,
+            "max": 65,
+            "imagen": "/medidas/{perfil}/ancho-espalda.svg"
+          },
+          {
+            "id": "contorno-busto",
+            "nombre": "Contorno de busto o pecho",
+            "como": "Rodea la parte más llena del busto o del pecho, pasando bajo los brazos. La cinta va derecha por la espalda.",
+            "min": 65,
+            "max": 175,
+            "imagen": "/medidas/{perfil}/contorno-busto.svg"
+          },
+          {
+            "id": "separacion-busto",
+            "nombre": "Separación de busto",
+            "como": "En línea recta, de la punta de un busto a la punta del otro (de pezón a pezón).",
+            "min": 10,
+            "max": 32,
+            "imagen": "/medidas/{perfil}/separacion-busto.svg"
+          },
+          {
+            "id": "altura-busto",
+            "nombre": "Altura de busto",
+            "como": "Desde donde el hombro se une con el cuello hasta la punta del busto.",
+            "min": 15,
+            "max": 42,
+            "imagen": "/medidas/{perfil}/altura-busto.svg"
+          },
+          {
+            "id": "largo-talle",
+            "nombre": "Largo de talle",
+            "como": "Desde la base del cuello (el huesito que se siente al bajar la cabeza) hasta el cordón de la cintura, en línea recta.",
+            "min": 32,
+            "max": 60,
+            "imagen": "/medidas/{perfil}/largo-talle.svg"
+          },
+          {
+            "id": "largo-total",
+            "nombre": "Largo total",
+            "como": "Desde la base del cuello hasta donde quieres que termine la prenda de arriba o la bata.",
+            "min": 35,
+            "max": 150,
+            "imagen": "/medidas/{perfil}/largo-total.svg"
+          },
+          {
+            "id": "largo-manga",
+            "nombre": "Largo de manga",
+            "como": "Desde la punta del hombro, con el brazo un poco doblado, hasta donde quieres que termine la manga.",
+            "min": 10,
+            "max": 75,
+            "imagen": "/medidas/{perfil}/largo-manga.svg",
+            "cuando": {
+              "alguna": [
+                { "paso": "manga", "en": ["corta", "tres-cuartos", "larga"] },
+                { "paso": "bata-salida", "en": ["si"] }
+              ]
+            }
+          },
+          {
+            "id": "ancho-manga",
+            "nombre": "Ancho de manga",
+            "como": "Rodea la parte más gruesa del brazo, arriba del codo.",
+            "min": 18,
+            "max": 60,
+            "imagen": "/medidas/{perfil}/ancho-manga.svg",
+            "cuando": {
+              "alguna": [
+                { "paso": "manga", "en": ["corta", "tres-cuartos", "larga"] },
+                { "paso": "bata-salida", "en": ["si"] }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titulo": "Parte de abajo",
+        "cuando": { "paso": "base", "en": ["dos-piezas"] },
+        "campos": [
+          {
+            "id": "contorno-cintura",
+            "nombre": "Contorno de cintura",
+            "como": "Rodea la cintura por donde está el cordón, sin meter el estómago.",
+            "min": 50,
+            "max": 165,
+            "imagen": "/medidas/{perfil}/contorno-cintura.svg"
+          },
+          {
+            "id": "contorno-cadera",
+            "nombre": "Contorno de cadera",
+            "como": "Con los pies juntos, rodea la parte más ancha de los glúteos. La cinta va derecha, sin bajar por detrás.",
+            "min": 70,
+            "max": 180,
+            "imagen": "/medidas/{perfil}/contorno-cadera.svg"
+          },
+          {
+            "id": "altura-cadera",
+            "nombre": "Altura de cadera",
+            "como": "Por el costado, desde el cordón de la cintura hasta la parte más ancha de la cadera.",
+            "min": 12,
+            "max": 32,
+            "imagen": "/medidas/{perfil}/altura-cadera.svg"
+          },
+          {
+            "id": "largo-tiro",
+            "nombre": "Largo de tiro",
+            "como": "Siéntate con la espalda recta en una silla firme. Por el costado, mide desde el cordón de la cintura hasta el asiento.",
+            "min": 18,
+            "max": 45,
+            "imagen": "/medidas/{perfil}/largo-tiro.svg"
+          },
+          {
+            "id": "largo-short",
+            "nombre": "Largo de short",
+            "como": "Por el costado, desde el cordón de la cintura hasta donde quieres que termine el short.",
+            "min": 20,
+            "max": 60,
+            "imagen": "/medidas/{perfil}/largo-short.svg",
+            "cuando": { "paso": "tipo-inferior", "en": ["short"] }
+          }
+        ]
+      }
     ]
   },
   "ilustracion": {

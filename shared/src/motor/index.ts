@@ -4,7 +4,9 @@ export {
   esquemaConfiguracion,
   type Condicion,
   type ConfiguracionCategoria,
+  type CampoMedidas,
   type ConfiguracionIlustracion,
+  type ConfiguracionMedidas,
   type ConfiguracionResumen,
   type Negocio,
   type Opcion,
@@ -29,6 +31,19 @@ export {
   type Seleccion,
   type TipoErrorSeleccion,
 } from './motor'
+export {
+  camposQueAplican,
+  formatoNumero,
+  imagenDelCampo,
+  leerNumero,
+  pideMedidas,
+  revisarMedidasEscritas,
+  validarMedidas,
+  type ErrorMedidas,
+  type GrupoMedidas,
+  type Medidas,
+  type TipoErrorMedidas,
+} from './medidas'
 export {
   ilustrar,
   ilustrarOpcion,

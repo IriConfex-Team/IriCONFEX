@@ -1,12 +1,16 @@
 import {
+  camposQueAplican,
   elegir,
   evaluarFlujo,
+  formatoNumero,
   ilustrar,
   ilustrarOpcion,
   iniciarSeleccion,
   mismaIlustracion,
   normalizarTelefono,
   pasosQueDibujan,
+  pideMedidas,
+  revisarMedidasEscritas,
   textoEncabezado,
   validarContacto,
   type ConfiguracionCategoria,
@@ -36,7 +40,8 @@ import { encuadrar, unirCajas, type Caja } from './encuadre'
 import { IlustracionPrenda } from './IlustracionPrenda'
 import { HojaInfoLocal, TarjetaInfoLocal } from './InfoLocal'
 import { PantallaContacto, type Contacto } from './PantallaContacto'
-import { PantallaResumen } from './PantallaResumen'
+import { PantallaMedidas, type MedidasEscritas } from './PantallaMedidas'
+import { PantallaResumen, type GrupoResumen } from './PantallaResumen'
 
 export interface FlujoConfiguracionProps {
   configuracion: ConfiguracionCategoria
@@ -46,6 +51,9 @@ export interface FlujoConfiguracionProps {
 
 /** Después de los pasos de la configuración: datos de contacto (HU-19) y resumen con el aviso (HU-20, HU-21). */
 type Fase = 'configurar' | 'contacto' | 'resumen'
+
+/** Lugar de la pantalla de medidas propias (HU-14) en el recorrido; no es un paso de la configuración. */
+const PANTALLA_MEDIDAS = '#medidas'
 
 /**
  * Vista genérica del flujo (HU-23 CA2): muestra el siguiente paso visible, sus opciones válidas y las fijaciones.
@@ -63,15 +71,25 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
   const [infoAbierta, setInfoAbierta] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const [avisoEnvio, setAvisoEnvio] = useState<{ tipo: TipoAviso; texto: string } | null>(null)
+  const [medidasEscritas, setMedidasEscritas] = useState<MedidasEscritas>({})
+  const [intentoMedidas, setIntentoMedidas] = useState(false)
 
   const negocio = configuracion.negocio
   const estado = useMemo(() => evaluarFlujo(configuracion, seleccion), [configuracion, seleccion])
-  const indice = Math.max(
-    0,
-    estado.pasos.findIndex((e) => e.paso.id === pasoActualId),
-  )
-  const actual = estado.pasos[indice]
-  const total = estado.pasos.length
+
+  // Los pasos visibles y, si la selección las pide, la pantalla de medidas antes del paso indicado.
+  const conMedidas = pideMedidas(configuracion, seleccion)
+  const recorrido = estado.pasos.map((e) => e.paso.id)
+  if (conMedidas && configuracion.medidas) {
+    const antes = recorrido.indexOf(configuracion.medidas.antesDe)
+    recorrido.splice(antes < 0 ? recorrido.length : antes, 0, PANTALLA_MEDIDAS)
+  }
+  const indice = Math.max(0, recorrido.indexOf(pasoActualId))
+  const enMedidas = recorrido[indice] === PANTALLA_MEDIDAS
+  const actual = estado.pasos.find((e) => e.paso.id === recorrido[indice])
+  const total = recorrido.length
+  const revisionMedidas = revisarMedidasEscritas(configuracion, seleccion, medidasEscritas)
+  const medidasCompletas = !conMedidas || Object.keys(revisionMedidas.errores).length === 0
   const nombreDelPaso = (id: string) => configuracion.pasos.find((p) => p.id === id)?.nombre ?? id
 
   const irA = (pasoId: string) => {
@@ -86,6 +104,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
   }
 
   const alElegir = (opcionId: string) => {
+    if (!actual) return
     const resultado = elegir(configuracion, seleccion, actual.paso.id, opcionId)
     setSeleccion(resultado.seleccion)
     setAvisoEnvio(null)
@@ -101,7 +120,10 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
     // Si algo quedó sin responder (p. ej. tras cambiar una elección), se vuelve a ese paso.
     const pendiente = estado.pasos.find((e) => e.valor === undefined || e.conflictos.length > 0)
     if (pendiente) irA(pendiente.paso.id)
-    else {
+    else if (!medidasCompletas) {
+      setIntentoMedidas(true)
+      irA(PANTALLA_MEDIDAS)
+    } else {
       setVieneDelResumen(false)
       setFase('resumen')
     }
@@ -113,8 +135,14 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
       else irAlResumen()
       return
     }
-    const siguiente = estado.pasos[indice + 1]
-    if (siguiente) irA(siguiente.paso.id)
+    if (enMedidas && !medidasCompletas) {
+      setIntentoMedidas(true)
+      // Lleva al primer campo con error, que puede estar fuera de la pantalla.
+      requestAnimationFrame(() => document.querySelector<HTMLInputElement>('input[aria-invalid="true"]')?.focus())
+      return
+    }
+    const siguiente = recorrido[indice + 1]
+    if (siguiente) irA(siguiente)
     else {
       setAviso(null)
       setFase('contacto')
@@ -123,14 +151,15 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
 
   const alAtras = () => {
     if (fase === 'resumen') setFase('contacto')
-    else if (fase === 'contacto') irA(estado.pasos[total - 1].paso.id)
-    else if (indice > 0) irA(estado.pasos[indice - 1].paso.id)
+    else if (fase === 'contacto') irA(recorrido[total - 1])
+    else if (indice > 0) irA(recorrido[indice - 1])
   }
 
   const alSolicitar = async () => {
     const solicitud: SolicitudCotizacion = {
       categoria: configuracion.categoria.id,
       seleccion,
+      ...(conMedidas && { medidas: revisionMedidas.medidas }),
       contacto: { nombre: contacto.nombre.trim(), telefono: normalizarTelefono(contacto.telefono) },
       consentimiento: { aceptado: true, fecha: new Date().toISOString() },
     }
@@ -154,9 +183,26 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
 
   const encabezado = configuracion.encabezado
   const puedeSeguir =
-    fase === 'contacto' || (actual.valor !== undefined && estado.conflictos.length === 0)
-  const tituloFase = { configurar: actual.paso.nombre, contacto: 'Tus datos', resumen: 'Revisa tu solicitud' }[fase]
+    fase === 'contacto' || ((enMedidas || actual?.valor !== undefined) && estado.conflictos.length === 0)
+  const tituloPaso = enMedidas ? (configuracion.medidas?.titulo ?? '') : (actual?.paso.nombre ?? '')
+  const tituloFase = { configurar: tituloPaso, contacto: 'Tus datos', resumen: 'Revisa tu solicitud' }[fase]
   const numeroFase = { configurar: indice + 1, contacto: total + 1, resumen: total + 2 }[fase]
+
+  // HU-14 CA6 y HU-21: las medidas también se revisan y se cambian desde el resumen.
+  const medidasResumen: GrupoResumen | undefined =
+    conMedidas && configuracion.medidas
+      ? {
+          titulo: configuracion.medidas.titulo,
+          filas: camposQueAplican(configuracion, seleccion)
+            .flatMap((g) => g.campos)
+            .map((campo) => ({
+              id: campo.id,
+              etiqueta: campo.nombre,
+              valor: `${formatoNumero(revisionMedidas.medidas[campo.id] ?? 0)} ${configuracion.medidas?.unidad ?? ''}`.trim(),
+              onCambiar: () => editarDesdeResumen(PANTALLA_MEDIDAS),
+            })),
+        }
+      : undefined
 
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-md flex-col bg-fondo">
@@ -178,6 +224,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
               configuracion={configuracion}
               estado={estado}
               contacto={contacto}
+              medidas={medidasResumen}
               negocio={negocio}
               aceptado={aceptado}
               onAceptar={setAceptado}
@@ -195,10 +242,21 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
         {fase === 'configurar' && (
           <>
             {aviso && <AvisoEnLinea tipo="aviso">{aviso}</AvisoEnLinea>}
-            <Conflictos conflictos={estado.conflictos} pasoActual={actual.paso.id} nombreDelPaso={nombreDelPaso} onIr={irA} />
-            {actual.paso.nota && <AvisoEnLinea>{actual.paso.nota}</AvisoEnLinea>}
-            <Paso configuracion={configuracion} seleccion={seleccion} estado={actual} negocio={negocio} onElegir={alElegir} />
-            {vieneDelResumen && estado.completo && (
+            <Conflictos conflictos={estado.conflictos} pasoActual={recorrido[indice]} nombreDelPaso={nombreDelPaso} onIr={irA} />
+            {enMedidas && (
+              <PantallaMedidas
+                configuracion={configuracion}
+                seleccion={seleccion}
+                valores={medidasEscritas}
+                onCambiar={setMedidasEscritas}
+                mostrarErrores={intentoMedidas}
+              />
+            )}
+            {actual?.paso.nota && <AvisoEnLinea>{actual.paso.nota}</AvisoEnLinea>}
+            {actual && (
+              <Paso configuracion={configuracion} seleccion={seleccion} estado={actual} negocio={negocio} onElegir={alElegir} />
+            )}
+            {vieneDelResumen && estado.completo && medidasCompletas && (
               <Boton tipo="secundario" onClick={irAlResumen}>
                 Volver al resumen
               </Boton>
