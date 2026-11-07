@@ -28,3 +28,9 @@ export class ErrorNoEncontrado extends ErrorApp {
     super(404, 'NO_ENCONTRADO', recurso + ' no existe');
   }
 }
+
+export class ErrorSeleccionInvalida extends ErrorApp {
+  constructor(detalles: DetalleError[]) {
+    super(400, 'SELECCION_INVALIDA', 'La selección no cumple las reglas del catálogo', detalles);
+  }
+}

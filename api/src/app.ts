@@ -8,20 +8,25 @@ import { crearCategoriasController } from './modulos/categorias/categorias.contr
 import { crearCategoriasRouter } from './modulos/categorias/categorias.rutas.js';
 import { crearSaludController } from './modulos/salud/salud.controlador.js';
 import { crearSaludRouter } from './modulos/salud/salud.rutas.js';
+import { crearSolicitudesController } from './modulos/solicitudes/solicitudes.controlador.js';
+import { crearSolicitudesRouter } from './modulos/solicitudes/solicitudes.rutas.js';
 
 export interface OpcionesApp {
   origenesCors?: string[];
+  limiteSolicitudes?: number;
 }
 
 export function crearApp(dependencias: Dependencias, opciones: OpcionesApp = {}): Express {
   const app = express();
   app.disable('x-powered-by');
+  app.set('trust proxy', 1);
   app.use(cors({ origin: opciones.origenesCors?.length ? opciones.origenesCors : false }));
   app.use(express.json({ limit: '100kb' }));
 
   const api = Router();
   api.use('/health', crearSaludRouter(crearSaludController(dependencias.salud)));
   api.use('/categorias', crearCategoriasRouter(crearCategoriasController(dependencias.categorias)));
+  api.use('/solicitudes',crearSolicitudesRouter(crearSolicitudesController(dependencias.solicitudes), {limite: opciones.limiteSolicitudes,}),);
   api.get('/openapi.json', (_req, res) => {
     res.json(documentoOpenApi);
   });

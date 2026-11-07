@@ -47,6 +47,27 @@ describe('fin del flujo: contacto, resumen y aviso de datos', () => {
     expect(screen.getByText(/8 dígitos/)).toBeInTheDocument()
   })
 
+  it('con la respuesta de la API muestra la referencia, el mensaje y WhatsApp (HU-22)', async () => {
+    const respuesta = {
+      referencia: 'IC-ABCD2345',
+      mensaje: 'Solicitud de cotización IC-ABCD2345',
+      enlaceWhatsapp: 'https://wa.me/50683413594?text=Hola',
+    }
+    const onSolicitar = vi.fn(async () => respuesta)
+    render(<FlujoConfiguracion configuracion={configuracion} onSolicitar={onSolicitar} />)
+    await hastaContacto()
+    await userEvent.type(screen.getByLabelText('Nombre'), 'Ana Mora')
+    await userEvent.type(screen.getByLabelText('Teléfono'), '8888 7777')
+    await siguiente()
+    await userEvent.click(screen.getByRole('checkbox'))
+    await userEvent.click(screen.getByRole('button', { name: 'Solicitar cotización' }))
+
+    expect(await screen.findByRole('heading', { name: '¡Tu solicitud está lista!' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Abrir WhatsApp' })).toHaveAttribute('href', respuesta.enlaceWhatsapp)
+    expect(screen.getByRole('button', { name: 'Copiar mensaje' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^(Siguiente|Revisar)$/ })).toBeNull()
+  })
+
   it('el resumen agrupa lo elegido, permite cambiar y exige aceptar el aviso (HU-20, HU-21)', async () => {
     const onSolicitar = vi.fn(async () => {})
     render(<FlujoConfiguracion configuracion={configuracion} onSolicitar={onSolicitar} />)

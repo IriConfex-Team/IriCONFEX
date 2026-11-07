@@ -38,6 +38,7 @@ import {
   type TipoAviso,
 } from '../components/ui'
 import { cx } from '../lib/cx'
+import { ErrorApi, type RespuestaSolicitud } from '../api/cliente'
 import { encuadrar, unirCajas, type Caja } from './encuadre'
 import { EncabezadoParte, GuiaDeOpciones } from './GuiasDelPaso'
 import { IlustracionPrenda } from './IlustracionPrenda'
@@ -45,16 +46,31 @@ import { HojaInfoLocal, TarjetaInfoLocal } from './InfoLocal'
 import { PantallaContacto, type Contacto } from './PantallaContacto'
 import { PantallaMedidas, type MedidasEscritas } from './PantallaMedidas'
 import { PantallaResumen, type GrupoResumen } from './PantallaResumen'
+import { SolicitudEnviada } from './SolicitudEnviada'
 import { VistaPrenda } from './VistaPrenda'
 
 export interface FlujoConfiguracionProps {
   configuracion: ConfiguracionCategoria
   /** Envía la solicitud a la API (HU-22, HU-25). Sin valor, la solicitud queda lista pero no se envía. */
-  onSolicitar?: (solicitud: SolicitudCotizacion) => Promise<void>
+  onSolicitar?: (solicitud: SolicitudCotizacion) => Promise<RespuestaSolicitud | void>
 }
 
 /** Después de los pasos de la configuración: datos de contacto (HU-19) y resumen con el aviso (HU-20, HU-21). */
-type Fase = 'configurar' | 'contacto' | 'resumen'
+type Fase = 'configurar' | 'contacto' | 'resumen' | 'enviada'
+
+/** HU-22: texto para el cliente según lo que respondió la API. */
+function mensajeDeError(error: unknown): string {
+  if (error instanceof ErrorApi) {
+    if (error.codigo === 'DEMASIADAS_SOLICITUDES') {
+      return 'Enviaste varias solicitudes seguidas. Espera unos minutos e inténtalo de nuevo.'
+    }
+    if (error.codigo === 'VALIDACION' || error.codigo === 'SELECCION_INVALIDA') {
+      return 'Hay un dato que no es válido. Revisa tus elecciones y tus datos de contacto.'
+    }
+    if (error.codigo === 'SIN_CONEXION') return error.message
+  }
+  return 'No se pudo enviar la solicitud. Intenta de nuevo en unos minutos.'
+}
 
 /** Lugar de la pantalla de medidas propias (HU-14) en el recorrido; no es un paso de la configuración. */
 const PANTALLA_MEDIDAS = '#medidas'
@@ -74,6 +90,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
   const [aceptado, setAceptado] = useState(false)
   const [infoAbierta, setInfoAbierta] = useState(false)
   const [enviando, setEnviando] = useState(false)
+  const [respuesta, setRespuesta] = useState<RespuestaSolicitud | null>(null)
   const [avisoEnvio, setAvisoEnvio] = useState<{ tipo: TipoAviso; texto: string } | null>(null)
   const [medidasEscritas, setMedidasEscritas] = useState<MedidasEscritas>({})
   const [intentoMedidas, setIntentoMedidas] = useState(false)
@@ -154,6 +171,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
   }
 
   const alAtras = () => {
+    if (fase === 'enviada') return // ya se envió: volver permitiría duplicar la solicitud
     if (fase === 'resumen') setFase('contacto')
     else if (fase === 'contacto') irA(recorrido[total - 1])
     else if (indice > 0) irA(recorrido[indice - 1])
@@ -174,12 +192,20 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
       })
       return
     }
+    if (enviando) return
     setEnviando(true)
+    setAvisoEnvio({ tipo: 'info', texto: 'Enviando… si el servidor estaba dormido puede tardar hasta un minuto.' })
     try {
-      await onSolicitar(solicitud)
-      setAvisoEnvio({ tipo: 'exito', texto: 'Listo: tu solicitud de cotización se envió.' })
-    } catch {
-      setAvisoEnvio({ tipo: 'error', texto: 'No se pudo enviar la solicitud. Revisa tu conexión e intenta de nuevo.' })
+      const resultado: RespuestaSolicitud | void = await onSolicitar(solicitud)
+      if (resultado) {
+        setRespuesta(resultado)
+        setAvisoEnvio(null)
+        setFase('enviada')
+      } else {
+        setAvisoEnvio({ tipo: 'exito', texto: 'Listo: tu solicitud de cotización se envió.' })
+      }
+    } catch (error) {
+      setAvisoEnvio({ tipo: 'error', texto: mensajeDeError(error) })
     } finally {
       setEnviando(false)
     }
@@ -191,8 +217,13 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
   const parteActual = actual ? parteDelPaso(actual.paso, seleccion) : undefined
   const guiaActual = actual ? guiaDelPaso(actual.paso, seleccion, actual.opciones) : undefined
   const tituloPaso = enMedidas ? (configuracion.medidas?.titulo ?? '') : (actual?.paso.nombre ?? '')
-  const tituloFase = { configurar: tituloPaso, contacto: 'Tus datos', resumen: 'Revisa tu solicitud' }[fase]
-  const numeroFase = { configurar: indice + 1, contacto: total + 1, resumen: total + 2 }[fase]
+  const tituloFase = {
+    configurar: tituloPaso,
+    contacto: 'Tus datos',
+    resumen: 'Revisa tu solicitud',
+    enviada: 'Solicitud lista',
+  }[fase]
+  const numeroFase = { configurar: indice + 1, contacto: total + 1, resumen: total + 2, enviada: total + 2 }[fase]
 
   // HU-14 CA6 y HU-21: las medidas también se revisan y se cambian desde el resumen.
   const medidasResumen: GrupoResumen | undefined =
@@ -245,6 +276,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
         {fase === 'contacto' && (
           <PantallaContacto contacto={contacto} onCambiar={setContacto} mostrarErrores={intentoContacto} />
         )}
+        {fase === 'enviada' && respuesta && <SolicitudEnviada respuesta={respuesta} />}
         {fase === 'configurar' && (
           <>
             {parteActual && <EncabezadoParte parte={parteActual} ilustracion={ilustrar(configuracion, seleccion)} />}
@@ -273,7 +305,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
         )}
       </main>
 
-      {fase !== 'resumen' && (
+      {fase !== 'resumen' && fase !== 'enviada' && (
         <BarraInferiorFija
           className="sticky bottom-0"
           deshabilitada={!puedeSeguir}

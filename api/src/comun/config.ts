@@ -4,6 +4,8 @@ const EsquemaEntorno = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   CORS_ORIGINS: z.string().default(''),
+  RUTA_CONFIG: z.string().default('../datos/categorias/pijamas.json'),
+  WHATSAPP_NEGOCIO: z.string().default(''),
   DATABASE_URL: z.string().min(1, 'Falta DATABASE_URL'),
 });
 
@@ -11,6 +13,8 @@ export interface Config {
   puerto: number;
   entorno: 'development' | 'test' | 'production';
   origenesCors: string[];
+  rutaConfiguracion: string;
+  whatsappNegocio: string;
   databaseUrl: string;
 }
 
@@ -48,5 +52,7 @@ export function leerConfig(entorno: NodeJS.ProcessEnv = process.env): Config {
     entorno: e.NODE_ENV,
     origenesCors,
     databaseUrl: e.DATABASE_URL,
+    rutaConfiguracion: e.RUTA_CONFIG,
+    whatsappNegocio: e.WHATSAPP_NEGOCIO
   };
 }

@@ -1,11 +1,8 @@
 import { z } from '../comun/zod.js';
-import {
-  CategoriaSchema,
-  ListaCategoriasSchema,
-  ParamsCategoriaSchema,
-} from '../modulos/categorias/categorias.esquemas.js';
+import {CategoriaSchema,ListaCategoriasSchema,ParamsCategoriaSchema,} from '../modulos/categorias/categorias.esquemas.js';
 import { RespuestaSaludSchema } from '../modulos/salud/salud.esquemas.js';
 import { registro } from './registro.js';
+import {RespuestaSolicitudSchema,esquemaSolicitud,} from '../modulos/solicitudes/solicitudes.esquemas.js';
 
 const ErrorSchema = registro.register(
   'Error',
@@ -19,6 +16,24 @@ const ErrorSchema = registro.register(
     }),
   }),
 );
+
+const SolicitudCotizacionDoc = z
+  .object({
+    categoria: z.string().openapi({ example: 'pijamas' }),
+    seleccion: z
+      .record(z.string(), z.string())
+      .openapi({ example: { perfil: 'bebe', escote: 'redondo' } }),
+    contacto: z.object({
+      nombre: z.string(),
+      telefono: z.string(),
+    }),
+    consentimiento: z.object({
+      aceptado: z.literal(true),
+      fecha: z.string().openapi({ format: 'date-time' }),
+    }),
+    medidas: z.record(z.string(), z.number()).optional(),
+  })
+  .openapi('SolicitudCotizacion');
 
 const respuestaError = (descripcion: string) => ({
   description: descripcion,
@@ -69,5 +84,25 @@ registro.registerPath({
     },
     400: respuestaError('El código tiene un formato inválido'),
     404: respuestaError('La categoría no existe'),
+  },
+});
+
+registro.registerPath({
+  method: 'post',
+  path: '/api/solicitudes',
+  tags: ['Solicitudes'],
+  summary: 'Envía una solicitud de cotización',
+  description:
+    'Valida la solicitud, la registra (si el registro falla, igual responde 201) y devuelve el mensaje de WhatsApp armado por el servidor.',
+  request: {
+    body: { content: { 'application/json': { schema: esquemaSolicitud } } },
+  },
+  responses: {
+    201: {
+      description: 'Solicitud procesada',
+      content: { 'application/json': { schema: RespuestaSolicitudSchema } },
+    },
+    400: respuestaError('Cuerpo inválido (VALIDACION) o selección que viola las reglas (SELECCION_INVALIDA)'),
+    429: respuestaError('Demasiados envíos seguidos desde la misma IP'),
   },
 });
