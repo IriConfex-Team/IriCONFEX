@@ -67,8 +67,20 @@ describe('HU-14 · qué medidas se piden', () => {
     expect(grupos.map((g) => g.titulo)).toEqual(['Parte de arriba'])
   })
 
-  it('el largo de short solo se pide con short', () => {
-    expect(ids({ ...mujerBlusaCorta, 'tipo-inferior': 'pantalon-largo' })).not.toContain('largo-short')
+  it('largo de short con short; largo de pantalón con pantalón largo o capri', () => {
+    expect(ids(mujerBlusaCorta)).not.toContain('largo-pantalon')
+    for (const tipo of ['pantalon-largo', 'capri']) {
+      const conPantalon = ids({ ...mujerBlusaCorta, 'tipo-inferior': tipo })
+      expect(conPantalon).toContain('largo-pantalon')
+      expect(conPantalon).not.toContain('largo-short')
+    }
+  })
+
+  it('a hombre no se le piden separación ni altura de busto', () => {
+    const hombre = ids({ ...mujerBlusaCorta, perfil: 'hombre' })
+    expect(hombre).not.toContain('separacion-busto')
+    expect(hombre).not.toContain('altura-busto')
+    expect(hombre).toHaveLength(11)
   })
 
   it('cada campo tiene su guía visual para los perfiles que pueden elegir «Mis medidas» (CA4)', () => {

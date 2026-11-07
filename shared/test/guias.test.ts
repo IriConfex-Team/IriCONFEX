@@ -33,9 +33,31 @@ describe('HU-13 · guía de tallas', () => {
     expect(guia('talla-inferior', mujerUniversal)!.columnas).toEqual(['Cintura', 'Cadera'])
   })
 
-  it('sin tabla donde aún no hay datos (Plus, hombre)', () => {
-    expect(guia('talla-superior', { ...mujerUniversal, 'grupo-talla': 'plus' })).toBeUndefined()
-    expect(guia('talla-superior', { ...mujerUniversal, perfil: 'hombre' })).toBeUndefined()
+  it('cada perfil y grupo tiene su tabla con sus filas', () => {
+    const plus = guia('talla-superior', { ...mujerUniversal, 'grupo-talla': 'plus' })!
+    expect(plus.filas.map((f) => f.opcion.nombre)).toEqual(['2XL', '3XL', '4XL', '5XL'])
+    const hombre = { perfil: 'hombre', base: 'dos-piezas', 'modalidad-talla': 'universal', 'grupo-talla': 'adulto' }
+    expect(guia('talla-superior', hombre)!.columnas).toEqual(['Pecho', 'Cintura'])
+    const nino = guia('talla-inferior', { perfil: 'nino', base: 'dos-piezas', 'modalidad-talla': 'universal', 'grupo-talla': 'nino' })!
+    expect(nino.columnas).toEqual(['Estatura', 'Cintura', 'Cadera'])
+    expect(nino.filas).toHaveLength(6)
+    const bebe = guia('talla-superior', { perfil: 'bebe', base: 'dos-piezas', 'modalidad-talla': 'universal', 'grupo-talla': 'bebe' })!
+    expect(bebe.columnas).toEqual(['Estatura (cm)', 'Peso (kg)'])
+    expect(bebe.imagen).toBeUndefined()
+  })
+
+  it('las filas de cada talla no se traslapan y suben de talla en talla', () => {
+    for (const pasoId of ['talla-superior', 'talla-inferior']) {
+      for (const g of paso(pasoId).guia!) {
+        g.columnas.forEach((columna, c) => {
+          const rangos = g.filas.map((f) => f.valores[c].replace(/,/g, '.').split('–').map(Number))
+          for (let i = 1; i < rangos.length; i++) {
+            expect(rangos[i][0], `${pasoId} ${columna} fila ${i}`).toBeGreaterThanOrEqual(rangos[i - 1][1])
+            expect(rangos[i][1]).toBeGreaterThan(rangos[i][0])
+          }
+        })
+      }
+    }
   })
 
   it('detecta piezas que no existen y filas con valores de más', () => {
