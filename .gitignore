@@ -4,3 +4,5 @@ dist/
 .env.*
 !.env.example
 api/generated/
+# Archivos comprimidos (copias locales)
+*.zip
