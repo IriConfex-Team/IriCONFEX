@@ -53,6 +53,8 @@ export interface FlujoConfiguracionProps {
   configuracion: ConfiguracionCategoria
   /** Envía la solicitud a la API (HU-22, HU-25). Sin valor, la solicitud queda lista pero no se envía. */
   onSolicitar?: (solicitud: SolicitudCotizacion) => Promise<RespuestaSolicitud | void>
+  /** «Atrás» en el primer paso: salir del flujo (p. ej. a la lista de categorías). */
+  onSalir?: () => void
 }
 
 /** Después de los pasos de la configuración: datos de contacto (HU-19) y resumen con el aviso (HU-20, HU-21). */
@@ -79,7 +81,7 @@ const PANTALLA_MEDIDAS = '#medidas'
  * Vista genérica del flujo (HU-23 CA2): muestra el siguiente paso visible, sus opciones válidas y las fijaciones.
  * No conoce ninguna prenda; todo sale de la configuración.
  */
-export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfiguracionProps) {
+export function FlujoConfiguracion({ configuracion, onSolicitar, onSalir }: FlujoConfiguracionProps) {
   const [seleccion, setSeleccion] = useState(() => iniciarSeleccion(configuracion))
   const [pasoActualId, setPasoActualId] = useState(configuracion.pasos[0].id)
   const [aviso, setAviso] = useState<string | null>(null)
@@ -175,6 +177,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar }: FlujoConfigur
     if (fase === 'resumen') setFase('contacto')
     else if (fase === 'contacto') irA(recorrido[total - 1])
     else if (indice > 0) irA(recorrido[indice - 1])
+    else onSalir?.()
   }
 
   const alSolicitar = async () => {

@@ -60,6 +60,12 @@ describe('HU-13 · guía de tallas', () => {
     }
   })
 
+  it('el dibujo de la tarjeta de la categoría (HU-01) usa pasos y opciones que existen', () => {
+    const roto = structuredClone(datos)
+    roto.categoria.tarjeta.dibujo.seleccion.escote = 'no-existe'
+    expect(() => cargarConfiguracion(roto)).toThrow(/dibujo de la tarjeta: la opción «no-existe» no existe en el paso «escote»/)
+  })
+
   it('detecta piezas que no existen y filas con valores de más', () => {
     const roto = structuredClone(datos)
     const talla = roto.pasos.find((p: { id: string }) => p.id === 'talla-superior')
