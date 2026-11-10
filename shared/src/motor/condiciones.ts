@@ -40,3 +40,4 @@ export function todas(resultados: Trivalor[]): Trivalor {
   if (resultados.includes(false)) return false
   return resultados.includes(null) ? null : true
 }
+

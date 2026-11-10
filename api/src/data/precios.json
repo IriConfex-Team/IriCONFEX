@@ -1,0 +1,26 @@
+{
+  "precios_por_pieza": [
+    {
+      "pieza": "Blusa / camisa",
+      "tela": "Brush",
+      "precios_crc": {
+        "bebe": 2000,
+        "nino_2_10": 3000,
+        "nino_12": 5000,
+        "adulto": 6000,
+        "plus": 7500
+      }
+    },
+    {
+      "pieza": "Blusa / camisa",
+      "tela": "Satín",
+      "precios_crc": {
+        "bebe": 2000,
+        "nino_2_10": 3000,
+        "nino_12": 5000,
+        "adulto": 6000,
+        "plus": 7000
+      }
+    }
+  ]
+}
