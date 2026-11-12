@@ -1041,7 +1041,8 @@
       { "paso": "manga", "opcion": "corta" },
       { "paso": "largo", "opcion": "rodilla", "cuando": { "paso": "base", "en": ["una-pieza"] } },
       { "paso": "largo", "opcion": "cadera" },
-      { "paso": "tipo-inferior", "opcion": "pantalon-largo" }
+      { "paso": "tipo-inferior", "opcion": "pantalon-largo" },
+      { "paso": "bata-salida-manga", "opcion": "larga", "cuando": { "paso": "bata-salida", "en": ["si"] } }
     ],
     "variables": {
       "ajuste-sup": [
@@ -1133,6 +1134,22 @@
               ]
             }
           }
+        ]
+      },
+      {
+        "id": "mujer-salida",
+        "ancho": 400,
+        "alto": 620,
+        "desplazamientoX": 420,
+        "cuando": { "paso": "bata-salida", "en": ["si"] },
+        "capas": [
+          { "archivo": "mujer/salida/cuerpo/sobre-rodilla.svg" },
+          { "archivo": "mujer/salida/manga/{bata-salida-manga}.svg" },
+          { "archivo": "mujer/salida/cinta/anudada.svg" },
+          { "archivo": "mujer/salida/acabado/encaje-ruedo.svg", "cuando": { "paso": "bata-salida-acabado", "en": ["encaje"] } },
+          { "archivo": "mujer/salida/acabado/encaje-{bata-salida-manga}.svg", "cuando": { "paso": "bata-salida-acabado", "en": ["encaje"] } },
+          { "archivo": "mujer/salida/acabado/vivo-frente.svg", "cuando": { "paso": "bata-salida-acabado", "en": ["con-vivo"] } },
+          { "archivo": "mujer/salida/acabado/vivo-{bata-salida-manga}.svg", "cuando": { "paso": "bata-salida-acabado", "en": ["con-vivo"] } }
         ]
       },
       {

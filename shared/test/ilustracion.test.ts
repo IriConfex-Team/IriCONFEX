@@ -57,6 +57,32 @@ describe('ilustración por capas (HU-06 CA4)', () => {
     faltantes.push(...imagenes.filter((ruta) => !existsSync(join(publica, ruta))))
     expect(combinaciones).toBeGreaterThan(1000)
     expect(faltantes).toEqual([])
+    // Recorre hasta la bata de salida, que es de los últimos pasos: tarda más que el resto de las pruebas.
+  }, 60_000)
+
+  it('la bata de salida se dibuja al lado del conjunto, con su manga y su acabado', () => {
+    const conjunto = recorrer(['perfil', 'mujer'], ['base', 'dos-piezas'], ['manga', 'tirantes'], ['tela-superior', 'satin'])
+    const sinBata = ilustrar(configuracion, conjunto)!
+    const conBata = ilustrar(configuracion, { ...conjunto, 'grupo-talla': 'adulto', 'bata-salida': 'si' })!
+    const salida = conBata.piezas.find((p) => p.id === 'mujer-salida')!
+    expect(salida.desplazamientoX).toBeGreaterThanOrEqual(sinBata.ancho)
+    expect(conBata.ancho).toBe(salida.desplazamientoX + salida.ancho)
+    // Antes de elegir la manga se dibuja la larga (relleno).
+    expect(salida.archivos).toContain('/ilustraciones/mujer/salida/manga/larga.svg')
+    const conVivo = ilustrar(configuracion, {
+      ...conjunto,
+      'grupo-talla': 'adulto',
+      'bata-salida': 'si',
+      'bata-salida-manga': 'tres-cuartos',
+      'bata-salida-acabado': 'con-vivo',
+    })!
+    expect(conVivo.piezas.find((p) => p.id === 'mujer-salida')!.archivos).toEqual(
+      expect.arrayContaining([
+        '/ilustraciones/mujer/salida/manga/tres-cuartos.svg',
+        '/ilustraciones/mujer/salida/acabado/vivo-frente.svg',
+        '/ilustraciones/mujer/salida/acabado/vivo-tres-cuartos.svg',
+      ]),
+    )
   })
 
   it('sin perfil no hay nada que dibujar', () => {
