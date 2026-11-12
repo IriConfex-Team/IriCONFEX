@@ -1,6 +1,26 @@
 {
   "version": 1,
-  "categoria": { "id": "pijamas", "nombre": "Arma tu pijama" },
+  "categoria": {
+    "id": "pijamas",
+    "nombre": "Arma tu pijama",
+    "tarjeta": {
+      "titulo": "Pijamas",
+      "descripcion": "Para mujer, hombre, niños y bebé",
+      "dibujo": {
+        "seleccion": {
+          "perfil": "mujer",
+          "base": "dos-piezas",
+          "escote": "v",
+          "manga": "tirantes",
+          "largo": "cintura",
+          "acabado-superior": "simple",
+          "tipo-inferior": "short",
+          "acabado-inferior": "vuelitos"
+        },
+        "color": "#e8c4c0"
+      }
+    }
+  },
   "encabezado": { "paso": "perfil", "plantilla": "Pijama para {opcion}" },
   "pasos": [
     {

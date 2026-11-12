@@ -15,7 +15,7 @@ export function EncabezadoParte({ parte, ilustracion }: { parte: ParteDelPaso; i
           ilustracion={ilustracion}
           resaltar={new Set(parte.piezas)}
           descripcion={`Pijama con la ${parte.nombre.toLowerCase()} destacada`}
-          className="h-32 w-24 shrink-0 bg-superficie p-1"
+          className="h-32 w-24 shrink-0 rounded-tarjeta bg-superficie p-1"
           proporcion={3 / 4}
         />
       )}

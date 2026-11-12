@@ -9,11 +9,13 @@ export interface VistaPrendaProps {
   grande?: boolean
   /** Piezas que se destacan (las demás se atenúan). */
   resaltar?: ReadonlySet<string>
-  /** Reemplaza el tamaño y el relleno del recuadro. */
+  /** Reemplaza el tamaño, el relleno y el redondeo del recuadro. */
   className?: string
   descripcion?: string
   /** Proporción (ancho / alto) del recorte; conviene que sea la del recuadro. */
   proporcion?: number
+  /** Color de la tela; sin valor, el gris neutro. */
+  color?: string
 }
 
 /** La prenda armada hasta ahora, siempre sobre lienzo neutro, recortada al dibujo (sin lienzo vacío). */
@@ -24,6 +26,7 @@ export function VistaPrenda({
   className,
   descripcion = 'Vista previa de tu elección',
   proporcion = 1,
+  color,
 }: VistaPrendaProps) {
   const clave = JSON.stringify(ilustracion)
   const capas = useMemo(
@@ -39,8 +42,8 @@ export function VistaPrenda({
   return (
     <div
       className={cx(
-        'flex items-center justify-center rounded-tarjeta bg-lienzo',
-        className ?? (grande ? 'h-72 py-3' : 'h-48 py-3'),
+        'flex items-center justify-center bg-lienzo',
+        className ?? cx('rounded-tarjeta py-3', grande ? 'h-72' : 'h-48'),
       )}
     >
       <IlustracionPrenda
@@ -49,6 +52,7 @@ export function VistaPrenda({
         onMedir={alMedir}
         vista={caja}
         resaltar={resaltar}
+        color={color}
         descripcion={descripcion}
         className="h-full w-full"
       />
