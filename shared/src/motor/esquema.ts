@@ -120,6 +120,8 @@ const esquemaIlustracion = z.strictObject({
         alto: z.number().positive(),
         /** Cuánto baja la pieza dentro del conjunto. */
         desplazamiento: z.number().min(0).optional(),
+        /** Cuánto se corre a la derecha (p. ej. una prenda que se muestra al lado del conjunto). */
+        desplazamientoX: z.number().min(0).optional(),
         cuando: esquemaCondicion.optional(),
         capas: z.array(z.strictObject({ archivo: z.string().min(1), cuando: esquemaCondicion.optional() })).min(1),
       }),

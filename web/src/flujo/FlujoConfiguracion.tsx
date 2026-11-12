@@ -378,9 +378,21 @@ function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<Pa
   }
 
   if (paso.presentacion === 'si-no') {
+    // Si la respuesta cambia el dibujo (p. ej. agregar una prenda), mientras no se responde se muestra el «sí»:
+    // así se entiende qué se está preguntando.
+    const muestraElSi = valor === undefined && pasosQueDibujan(configuracion).has(paso.id)
     return (
       <>
-        <VistaPrenda ilustracion={ilustrar(configuracion, seleccion)} />
+        <VistaPrenda
+          ilustracion={
+            muestraElSi ? ilustrarOpcion(configuracion, seleccion, paso.id, 'si') : ilustrar(configuracion, seleccion)
+          }
+          // Recuadro ancho y bajo: con la proporción del recuadro, un conjunto ancho (pijama + bata) se ve grande.
+          proporcion={1.8}
+        />
+        {muestraElSi && (
+          <p className="m-0 -mt-2 text-center estilo-pequeno text-texto-secundario">Así se vería si eliges «Sí».</p>
+        )}
         <SelectorSiNo
           etiqueta={paso.nombre}
           valor={valor === undefined ? null : valor === 'si'}

@@ -24,7 +24,7 @@ describe('IlustracionPrenda', () => {
         ilustracion={{
           ancho: 400,
           alto: 680,
-          piezas: [{ id: 'p', ancho: 400, alto: 480, desplazamiento: 200, archivos: ['/i/cuerpo.svg', '/i/escote.svg', '/i/no-existe.svg'] }],
+          piezas: [{ id: 'p', ancho: 400, alto: 480, desplazamiento: 200, desplazamientoX: 0, archivos: ['/i/cuerpo.svg', '/i/escote.svg', '/i/no-existe.svg'] }],
         }}
       />,
     )

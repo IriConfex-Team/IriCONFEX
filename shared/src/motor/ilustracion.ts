@@ -7,6 +7,7 @@ export interface PiezaIlustrada {
   ancho: number
   alto: number
   desplazamiento: number
+  desplazamientoX: number
   /** URLs de las capas en orden de dibujo. */
   archivos: string[]
 }
@@ -80,13 +81,20 @@ export function ilustrar(configuracion: ConfiguracionCategoria, seleccion: Selec
       return ruta === null ? [] : [`${carpeta}/${ruta}`]
     })
     if (archivos.length > 0) {
-      piezas.push({ id: pieza.id, ancho: pieza.ancho, alto: pieza.alto, desplazamiento: pieza.desplazamiento ?? 0, archivos })
+      piezas.push({
+        id: pieza.id,
+        ancho: pieza.ancho,
+        alto: pieza.alto,
+        desplazamiento: pieza.desplazamiento ?? 0,
+        desplazamientoX: pieza.desplazamientoX ?? 0,
+        archivos,
+      })
     }
   }
   if (piezas.length === 0) return null
 
   return {
-    ancho: Math.max(...piezas.map((p) => p.ancho)),
+    ancho: Math.max(...piezas.map((p) => p.desplazamientoX + p.ancho)),
     alto: Math.max(...piezas.map((p) => p.desplazamiento + p.alto)),
     piezas,
   }
