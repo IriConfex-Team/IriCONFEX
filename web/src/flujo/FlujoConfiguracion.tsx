@@ -24,7 +24,7 @@ import {
   type Seleccion,
   type SolicitudCotizacion,
 } from '@iriconfex/shared'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   AvisoEnLinea,
   BarraInferiorFija,
@@ -96,6 +96,11 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onSalir }: Fluj
   const [avisoEnvio, setAvisoEnvio] = useState<{ tipo: TipoAviso; texto: string } | null>(null)
   const [medidasEscritas, setMedidasEscritas] = useState<MedidasEscritas>({})
   const [intentoMedidas, setIntentoMedidas] = useState(false)
+
+  // Cada paso, la pantalla de contacto y el resumen empiezan arriba, aunque el anterior se haya bajado.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pasoActualId, fase])
 
   const negocio = configuracion.negocio
   const estado = useMemo(() => evaluarFlujo(configuracion, seleccion), [configuracion, seleccion])
