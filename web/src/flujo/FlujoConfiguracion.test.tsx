@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { configuraciones } from './configuraciones'
 import { FlujoConfiguracion } from './FlujoConfiguracion'
 
@@ -90,5 +90,16 @@ describe('FlujoConfiguracion (con la configuración de datos/categorias)', () =>
     expect(screen.getByRole('button', { name: 'Siguiente' })).toBeDisabled()
     await userEvent.click(screen.getByRole('button', { name: 'Cambiar escote' }))
     expect(screen.getByRole('radiogroup', { name: 'Escote' })).toBeInTheDocument()
+  })
+})
+
+describe('cada paso empieza arriba', () => {
+  it('al pasar al siguiente paso la pantalla vuelve al inicio', async () => {
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+    render(<FlujoConfiguracion configuracion={configuracion} />)
+    scrollTo.mockClear()
+    await elegirYSeguir('Mujer')
+    expect(scrollTo).toHaveBeenCalledWith(0, 0)
+    scrollTo.mockRestore()
   })
 })
