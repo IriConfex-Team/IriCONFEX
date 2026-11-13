@@ -1,6 +1,7 @@
 import { formatoTelefono, type ConfiguracionCategoria, type EstadoFlujo, type EstadoPaso, type Negocio } from '@iriconfex/shared'
 import { useId } from 'react'
 import { Boton } from '../components/ui'
+import { formatColones } from '../lib/formatColones'
 import type { Contacto } from './PantallaContacto'
 import { avisoDatos, TEXTO_ACEPTACION } from './textosDatos'
 
@@ -77,6 +78,8 @@ export interface PantallaResumenProps {
   /** Medidas propias (HU-14), después de las elecciones. */
   medidas?: GrupoResumen
   negocio?: Negocio
+  /** Precio estimado calculado en el servidor (HU-18). `null` o sin valor: a confirmar por la costurera. */
+  precio?: number | null
   aceptado: boolean
   onAceptar: (aceptado: boolean) => void
   onEditarPaso: (pasoId: string) => void
@@ -92,6 +95,7 @@ export function PantallaResumen({
   contacto,
   medidas,
   negocio,
+  precio,
   aceptado,
   onAceptar,
   onEditarPaso,
@@ -116,7 +120,7 @@ export function PantallaResumen({
 
       <section className="flex flex-col gap-0.5 rounded-tarjeta bg-superficie-beige px-4 py-3">
         <p className="m-0 estilo-pequeno text-texto-secundario">Precio estimado</p>
-        <p className="m-0 estilo-cuerpo-fuerte text-texto">A confirmar por la costurera</p>
+        <p className="m-0 estilo-cuerpo-fuerte text-texto">{typeof precio === 'number' ? formatColones(precio) : 'A confirmar por la costurera'}</p>
         <p className="m-0 estilo-pequeno text-texto-secundario">Estimado, sujeto a confirmación, no incluye envío.</p>
       </section>
 

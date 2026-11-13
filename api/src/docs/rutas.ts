@@ -1,8 +1,20 @@
+
 import { z } from '../comun/zod.js';
-import {CategoriaSchema,ListaCategoriasSchema,ParamsCategoriaSchema,} from '../modulos/categorias/categorias.esquemas.js';
+import {
+  CategoriaSchema,
+  ListaCategoriasSchema,
+  ParamsCategoriaSchema,
+} from '../modulos/categorias/categorias.esquemas.js';
+import {
+  RespuestaCotizacionSchema,
+  esquemaCotizacion,
+} from '../modulos/cotizaciones/cotizaciones.esquemas.js';
 import { RespuestaSaludSchema } from '../modulos/salud/salud.esquemas.js';
 import { registro } from './registro.js';
-import {RespuestaSolicitudSchema,esquemaSolicitud,} from '../modulos/solicitudes/solicitudes.esquemas.js';
+import {
+  RespuestaSolicitudSchema,
+  esquemaSolicitud,
+} from '../modulos/solicitudes/solicitudes.esquemas.js';
 
 const ErrorSchema = registro.register(
   'Error',
@@ -104,5 +116,25 @@ registro.registerPath({
     },
     400: respuestaError('Cuerpo inválido (VALIDACION) o selección que viola las reglas (SELECCION_INVALIDA)'),
     429: respuestaError('Demasiados envíos seguidos desde la misma IP'),
+  },
+});
+
+registro.registerPath({
+  method: 'post',
+  path: '/api/quotes',
+  tags: ['Cotizaciones'],
+  summary: 'Calcula el precio estimado de una selección',
+  description:
+    'Suma piezas + adicionales del Anexo B en el servidor. estado=estimado trae el total; a_confirmar significa que falta algún precio en la tabla; incompleto, que el cliente aún no elige lo necesario para calcular.',
+  request: {
+    body: { content: { 'application/json': { schema: esquemaCotizacion } } },
+  },
+  responses: {
+    200: {
+      description: 'Resultado del cálculo',
+      content: { 'application/json': { schema: RespuestaCotizacionSchema } },
+    },
+    400: respuestaError('Cuerpo inválido (VALIDACION) o selección que viola las reglas (SELECCION_INVALIDA)'),
+    429: respuestaError('Demasiadas consultas seguidas desde la misma IP'),
   },
 });

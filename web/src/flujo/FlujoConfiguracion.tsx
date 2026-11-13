@@ -38,7 +38,7 @@ import {
   type TipoAviso,
 } from '../components/ui'
 import { cx } from '../lib/cx'
-import { ErrorApi, type RespuestaSolicitud } from '../api/cliente'
+import { ErrorApi, type Cotizacion, type EntradaCotizacion, type RespuestaSolicitud } from '../api/cliente'
 import { encuadrar, unirCajas, type Caja } from './encuadre'
 import { EncabezadoParte, GuiaDeOpciones } from './GuiasDelPaso'
 import { IlustracionPrenda } from './IlustracionPrenda'
@@ -53,6 +53,8 @@ export interface FlujoConfiguracionProps {
   configuracion: ConfiguracionCategoria
   /** Envía la solicitud a la API (HU-22, HU-25). Sin valor, la solicitud queda lista pero no se envía. */
   onSolicitar?: (solicitud: SolicitudCotizacion) => Promise<RespuestaSolicitud | void>
+  /** Pide el precio estimado a la API (HU-18). Sin valor, no se muestra precio. */
+  onCotizar?: (entrada: EntradaCotizacion, signal: AbortSignal) => Promise<Cotizacion>
   /** «Atrás» en el primer paso: salir del flujo (p. ej. a la lista de categorías). */
   onSalir?: () => void
 }
@@ -81,7 +83,7 @@ const PANTALLA_MEDIDAS = '#medidas'
  * Vista genérica del flujo (HU-23 CA2): muestra el siguiente paso visible, sus opciones válidas y las fijaciones.
  * No conoce ninguna prenda; todo sale de la configuración.
  */
-export function FlujoConfiguracion({ configuracion, onSolicitar, onSalir }: FlujoConfiguracionProps) {
+export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSalir }: FlujoConfiguracionProps) {
   const [seleccion, setSeleccion] = useState(() => iniciarSeleccion(configuracion))
   const [pasoActualId, setPasoActualId] = useState(configuracion.pasos[0].id)
   const [aviso, setAviso] = useState<string | null>(null)
@@ -96,6 +98,33 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onSalir }: Fluj
   const [avisoEnvio, setAvisoEnvio] = useState<{ tipo: TipoAviso; texto: string } | null>(null)
   const [medidasEscritas, setMedidasEscritas] = useState<MedidasEscritas>({})
   const [intentoMedidas, setIntentoMedidas] = useState(false)
+  // HU-18: el precio lo calcula el servidor cada vez que cambia la selección (con una pequeña espera
+  // para no consultar en cada toque). Se guarda junto con la selección a la que pertenece: si el cliente
+  // ya cambió algo, el precio viejo no se muestra mientras llega el nuevo.
+  const claveSeleccion = JSON.stringify(seleccion)
+  const [precio, setPrecio] = useState<{ clave: string; cotizacion: Cotizacion } | null>(null)
+  
+  useEffect(() => {
+    if (!onCotizar) return
+    const control = new AbortController()
+    const espera = setTimeout(() => {
+      onCotizar({ categoria: configuracion.categoria.id, seleccion }, control.signal)
+        .then((cotizacion) => {
+          if (!control.signal.aborted) setPrecio({ clave: claveSeleccion, cotizacion })
+        })
+        .catch(() => {
+          // Sin precio no pasa nada: la barra no lo muestra y la solicitud igual se puede enviar.
+        })
+    }, 250)
+    return () => {
+      clearTimeout(espera)
+      control.abort()
+    }
+  }, [onCotizar, configuracion, seleccion, claveSeleccion])
+  const cotizacion = precio?.clave === claveSeleccion ? precio.cotizacion : undefined
+  // undefined = no mostrar precio · null = «a confirmar» · número = precio estimado
+  const precioEstimado =
+    cotizacion === undefined || cotizacion.estado === 'incompleto' ? undefined : cotizacion.precioEstimadoCrc
 
   // Cada paso, la pantalla de contacto y el resumen empiezan arriba, aunque el anterior se haya bajado.
   useEffect(() => {
@@ -271,6 +300,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onSalir }: Fluj
               contacto={contacto}
               medidas={medidasResumen}
               negocio={negocio}
+              precio={precioEstimado}
               aceptado={aceptado}
               onAceptar={setAceptado}
               onEditarPaso={editarDesdeResumen}
@@ -316,6 +346,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onSalir }: Fluj
       {fase !== 'resumen' && fase !== 'enviada' && (
         <BarraInferiorFija
           className="sticky bottom-0"
+          precioEstimado={precioEstimado}
           deshabilitada={!puedeSeguir}
           ayuda={estado.conflictos.length > 0 ? 'Resuelve el aviso para continuar.' : undefined}
           textoBoton={fase === 'contacto' ? 'Revisar' : 'Siguiente'}

@@ -1,3 +1,4 @@
+
 import cors from 'cors';
 import express, { Router, type Express } from 'express';
 import swaggerUi from 'swagger-ui-express';
@@ -6,6 +7,8 @@ import type { Dependencias } from './contenedor.js';
 import { documentoOpenApi } from './docs/openapi.js';
 import { crearCategoriasController } from './modulos/categorias/categorias.controlador.js';
 import { crearCategoriasRouter } from './modulos/categorias/categorias.rutas.js';
+import { crearCotizacionesController } from './modulos/cotizaciones/cotizaciones.controlador.js';
+import { crearCotizacionesRouter } from './modulos/cotizaciones/cotizaciones.rutas.js';
 import { crearSaludController } from './modulos/salud/salud.controlador.js';
 import { crearSaludRouter } from './modulos/salud/salud.rutas.js';
 import { crearSolicitudesController } from './modulos/solicitudes/solicitudes.controlador.js';
@@ -14,6 +17,7 @@ import { crearSolicitudesRouter } from './modulos/solicitudes/solicitudes.rutas.
 export interface OpcionesApp {
   origenesCors?: string[];
   limiteSolicitudes?: number;
+  limiteCotizaciones?: number;
 }
 
 export function crearApp(dependencias: Dependencias, opciones: OpcionesApp = {}): Express {
@@ -26,7 +30,18 @@ export function crearApp(dependencias: Dependencias, opciones: OpcionesApp = {})
   const api = Router();
   api.use('/health', crearSaludRouter(crearSaludController(dependencias.salud)));
   api.use('/categorias', crearCategoriasRouter(crearCategoriasController(dependencias.categorias)));
-  api.use('/solicitudes',crearSolicitudesRouter(crearSolicitudesController(dependencias.solicitudes), {limite: opciones.limiteSolicitudes,}),);
+  api.use(
+    '/solicitudes',
+    crearSolicitudesRouter(crearSolicitudesController(dependencias.solicitudes), {
+      limite: opciones.limiteSolicitudes,
+    }),
+  );
+  api.use(
+    '/quotes',
+    crearCotizacionesRouter(crearCotizacionesController(dependencias.cotizaciones), {
+      limite: opciones.limiteCotizaciones,
+    }),
+  );
   api.get('/openapi.json', (_req, res) => {
     res.json(documentoOpenApi);
   });

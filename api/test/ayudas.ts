@@ -1,9 +1,13 @@
+
 import type { Dependencias } from '../src/contenedor.js';
+import type { DetalleError } from '../src/comun/errores.js';
+import { crearCotizacionesService } from '../src/modulos/cotizaciones/cotizaciones.servicio.js';
 import type { Categoria } from '../src/modulos/categorias/categorias.esquemas.js';
 import { crearCategoriasService } from '../src/modulos/categorias/categorias.servicio.js';
 import { crearSaludService } from '../src/modulos/salud/salud.servicio.js';
 import type { RegistroSolicitud } from '../src/modulos/solicitudes/solicitudes.tipos.js';
 import { crearSolicitudesService } from '../src/modulos/solicitudes/solicitudes.servicio.js';
+import { catalogoDePrueba } from './catalogo-csv.js';
 
 export const CATEGORIAS_DE_PRUEBA: Categoria[] = [
   { codigo: 'pijamas', nombre: 'Arma tu pijama', imagenUrl: null },
@@ -41,6 +45,8 @@ interface Opciones {
   registroFalla?: boolean;
   reglas?: string[];
   registros?: RegistroSolicitud[];
+  /** Problemas que reporta la revisión de reglas al cotizar (HU-18) */
+  problemasCotizacion?: DetalleError[];
 }
 
 export function dependenciasFalsas({
@@ -49,18 +55,34 @@ export function dependenciasFalsas({
   registroFalla = false,
   reglas = [],
   registros = [],
+  problemasCotizacion = [],
 }: Opciones = {}): Dependencias {
   return {
-    salud: crearSaludService({ verificarConexion: async () => baseOk }, { version: 'test' }),
+    salud: crearSaludService(
+      { verificarConexion: async () => baseOk },
+      { version: 'test' },
+    ),
     categorias: crearCategoriasService({
       listarActivas: async () => categorias,
-      buscarPorCodigo: async (codigo) => categorias.find((c) => c.codigo === codigo) ?? null,
+      buscarPorCodigo: async (codigo) =>
+        categorias.find((c) => c.codigo === codigo) ?? null,
     }),
+
+    // Usa los precios REALES del Anexo B (los CSV del seed), sin base de datos
+    cotizaciones: crearCotizacionesService({
+      repositorio: {
+        obtenerCatalogo: async () => catalogoDePrueba(),
+      },
+      revisarSeleccion: () => problemasCotizacion,
+    }),
+
     solicitudes: crearSolicitudesService({
       repositorio: {
         registrar: async (registro) => {
           // Simula un error de Prisma que filtra datos personales en su mensaje
-          if (registroFalla) throw new Error('falló al guardar a ' + registro.nombreCliente);
+          if (registroFalla) {
+            throw new Error('falló al guardar a ' + registro.nombreCliente);
+          }
           registros.push(registro);
         },
       },

@@ -1,3 +1,5 @@
+
+import { cotizar } from './api/cliente'
 import { lazy, Suspense } from 'react'
 import { enviarSolicitud } from './api/cliente'
 import { configuraciones } from './flujo/configuraciones'
@@ -18,7 +20,7 @@ function App() {
   )
 }
 
-// Rutas: / inicio y /categorias (HU-01), /disenar/<categoría> el flujo genérico (HU-23), que envía la solicitud
+// Rutas: / inicio y /categorias (HU-01), /disenar/:categoría el flujo genérico (HU-23), que envía la solicitud
 // a la API (HU-22, HU-25); /privacidad la política de datos (HU-20) y /design el sistema de diseño (T-04).
 function Rutas() {
   const ruta = useRuta()
@@ -34,6 +36,7 @@ function Rutas() {
         key={elegida.categoria.id}
         configuracion={elegida}
         onSolicitar={enviarSolicitud}
+        onCotizar={cotizar}
         onSalir={() => navegar(rutas.categorias)}
       />
     )
