@@ -79,7 +79,7 @@ IriCONFEX/
    DIRECT_URL=postgresql://iriconfex:tu_clave@localhost:5432/iriconfex
    ```
 
-3. **Levantar todo de una vez** (PostgreSQL, migraciones y seed):
+3. **Levantar todo de una vez** (PostgreSQL, migraciones, seed y el servicio pi en http://localhost:3000):
 
    ```bash
    docker compose up --build -d
