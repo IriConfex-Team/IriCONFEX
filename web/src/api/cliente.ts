@@ -13,6 +13,20 @@ export interface RespuestaSolicitud {
   enlaceWhatsapp: string;
 }
 
+/** HU-18: precio estimado calculado en el servidor (POST /api/quotes). */
+export interface Cotizacion {
+  /** estimado: hay precio · a_confirmar: falta un precio en la tabla · incompleto: aún no elige lo necesario */
+  estado: 'estimado' | 'a_confirmar' | 'incompleto'
+  precioEstimadoCrc: number | null
+  moneda: 'CRC'
+  lineas: { tipo: 'pieza' | 'adicional'; codigo: string; montoCrc: number | null }[]
+}
+
+export interface EntradaCotizacion {
+  categoria: string
+  seleccion: Record<string, string>
+}
+
 export class ErrorApi extends Error {
   readonly estado: number;
   readonly codigo: string;
@@ -61,4 +75,22 @@ export async function enviarSolicitud(solicitud: SolicitudCotizacion): Promise<R
     cuerpo?.error?.mensaje ?? 'No se pudo enviar la solicitud',
     cuerpo?.error?.detalles ?? [],
   );
+}
+
+/** HU-18: pide el precio estimado al servidor. El cliente nunca calcula ni envía precios. */
+export async function cotizar(entrada: EntradaCotizacion, signal?: AbortSignal): Promise<Cotizacion> {
+  let respuesta: Response;
+  try {
+    respuesta = await fetch(BASE + '/api/quotes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entrada),
+      // Con Render dormido la primera consulta puede tardar; si el flujo la cancela, se respeta
+      signal: signal ?? AbortSignal.timeout(ESPERA_MAXIMA_MS),
+    });
+  } catch {
+    throw new ErrorApi(0, 'SIN_CONEXION', 'No pudimos consultar el precio.');
+  }
+  if (respuesta.status === 200) return (await respuesta.json()) as Cotizacion;
+  throw new ErrorApi(respuesta.status, 'ERROR', 'No se pudo calcular el precio');
 }
