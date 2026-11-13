@@ -6,3 +6,7 @@ dist/
 api/generated/
 # Archivos comprimidos (copias locales)
 *.zip
+
+# Playwright
+test-results/
+playwright-report/
