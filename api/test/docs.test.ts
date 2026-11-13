@@ -1,3 +1,4 @@
+
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { crearApp } from '../src/app.js';
@@ -12,7 +13,13 @@ describe('documentación OpenAPI', () => {
     expect(respuesta.status).toBe(200);
     expect(respuesta.body.openapi).toBe('3.1.0');
     expect(Object.keys(respuesta.body.paths)).toEqual(
-      expect.arrayContaining(['/api/health', '/api/categorias', '/api/categorias/{codigo}', '/api/quotes', '/api/solicitudes']),
+      expect.arrayContaining([
+        '/api/health',
+        '/api/categorias',
+        '/api/categorias/{codigo}',
+        '/api/quotes',
+        '/api/solicitudes',
+      ]),
     );
     expect(respuesta.body.components.schemas.Error).toBeDefined();
   });

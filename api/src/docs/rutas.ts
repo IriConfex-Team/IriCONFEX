@@ -1,9 +1,20 @@
+
 import { z } from '../comun/zod.js';
-import {CategoriaSchema,ListaCategoriasSchema,ParamsCategoriaSchema,} from '../modulos/categorias/categorias.esquemas.js';
-import {RespuestaCotizacionSchema,esquemaCotizacion,} from '../modulos/cotizaciones/cotizaciones.esquemas.js';
+import {
+  CategoriaSchema,
+  ListaCategoriasSchema,
+  ParamsCategoriaSchema,
+} from '../modulos/categorias/categorias.esquemas.js';
+import {
+  RespuestaCotizacionSchema,
+  esquemaCotizacion,
+} from '../modulos/cotizaciones/cotizaciones.esquemas.js';
 import { RespuestaSaludSchema } from '../modulos/salud/salud.esquemas.js';
 import { registro } from './registro.js';
-import {RespuestaSolicitudSchema,esquemaSolicitud,} from '../modulos/solicitudes/solicitudes.esquemas.js';
+import {
+  RespuestaSolicitudSchema,
+  esquemaSolicitud,
+} from '../modulos/solicitudes/solicitudes.esquemas.js';
 
 const ErrorSchema = registro.register(
   'Error',

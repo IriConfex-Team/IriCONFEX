@@ -55,6 +55,8 @@ export interface FlujoConfiguracionProps {
   onSolicitar?: (solicitud: SolicitudCotizacion) => Promise<RespuestaSolicitud | void>
   /** Pide el precio estimado a la API (HU-18). Sin valor, no se muestra precio. */
   onCotizar?: (entrada: EntradaCotizacion, signal: AbortSignal) => Promise<Cotizacion>
+  /** «Atrás» en el primer paso: salir del flujo (p. ej. a la lista de categorías). */
+  onSalir?: () => void
 }
 
 /** Después de los pasos de la configuración: datos de contacto (HU-19) y resumen con el aviso (HU-20, HU-21). */
@@ -81,7 +83,7 @@ const PANTALLA_MEDIDAS = '#medidas'
  * Vista genérica del flujo (HU-23 CA2): muestra el siguiente paso visible, sus opciones válidas y las fijaciones.
  * No conoce ninguna prenda; todo sale de la configuración.
  */
-export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar }: FlujoConfiguracionProps) {
+export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSalir }: FlujoConfiguracionProps) {
   const [seleccion, setSeleccion] = useState(() => iniciarSeleccion(configuracion))
   const [pasoActualId, setPasoActualId] = useState(configuracion.pasos[0].id)
   const [aviso, setAviso] = useState<string | null>(null)
@@ -123,6 +125,11 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar }: Fl
   // undefined = no mostrar precio · null = «a confirmar» · número = precio estimado
   const precioEstimado =
     cotizacion === undefined || cotizacion.estado === 'incompleto' ? undefined : cotizacion.precioEstimadoCrc
+
+  // Cada paso, la pantalla de contacto y el resumen empiezan arriba, aunque el anterior se haya bajado.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pasoActualId, fase])
 
   const negocio = configuracion.negocio
   const estado = useMemo(() => evaluarFlujo(configuracion, seleccion), [configuracion, seleccion])
@@ -204,6 +211,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar }: Fl
     if (fase === 'resumen') setFase('contacto')
     else if (fase === 'contacto') irA(recorrido[total - 1])
     else if (indice > 0) irA(recorrido[indice - 1])
+    else onSalir?.()
   }
 
   const alSolicitar = async () => {
@@ -406,9 +414,21 @@ function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<Pa
   }
 
   if (paso.presentacion === 'si-no') {
+    // Si la respuesta cambia el dibujo (p. ej. agregar una prenda), mientras no se responde se muestra el «sí»:
+    // así se entiende qué se está preguntando.
+    const muestraElSi = valor === undefined && pasosQueDibujan(configuracion).has(paso.id)
     return (
       <>
-        <VistaPrenda ilustracion={ilustrar(configuracion, seleccion)} />
+        <VistaPrenda
+          ilustracion={
+            muestraElSi ? ilustrarOpcion(configuracion, seleccion, paso.id, 'si') : ilustrar(configuracion, seleccion)
+          }
+          // Recuadro ancho y bajo: con la proporción del recuadro, un conjunto ancho (pijama + bata) se ve grande.
+          proporcion={1.8}
+        />
+        {muestraElSi && (
+          <p className="m-0 -mt-2 text-center estilo-pequeno text-texto-secundario">Así se vería si eliges «Sí».</p>
+        )}
         <SelectorSiNo
           etiqueta={paso.nombre}
           valor={valor === undefined ? null : valor === 'si'}

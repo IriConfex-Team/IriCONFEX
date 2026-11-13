@@ -1,3 +1,4 @@
+
 import type { SolicitudCotizacion } from '@iriconfex/shared';
 
 // Vite incrusta VITE_API_URL al compilar. Con envDir: '..' lee el .env de la raíz del monorepo.
@@ -16,15 +17,15 @@ export interface RespuestaSolicitud {
 /** HU-18: precio estimado calculado en el servidor (POST /api/quotes). */
 export interface Cotizacion {
   /** estimado: hay precio · a_confirmar: falta un precio en la tabla · incompleto: aún no elige lo necesario */
-  estado: 'estimado' | 'a_confirmar' | 'incompleto'
-  precioEstimadoCrc: number | null
-  moneda: 'CRC'
-  lineas: { tipo: 'pieza' | 'adicional'; codigo: string; montoCrc: number | null }[]
+  estado: 'estimado' | 'a_confirmar' | 'incompleto';
+  precioEstimadoCrc: number | null;
+  moneda: 'CRC';
+  lineas: { tipo: 'pieza' | 'adicional'; codigo: string; montoCrc: number | null }[];
 }
 
 export interface EntradaCotizacion {
-  categoria: string
-  seleccion: Record<string, string>
+  categoria: string;
+  seleccion: Record<string, string>;
 }
 
 export class ErrorApi extends Error {
@@ -78,7 +79,10 @@ export async function enviarSolicitud(solicitud: SolicitudCotizacion): Promise<R
 }
 
 /** HU-18: pide el precio estimado al servidor. El cliente nunca calcula ni envía precios. */
-export async function cotizar(entrada: EntradaCotizacion, signal?: AbortSignal): Promise<Cotizacion> {
+export async function cotizar(
+  entrada: EntradaCotizacion,
+  signal?: AbortSignal,
+): Promise<Cotizacion> {
   let respuesta: Response;
   try {
     respuesta = await fetch(BASE + '/api/quotes', {

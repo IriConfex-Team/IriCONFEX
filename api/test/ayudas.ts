@@ -1,3 +1,4 @@
+
 import type { Dependencias } from '../src/contenedor.js';
 import type { DetalleError } from '../src/comun/errores.js';
 import { crearCotizacionesService } from '../src/modulos/cotizaciones/cotizaciones.servicio.js';

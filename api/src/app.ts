@@ -1,3 +1,4 @@
+
 import cors from 'cors';
 import express, { Router, type Express } from 'express';
 import swaggerUi from 'swagger-ui-express';
@@ -29,8 +30,18 @@ export function crearApp(dependencias: Dependencias, opciones: OpcionesApp = {})
   const api = Router();
   api.use('/health', crearSaludRouter(crearSaludController(dependencias.salud)));
   api.use('/categorias', crearCategoriasRouter(crearCategoriasController(dependencias.categorias)));
-  api.use('/solicitudes',crearSolicitudesRouter(crearSolicitudesController(dependencias.solicitudes), {limite: opciones.limiteSolicitudes,}),);
-  api.use('/quotes', crearCotizacionesRouter(crearCotizacionesController(dependencias.cotizaciones), { limite: opciones.limiteCotizaciones }),);
+  api.use(
+    '/solicitudes',
+    crearSolicitudesRouter(crearSolicitudesController(dependencias.solicitudes), {
+      limite: opciones.limiteSolicitudes,
+    }),
+  );
+  api.use(
+    '/quotes',
+    crearCotizacionesRouter(crearCotizacionesController(dependencias.cotizaciones), {
+      limite: opciones.limiteCotizaciones,
+    }),
+  );
   api.get('/openapi.json', (_req, res) => {
     res.json(documentoOpenApi);
   });

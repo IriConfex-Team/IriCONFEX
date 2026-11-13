@@ -94,10 +94,12 @@ function medir(svg: SVGSVGElement, urls: ReadonlySet<string>): Caja | null {
     if (!urls.has(grupo.dataset.capa ?? '') || typeof grupo.getBBox !== 'function') continue
     const b = grupo.getBBox()
     if (b.width === 0 && b.height === 0) continue
-    const y = b.y + Number(grupo.closest<SVGGElement>('[data-desplazamiento]')?.dataset.desplazamiento ?? 0)
+    const pieza = grupo.closest<SVGGElement>('[data-desplazamiento]')?.dataset
+    const x = b.x + Number(pieza?.desplazamientoX ?? 0)
+    const y = b.y + Number(pieza?.desplazamiento ?? 0)
     caja = caja
-      ? unirCajas(caja, { x: b.x, y, ancho: b.width, alto: b.height })
-      : { x: b.x, y, ancho: b.width, alto: b.height }
+      ? unirCajas(caja, { x, y, ancho: b.width, alto: b.height })
+      : { x, y, ancho: b.width, alto: b.height }
   }
   return caja
 }
@@ -144,7 +146,10 @@ export function IlustracionPrenda({
         const capas = await Promise.all(pieza.archivos.map(async (url) => ({ url, svg: await cargarCapa(url) })))
         const contenido = armarPieza(capas, `${prefijo}-m${i}`, pieza.ancho, pieza.alto)
         const atenuada = resaltar && !resaltar.has(pieza.id) ? ' opacity="0.25"' : ''
-        return `<g transform="translate(0 ${pieza.desplazamiento})" data-desplazamiento="${pieza.desplazamiento}"${atenuada}>${contenido}</g>`
+        return (
+          `<g transform="translate(${pieza.desplazamientoX} ${pieza.desplazamiento})" ` +
+          `data-desplazamiento="${pieza.desplazamiento}" data-desplazamiento-x="${pieza.desplazamientoX}"${atenuada}>${contenido}</g>`
+        )
       }),
     ).then((piezas) => {
       if (vigente) setMarcado({ clave, html: piezas.join('') })

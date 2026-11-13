@@ -120,6 +120,8 @@ const esquemaIlustracion = z.strictObject({
         alto: z.number().positive(),
         /** Cuánto baja la pieza dentro del conjunto. */
         desplazamiento: z.number().min(0).optional(),
+        /** Cuánto se corre a la derecha (p. ej. una prenda que se muestra al lado del conjunto). */
+        desplazamientoX: z.number().min(0).optional(),
         cuando: esquemaCondicion.optional(),
         capas: z.array(z.strictObject({ archivo: z.string().min(1), cuando: esquemaCondicion.optional() })).min(1),
       }),
@@ -183,7 +185,23 @@ const esquemaMedidas = z.strictObject({
 export const esquemaConfiguracion = z.strictObject({
   $schema: z.string().optional(),
   version: z.literal(1),
-  categoria: z.strictObject({ id: z.string().min(1), nombre: z.string().min(1) }),
+  categoria: z.strictObject({
+    id: z.string().min(1),
+    nombre: z.string().min(1),
+    /** Cómo se presenta en la lista de categorías (HU-01). */
+    tarjeta: z
+      .strictObject({
+        titulo: z.string().min(1),
+        descripcion: z.string().optional(),
+        /** Fotografía representativa; mientras no exista se usa `dibujo`. */
+        imagen: z.string().optional(),
+        /** La prenda dibujada con estas elecciones (y este color de tela) como imagen de la categoría. */
+        dibujo: z
+          .strictObject({ seleccion: z.record(z.string(), z.string()), color: z.string().optional() })
+          .optional(),
+      })
+      .optional(),
+  }),
   /** Texto del encabezado según la opción elegida en un paso, p. ej. «… para {opcion}». */
   encabezado: z.strictObject({ paso: z.string().min(1), plantilla: z.string().min(1) }).optional(),
   pasos: z.array(esquemaPaso).min(1),
@@ -292,6 +310,10 @@ function verificarReferencias(configuracion: ConfiguracionCategoria): string[] {
         }
       }
     })
+  }
+
+  for (const [paso, opcion] of Object.entries(configuracion.categoria.tarjeta?.dibujo?.seleccion ?? {})) {
+    revisarOpciones('categoría, dibujo de la tarjeta', paso, [opcion])
   }
 
   if (configuracion.encabezado) revisarOpciones('encabezado', configuracion.encabezado.paso, [])

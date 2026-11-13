@@ -1,3 +1,4 @@
+
 import type { PrismaClient } from '../generated/prisma/client.js';
 import type { ConfiguracionNegocio } from './comun/configuracion.js';
 import { crearCategoriasRepository } from './modulos/categorias/categorias.repositorio.js';
@@ -28,8 +29,8 @@ import {
 export interface Dependencias {
   salud: SaludService;
   categorias: CategoriasService;
-  solicitudes: SolicitudesService;
   cotizaciones: CotizacionesService;
+  solicitudes: SolicitudesService;
 }
 
 export interface OpcionesDependencias {
@@ -42,13 +43,15 @@ export function crearDependencias(
   prisma: PrismaClient,
   { version, configuracion, whatsappNegocio }: OpcionesDependencias,
 ): Dependencias {
-    const cotizaciones = crearCotizacionesService({
+  const cotizaciones = crearCotizacionesService({
     repositorio: crearCotizacionesRepository(prisma),
     revisarSeleccion: (entrada) => revisarSeleccionParaPrecio(configuracion, entrada),
   });
+
   return {
     salud: crearSaludService(crearSaludRepository(prisma), { version }),
-    categorias: crearCategoriasService(crearCategoriasRepository(prisma)), cotizaciones,
+    categorias: crearCategoriasService(crearCategoriasRepository(prisma)),
+    cotizaciones,
     solicitudes: crearSolicitudesService({
       repositorio: crearSolicitudesRepository(prisma),
       verificarReglas: (entrada) => verificarReglas(configuracion, entrada),
@@ -57,9 +60,9 @@ export function crearDependencias(
       version: versionDe(configuracion),
       precio: {
         calcular: async ({ categoria, seleccion }) =>
-          (await cotizaciones.cotizar({ categoria, seleccion }))
-        .precioEstimadoCrc,
+          (await cotizaciones.cotizar({ categoria, seleccion })).precioEstimadoCrc,
       },
     }),
   };
 }
+
