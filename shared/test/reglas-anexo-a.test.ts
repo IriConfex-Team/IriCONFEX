@@ -310,18 +310,18 @@ describe('R10 · cuello camisero solo con satín, satín alicrado o modal', () =
 describe('flujo completo', () => {
   it('una selección hecha paso a paso pasa la revalidación del servidor', () => {
     const s = recorrer(
-      ['perfil', 'nino'],
-      ['escote', 'camisero'],
+      ['perfil', 'hombre'],
+      ['escote', 'redondo'],
       ['manga', 'corta'],
-      ['es-nina', 'si'],
-      ['acabado-superior', 'vuelitos'],
       ['tipo-inferior', 'short'],
-      ['acabado-inferior', 'vuelitos'],
-      ['tela-superior', 'modal'],
+      ['tela-superior', 'brush'],
+      ['color-superior', 'catalogo'],
       ['tela-inferior', 'brush'],
+      ['color-inferior', 'catalogo'],
       ['modalidad-talla', 'universal'],
-      ['talla-superior', 'nino-6'],
-      ['talla-inferior', 'nino-8'],
+      ['grupo-talla', 'adulto'],
+      ['talla-superior', 'adulto-m'],
+      ['talla-inferior', 'adulto-m'],
     )
     expect(evaluarFlujo(configuracion, s).completo).toBe(true)
     expect(validarSeleccion(configuracion, s)).toEqual({ valida: true, errores: [] })

@@ -174,6 +174,18 @@
       ]
     },
     {
+      "id": "color-superior",
+      "nombre": "Color de la parte de arriba",
+      "nota": "Opcional. El color exacto está sujeto a la disponibilidad de la costurera.",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "catalogo", "nombre": "Color del catálogo" },{
+          "id": "otro-color",
+          "nombre": "Otro color"
+        }
+      ]
+    },
+    {
       "id": "tela-inferior",
       "nombre": "Tela de la parte de abajo",
       "presentacion": "lista",
@@ -185,6 +197,18 @@
         { "id": "resorte", "nombre": "Resorte", "descripcion": "Tejido acanalado muy elástico que se usa en puños, cuellos y pretinas para que ajusten sin apretar.", "imagen": "/telas/resorte.jpg" },
         { "id": "rib", "nombre": "Rib acanalado", "descripcion": "Punto con canales verticales, elástico y suave. Se ciñe al cuerpo, abriga moderadamente y luce moderno.", "imagen": "/telas/rib.jpg" },
         { "id": "modal", "nombre": "Modal", "descripcion": "Fibra ligera, sedosa y muy fresca, con excelente caída. Es transpirable e ideal para climas cálidos o para dormir.", "imagen": "/telas/modal.jpg" }
+      ]
+    },
+    {
+      "id": "color-inferior",
+      "nombre": "Color de la parte de abajo",
+      "nota": "Opcional. El color exacto está sujeto a la disponibilidad de la costurera.",
+      "presentacion": "tarjetas",
+      "opciones": [
+        { "id": "catalogo", "nombre": "Color del catálogo" },{
+          "id": "otro-color",
+          "nombre": "Otro color"
+        }
       ]
     },
     {
@@ -737,6 +761,13 @@
 
     {
       "tipo": "visibilidad",
+      "codigo": "R7",
+      "objetivo": { "paso": "color-inferior" },
+      "cuando": { "paso": "base", "en": ["dos-piezas"] }
+    },
+
+    {
+      "tipo": "visibilidad",
       "codigo": "A8.7",
       "objetivo": { "paso": "modalidad-talla", "opciones": ["medida"] },
       "cuando": { "paso": "perfil", "en": ["mujer", "hombre"] }
@@ -876,6 +907,7 @@
       { "titulo": "Parte superior", "pasos": ["escote", "manga", "botones", "largo", "aberturas", "acabado-superior"] },
       { "titulo": "Parte inferior", "pasos": ["tipo-inferior", "abertura-lateral", "acabado-inferior"] },
       { "titulo": "Telas", "pasos": ["tela-superior", "tela-inferior"] },
+      { "titulo": "Colores", "pasos": ["color-superior", "color-inferior"] },
       { "titulo": "Bata de salida", "pasos": ["bata-salida", "bata-salida-manga", "bata-salida-acabado"] },
       { "titulo": "Tallaje", "pasos": ["modalidad-talla", "grupo-talla", "talla-superior", "talla-inferior"] },
       { "titulo": "Entrega", "pasos": ["entrega"] }
