@@ -14,6 +14,8 @@ export const CONVENCIONES = {
   valorEnvio: 'envio', // hoy el catálogo solo ofrece «retiro»
 } as const;
 
+const PASOS_COLOR = new Set(['color-superior', 'color-inferior']);
+
 const UN_DIA_MS = 24 * 60 * 60 * 1000;
 
 export function desdeEsquema(s: SolicitudWeb): SolicitudEntrada {
@@ -59,6 +61,63 @@ function textoDeError(e: unknown): string {
   return 'Valor no válido';
 }
 
+function formatearColor(valor: string): string {
+  if (valor.startsWith('catálogo:')) {
+    return `${valor.slice('catálogo:'.length).trim()} (catálogo)`;
+  }
+  if (valor.startsWith('personalizado:')) {
+    const texto = valor.slice('personalizado:'.length).trim();
+    return texto ? `${texto} (personalizado)` : 'Sin preferencia de color';
+  }
+  return valor;
+}
+
+function validarColores(seleccion: Record<string, string>): string[] {
+  const errores: string[] = [];
+  for (const pasoId of PASOS_COLOR) {
+    const valor = seleccion[pasoId];
+    // Si no eligió color o quedó vacío (opcional / no aplica), es válido
+    if (valor === undefined || valor.trim() === '') continue;
+
+    const esCatalogo =
+      valor.startsWith('catálogo:') && valor.slice('catálogo:'.length).trim().length > 0;
+    const esPersonalizado =
+      valor.startsWith('personalizado:') && valor.slice('personalizado:'.length).trim().length <= 60;
+
+    if (!esCatalogo && !esPersonalizado) {
+      errores.push(`${pasoId}: el color elegido no tiene un formato válido`);
+    }
+  }
+  return errores;
+}
+
+/** Inyecta en memoria las opciones dinámicas de color elegidas para que `validarSeleccion` y el mensaje las reconozcan. */
+function configConColoresElegidos(
+  config: ConfiguracionNegocio,
+  seleccion: Record<string, string>,
+): ConfiguracionNegocio {
+  const c = config as unknown as {
+    pasos?: Array<{ id: string; opciones?: Array<{ id: string; nombre: string }> }>;
+  };
+  if (!Array.isArray(c.pasos)) return config;
+
+  const pasosActualizados = c.pasos.map((paso) => {
+    if (!PASOS_COLOR.has(paso.id)) return paso;
+    const valor = seleccion[paso.id];
+    if (valor === undefined || valor.trim() === '') return paso;
+
+    const yaExiste = paso.opciones?.some((o) => o.id === valor);
+    if (yaExiste) return paso;
+
+    return {
+      ...paso,
+      opciones: [...(paso.opciones ?? []), { id: valor, nombre: formatearColor(valor) }],
+    };
+  });
+
+  return { ...config, pasos: pasosActualizados } as unknown as ConfiguracionNegocio;
+}
+
 // Reglas del Anexo A (shared). Devuelve la lista de problemas; vacía si todo está bien.
 export async function verificarReglas(
   config: ConfiguracionNegocio,
@@ -67,9 +126,12 @@ export async function verificarReglas(
   if (entrada.categoria !== CONVENCIONES.categoriaSoportada) {
     return ['categoria: la categoría «' + entrada.categoria + '» no está disponible'];
   }
-  const seleccion = validarSeleccion(config, entrada.seleccion);
-  const medidas = validarMedidas(config, entrada.seleccion, entrada.medidas);
-  return [...seleccion.errores, ...medidas.errores].map(textoDeError);
+
+  const erroresColores = validarColores(entrada.seleccion);
+  const configEfectiva = configConColoresElegidos(config, entrada.seleccion);
+  const seleccion = validarSeleccion(configEfectiva, entrada.seleccion);
+  const medidas = validarMedidas(configEfectiva, entrada.seleccion, entrada.medidas);
+  return [...seleccion.errores.map(textoDeError), ...medidas.errores.map(textoDeError), ...erroresColores];
 }
 
 // --- Piezas del pijamas.json -------------------------------------------------------

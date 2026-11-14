@@ -18,6 +18,18 @@ export interface GrupoResumen {
   filas: Fila[]
 }
 
+function formatearColorResumen(valor?: string): string {
+  if (!valor) return 'Sin preferencia de color'
+  if (valor.startsWith('catálogo:')) {
+    return `${valor.replace('catálogo:', '').trim()} (catálogo)`
+  }
+  if (valor.startsWith('personalizado:')) {
+    const texto = valor.replace('personalizado:', '').trim()
+    return texto ? `${texto} (personalizado)` : 'Sin preferencia de color'
+  }
+  return valor
+}
+
 /** Agrupa los pasos respondidos según `resumen.secciones`; lo que no está en ninguna sección va al final. */
 function agrupar(
   configuracion: ConfiguracionCategoria,
@@ -25,12 +37,20 @@ function agrupar(
   onEditarPaso: (id: string) => void,
 ): GrupoResumen[] {
   const respondidos = estado.pasos.filter((e) => e.valor !== undefined)
-  const fila = (e: EstadoPaso): Fila => ({
-    id: e.paso.id,
-    etiqueta: e.paso.nombre,
-    valor: e.paso.opciones.find((o) => o.id === e.valor)?.nombre ?? '',
-    onCambiar: e.fijada ? undefined : () => onEditarPaso(e.paso.id),
-  })
+  const fila = (e: EstadoPaso): Fila => {
+    const esColor = e.paso.id === 'color-superior' || e.paso.id === 'color-inferior'
+    const valorMostrado = esColor
+      ? formatearColorResumen(e.valor)
+      : (e.paso.opciones.find((o) => o.id === e.valor)?.nombre ?? '')
+
+    return {
+      id: e.paso.id,
+      etiqueta: e.paso.nombre,
+      valor: valorMostrado,
+      onCambiar: e.fijada ? undefined : () => onEditarPaso(e.paso.id),
+    }
+  }
+
   const secciones = configuracion.resumen?.secciones ?? []
   const usados = new Set(secciones.flatMap((s) => s.pasos))
   const grupos = secciones

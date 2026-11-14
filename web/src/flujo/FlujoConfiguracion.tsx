@@ -1,3 +1,4 @@
+import { SelectorColorTela } from '../components/SelectorColorTela'
 import {
   camposQueAplican,
   elegir,
@@ -98,9 +99,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
   const [avisoEnvio, setAvisoEnvio] = useState<{ tipo: TipoAviso; texto: string } | null>(null)
   const [medidasEscritas, setMedidasEscritas] = useState<MedidasEscritas>({})
   const [intentoMedidas, setIntentoMedidas] = useState(false)
-  // HU-18: el precio lo calcula el servidor cada vez que cambia la selección (con una pequeña espera
-  // para no consultar en cada toque). Se guarda junto con la selección a la que pertenece: si el cliente
-  // ya cambió algo, el precio viejo no se muestra mientras llega el nuevo.
+  
   const claveSeleccion = JSON.stringify(seleccion)
   const [precio, setPrecio] = useState<{ clave: string; cotizacion: Cotizacion } | null>(null)
   
@@ -121,12 +120,11 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
       control.abort()
     }
   }, [onCotizar, configuracion, seleccion, claveSeleccion])
+  
   const cotizacion = precio?.clave === claveSeleccion ? precio.cotizacion : undefined
-  // undefined = no mostrar precio · null = «a confirmar» · número = precio estimado
   const precioEstimado =
     cotizacion === undefined || cotizacion.estado === 'incompleto' ? undefined : cotizacion.precioEstimadoCrc
 
-  // Cada paso, la pantalla de contacto y el resumen empiezan arriba, aunque el anterior se haya bajado.
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [pasoActualId, fase])
@@ -134,7 +132,6 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
   const negocio = configuracion.negocio
   const estado = useMemo(() => evaluarFlujo(configuracion, seleccion), [configuracion, seleccion])
 
-  // Los pasos visibles y, si la selección las pide, la pantalla de medidas antes del paso indicado.
   const conMedidas = pideMedidas(configuracion, seleccion)
   const recorrido = estado.pasos.map((e) => e.paso.id)
   if (conMedidas && configuracion.medidas) {
@@ -160,8 +157,23 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
     irA(pasoId)
   }
 
+  // ✅ INTERCEPCIÓN DE COLORES CORREGIDA
   const alElegir = (opcionId: string) => {
     if (!actual) return
+
+    // Si es un paso de color, guardamos el string (ej. "catálogo:Rosado Claro") 
+    // directamente en la selección sin pasar por el motor.
+    if (actual.paso.id === 'color-superior' || actual.paso.id === 'color-inferior') {
+      setSeleccion((prev) => ({
+        ...prev,
+        [actual.paso.id]: opcionId,
+      }))
+      setAvisoEnvio(null)
+      setAviso(null)
+      return
+    }
+
+    // Para los demás pasos, dejamos que el motor haga su trabajo
     const resultado = elegir(configuracion, seleccion, actual.paso.id, opcionId)
     setSeleccion(resultado.seleccion)
     setAvisoEnvio(null)
@@ -174,7 +186,6 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
   }
 
   const irAlResumen = () => {
-    // Si algo quedó sin responder (p. ej. tras cambiar una elección), se vuelve a ese paso.
     const pendiente = estado.pasos.find((e) => e.valor === undefined || e.conflictos.length > 0)
     if (pendiente) irA(pendiente.paso.id)
     else if (!medidasCompletas) {
@@ -194,7 +205,6 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
     }
     if (enMedidas && !medidasCompletas) {
       setIntentoMedidas(true)
-      // Lleva al primer campo con error, que puede estar fuera de la pantalla.
       requestAnimationFrame(() => document.querySelector<HTMLInputElement>('input[aria-invalid="true"]')?.focus())
       return
     }
@@ -207,7 +217,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
   }
 
   const alAtras = () => {
-    if (fase === 'enviada') return // ya se envió: volver permitiría duplicar la solicitud
+    if (fase === 'enviada') return
     if (fase === 'resumen') setFase('contacto')
     else if (fase === 'contacto') irA(recorrido[total - 1])
     else if (indice > 0) irA(recorrido[indice - 1])
@@ -262,7 +272,6 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
   }[fase]
   const numeroFase = { configurar: indice + 1, contacto: total + 1, resumen: total + 2, enviada: total + 2 }[fase]
 
-  // HU-14 CA6 y HU-21: las medidas también se revisan y se cambian desde el resumen.
   const medidasResumen: GrupoResumen | undefined =
     conMedidas && configuracion.medidas
       ? {
@@ -367,7 +376,6 @@ interface PasoProps {
   onElegir: (opcionId: string) => void
 }
 
-/** Las opciones del paso y, si la elegida lo pide, la información del local (HU-15, HU-16). */
 function Paso({ negocio, ...props }: PasoProps) {
   const { paso, fijada, valor } = props.estado
   const elegida = paso.opciones.find((o) => o.id === (fijada?.opcion ?? valor))
@@ -381,8 +389,8 @@ function Paso({ negocio, ...props }: PasoProps) {
 
 function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<PasoProps, 'negocio'>) {
   const { paso, fijada, opciones, valor } = estado
-
-  // Cómo quedaría la prenda con cada opción. Si ninguna cambia el dibujo (p. ej. la talla), no se muestran.
+  
+  // ✅ REGLAS DE HOOKS CORREGIDAS: Hooks van primero.
   const vistas = useMemo(() => {
     const porOpcion = new Map(opciones.map((o) => [o.id, ilustrarOpcion(configuracion, seleccion, paso.id, o.id)]))
     const primera = porOpcion.get(opciones[0]?.id)
@@ -390,6 +398,11 @@ function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<Pa
     return cambian ? porOpcion : null
   }, [configuracion, seleccion, paso.id, opciones])
   const vista = useEncuadreComun(paso.id, vistas)
+
+  // ✅ Retornos condicionales seguros (después de los hooks)
+  if (paso.id === "color-superior" || paso.id === "color-inferior") {
+    return <SelectorColorTela paso={paso} seleccion={seleccion} onSeleccionar={onElegir} />
+  }
 
   if (fijada) {
     const opcion = paso.opciones.find((o) => o.id === fijada.opcion)
@@ -414,8 +427,6 @@ function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<Pa
   }
 
   if (paso.presentacion === 'si-no') {
-    // Si la respuesta cambia el dibujo (p. ej. agregar una prenda), mientras no se responde se muestra el «sí»:
-    // así se entiende qué se está preguntando.
     const muestraElSi = valor === undefined && pasosQueDibujan(configuracion).has(paso.id)
     return (
       <>
@@ -423,7 +434,6 @@ function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<Pa
           ilustracion={
             muestraElSi ? ilustrarOpcion(configuracion, seleccion, paso.id, 'si') : ilustrar(configuracion, seleccion)
           }
-          // Recuadro ancho y bajo: con la proporción del recuadro, un conjunto ancho (pijama + bata) se ve grande.
           proporcion={1.8}
         />
         {muestraElSi && (
@@ -481,13 +491,8 @@ function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<Pa
   )
 }
 
-/** Proporción del área de ilustración de la tarjeta (ancho / alto). */
 const PROPORCION_TARJETA = 1.45
 
-/**
- * Acerca las miniaturas de un paso a lo que cambia entre sus opciones (p. ej. el escote), con el mismo encuadre
- * para todas las tarjetas, para que se puedan comparar. Se calcula con las capas que no son comunes a todas.
- */
 function useEncuadreComun(pasoId: string, vistas: Map<string, Ilustracion | null> | null) {
   const { clave, enfoque } = useMemo(() => {
     if (!vistas) return { clave: '', enfoque: undefined }
@@ -515,7 +520,6 @@ function useEncuadreComun(pasoId: string, vistas: Map<string, Ilustracion | null
     return mapa
   }, [vistas, clave])
 
-  // Solo cuando todas las tarjetas se midieron, para que no salte el encuadre mientras cargan.
   const completas = vistas !== null && enfoque !== undefined && medidas.clave === clave && medidas.cajas.size >= vistas.size
   const medidasValidas = completas ? [...medidas.cajas.values()].filter((c): c is Caja => c !== null) : []
   const caja = medidasValidas.length > 0 ? encuadrar(medidasValidas.reduce(unirCajas), PROPORCION_TARJETA) : null
@@ -529,11 +533,9 @@ interface MiniaturaProps {
   enfoque?: ReadonlySet<string>
   onMedir?: (caja: Caja | null) => void
   vista?: Caja | null
-  /** La foto llena el recuadro (lista) en lugar de ajustarse dentro. */
   cubrir?: boolean
 }
 
-/** Fotografía de la opción si la configuración la trae (HU-06 CA4); si no, la prenda dibujada con esa opción. */
 function Miniatura({ opcion, ilustracion, enfoque, onMedir, vista, cubrir = false }: MiniaturaProps) {
   if (opcion.imagen) {
     return (
@@ -556,7 +558,6 @@ function Miniatura({ opcion, ilustracion, enfoque, onMedir, vista, cubrir = fals
   )
 }
 
-/** Una elección posterior contradice otra anterior (HU-06 CA7): se explica y se ofrece cambiarla. */
 function Conflictos({
   conflictos,
   pasoActual,
