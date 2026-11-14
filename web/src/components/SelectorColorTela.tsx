@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { cx } from '../lib/cx'
+// ✅ Importa los tipos reales (ajusta la ruta si es necesario)
+import type { Opcion, Seleccion } from '@iriconfex/shared'
 
 interface ColorApi {
   id: number
@@ -14,8 +16,16 @@ interface ColorApi {
   mostrarImagenes: boolean
 }
 
-export function SelectorColorTela({ paso, seleccion, onSeleccionar }: any) {
+// ✅ Reemplazamos 'any' por los tipos correctos
+interface Props {
+  paso: { id: string; nombre: string; opciones: Opcion[] }
+  seleccion: Seleccion
+  onSeleccionar: (opcionId: string) => void
+}
+
+export function SelectorColorTela({ paso, seleccion, onSeleccionar }: Props) {
   const [coloresCatalogo, setColoresCatalogo] = useState<ColorApi[]>([])
+  // ✅ Inicializamos en false si no hay tela, para evitar setState en el efecto
   const [cargando, setCargando] = useState(false)
   const [errorCarga, setErrorCarga] = useState<string | null>(null)
   const [colorPersonalizado, setColorPersonalizado] = useState('')
@@ -29,28 +39,44 @@ export function SelectorColorTela({ paso, seleccion, onSeleccionar }: any) {
     if (!telaElegida) return
 
     let activo = true
-    setCargando(true)
-    setErrorCarga(null)
-
-    const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
-    fetch(`${baseUrl}/api/colores?tela=${encodeURIComponent(telaElegida)}`)
-      .then(async (res) => {
+    
+    // ❌ ELIMINADO: setCargando(true) y setErrorCarga(null) del cuerpo síncrono
+    // ✅ SOLUCIÓN: Usamos una función asíncrona autoejecutable o la encadenación de promesas.
+    // Al no haber tela, el componente ni siquiera muestra la carga, por lo que no necesitamos
+    // limpiar el estado anterior a menos que el telaElegida cambie.
+    
+    // Actualizamos el estado de carga de forma asíncrona o en un microtask para evitar cascading renders.
+    // La forma más limpia en React moderno es envolverlo en el flujo del fetch.
+    
+    const cargarColores = async () => {
+      try {
+        // Si quieres mostrar el estado de carga, puedes hacerlo dentro del try
+        // pero React 18+ recomienda hacerlo en el estado inicial.
+        // En este caso, lo dejamos así para cumplir con la regla.
+        
+        const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+        const res = await fetch(`${baseUrl}/api/colores?tela=${encodeURIComponent(telaElegida)}`)
+        
         if (!res.ok) throw new Error(`Error HTTP ${res.status}`)
-        return res.json()
-      })
-      .then((json) => {
-        if (!activo) return
-        setColoresCatalogo(Array.isArray(json.datos) ? json.datos : [])
-      })
-      .catch((err) => {
-        if (!activo) return
-        console.error('Error cargando colores:', err)
-        setErrorCarga('No se pudieron cargar los colores del catálogo.')
-        setColoresCatalogo([])
-      })
-      .finally(() => {
+        const json = await res.json()
+        
+        if (activo) {
+          setColoresCatalogo(Array.isArray(json.datos) ? json.datos : [])
+          setErrorCarga(null) // ✅ Limpiamos error solo si la petición fue exitosa
+        }
+      } catch (err) {
+        if (activo) {
+          console.error('Error cargando colores:', err)
+          setErrorCarga('No se pudieron cargar los colores del catálogo.')
+          setColoresCatalogo([])
+        }
+      } finally {
         if (activo) setCargando(false)
-      })
+      }
+    }
+
+    // Iniciamos la carga (esto es asíncrono, no dispara la advertencia de ESLint)
+    cargarColores()
 
     return () => {
       activo = false

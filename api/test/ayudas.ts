@@ -1,4 +1,3 @@
-
 import type { Dependencias } from '../src/contenedor.js';
 import type { DetalleError } from '../src/comun/errores.js';
 import { crearCotizacionesService } from '../src/modulos/cotizaciones/cotizaciones.servicio.js';
@@ -7,6 +6,8 @@ import { crearCategoriasService } from '../src/modulos/categorias/categorias.ser
 import { crearSaludService } from '../src/modulos/salud/salud.servicio.js';
 import type { RegistroSolicitud } from '../src/modulos/solicitudes/solicitudes.tipos.js';
 import { crearSolicitudesService } from '../src/modulos/solicitudes/solicitudes.servicio.js';
+// ✅ NUEVO: Importar el servicio de colores (verifica la ruta exacta en tu proyecto)
+import { crearColoresService } from '../src/modulos/colores/colores.servicio.js';
 import { catalogoDePrueba } from './catalogo-csv.js';
 
 export const CATEGORIAS_DE_PRUEBA: Categoria[] = [
@@ -90,6 +91,11 @@ export function dependenciasFalsas({
       configMensaje: CONFIG_MENSAJE_DE_PRUEBA,
       numeroWhatsapp: '83413594',
       version: 'test',
+    }),
+
+    // ✅ NUEVO: Instanciar el servicio de colores con su repositorio falso
+     colores: crearColoresService({
+      listarPorTela: async () => [], 
     }),
   };
 }
