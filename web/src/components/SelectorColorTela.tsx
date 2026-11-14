@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { cx } from '../lib/cx'
-// ✅ Importa los tipos reales (ajusta la ruta si es necesario)
 import type { Opcion, Seleccion } from '@iriconfex/shared'
 
 interface ColorApi {
@@ -16,7 +15,6 @@ interface ColorApi {
   mostrarImagenes: boolean
 }
 
-// ✅ Reemplazamos 'any' por los tipos correctos
 interface Props {
   paso: { id: string; nombre: string; opciones: Opcion[] }
   seleccion: Seleccion
@@ -25,13 +23,11 @@ interface Props {
 
 export function SelectorColorTela({ paso, seleccion, onSeleccionar }: Props) {
   const [coloresCatalogo, setColoresCatalogo] = useState<ColorApi[]>([])
-  // ✅ Inicializamos en false si no hay tela, para evitar setState en el efecto
   const [cargando, setCargando] = useState(false)
   const [errorCarga, setErrorCarga] = useState<string | null>(null)
   const [colorPersonalizado, setColorPersonalizado] = useState('')
   const [mostrarInput, setMostrarInput] = useState(false)
 
-  // Identifica la tela elegida en el paso anterior ('tela-superior' o 'tela-inferior')
   const idPasoTela = paso.id.replace('color', 'tela')
   const telaElegida = seleccion[idPasoTela]
 
@@ -39,21 +35,9 @@ export function SelectorColorTela({ paso, seleccion, onSeleccionar }: Props) {
     if (!telaElegida) return
 
     let activo = true
-    
-    // ❌ ELIMINADO: setCargando(true) y setErrorCarga(null) del cuerpo síncrono
-    // ✅ SOLUCIÓN: Usamos una función asíncrona autoejecutable o la encadenación de promesas.
-    // Al no haber tela, el componente ni siquiera muestra la carga, por lo que no necesitamos
-    // limpiar el estado anterior a menos que el telaElegida cambie.
-    
-    // Actualizamos el estado de carga de forma asíncrona o en un microtask para evitar cascading renders.
-    // La forma más limpia en React moderno es envolverlo en el flujo del fetch.
-    
+
     const cargarColores = async () => {
       try {
-        // Si quieres mostrar el estado de carga, puedes hacerlo dentro del try
-        // pero React 18+ recomienda hacerlo en el estado inicial.
-        // En este caso, lo dejamos así para cumplir con la regla.
-        
         const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
         const res = await fetch(`${baseUrl}/api/colores?tela=${encodeURIComponent(telaElegida)}`)
         
@@ -62,7 +46,7 @@ export function SelectorColorTela({ paso, seleccion, onSeleccionar }: Props) {
         
         if (activo) {
           setColoresCatalogo(Array.isArray(json.datos) ? json.datos : [])
-          setErrorCarga(null) // ✅ Limpiamos error solo si la petición fue exitosa
+          setErrorCarga(null)
         }
       } catch (err) {
         if (activo) {
@@ -75,7 +59,6 @@ export function SelectorColorTela({ paso, seleccion, onSeleccionar }: Props) {
       }
     }
 
-    // Iniciamos la carga (esto es asíncrono, no dispara la advertencia de ESLint)
     cargarColores()
 
     return () => {
@@ -109,13 +92,17 @@ export function SelectorColorTela({ paso, seleccion, onSeleccionar }: Props) {
         <p className="estilo-pequeno text-red-600">{errorCarga}</p>
       )}
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {/* ✅ Agregamos role="radiogroup" para que sea accesible */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3" role="radiogroup">
         {coloresCatalogo.map((color) => {
           const seleccionado = valorActual === `catálogo:${color.nombre}` && !mostrarInput
           return (
             <button
               key={color.id}
               type="button"
+              // ✅ Agregamos role y aria-checked
+              role="radio"
+              aria-checked={seleccionado}
               onClick={() => manejarSeleccionCatalogo(color)}
               className={cx(
                 'flex cursor-pointer flex-col items-center gap-2 rounded-tarjeta border p-3 transition-colors',
@@ -154,6 +141,9 @@ export function SelectorColorTela({ paso, seleccion, onSeleccionar }: Props) {
         {/* Opción fija "Otro color" (HU-12a CA1) */}
         <button
           type="button"
+          // ✅ Agregamos role y aria-checked
+          role="radio"
+          aria-checked={mostrarInput}
           onClick={() => {
             setMostrarInput(true)
             onSeleccionar(`personalizado:${colorPersonalizado}`)
