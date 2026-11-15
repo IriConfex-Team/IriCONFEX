@@ -49,21 +49,17 @@ import { PantallaMedidas, type MedidasEscritas } from './PantallaMedidas'
 import { PantallaResumen, type GrupoResumen } from './PantallaResumen'
 import { SolicitudEnviada } from './SolicitudEnviada'
 import { VistaPrenda } from './VistaPrenda'
+import { SelectorEntrega, esEntregaIncompleta } from '../components/ui/SelectorEntrega'
 
 export interface FlujoConfiguracionProps {
   configuracion: ConfiguracionCategoria
-  /** Envía la solicitud a la API (HU-22, HU-25). Sin valor, la solicitud queda lista pero no se envía. */
   onSolicitar?: (solicitud: SolicitudCotizacion) => Promise<RespuestaSolicitud | void>
-  /** Pide el precio estimado a la API (HU-18). Sin valor, no se muestra precio. */
   onCotizar?: (entrada: EntradaCotizacion, signal: AbortSignal) => Promise<Cotizacion>
-  /** «Atrás» en el primer paso: salir del flujo (p. ej. a la lista de categorías). */
   onSalir?: () => void
 }
 
-/** Después de los pasos de la configuración: datos de contacto (HU-19) y resumen con el aviso (HU-20, HU-21). */
 type Fase = 'configurar' | 'contacto' | 'resumen' | 'enviada'
 
-/** HU-22: texto para el cliente según lo que respondió la API. */
 function mensajeDeError(error: unknown): string {
   if (error instanceof ErrorApi) {
     if (error.codigo === 'DEMASIADAS_SOLICITUDES') {
@@ -77,13 +73,8 @@ function mensajeDeError(error: unknown): string {
   return 'No se pudo enviar la solicitud. Intenta de nuevo en unos minutos.'
 }
 
-/** Lugar de la pantalla de medidas propias (HU-14) en el recorrido; no es un paso de la configuración. */
 const PANTALLA_MEDIDAS = '#medidas'
 
-/**
- * Vista genérica del flujo (HU-23 CA2): muestra el siguiente paso visible, sus opciones válidas y las fijaciones.
- * No conoce ninguna prenda; todo sale de la configuración.
- */
 export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSalir }: FlujoConfiguracionProps) {
   const [seleccion, setSeleccion] = useState(() => iniciarSeleccion(configuracion))
   const [pasoActualId, setPasoActualId] = useState(configuracion.pasos[0].id)
@@ -111,9 +102,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
         .then((cotizacion) => {
           if (!control.signal.aborted) setPrecio({ clave: claveSeleccion, cotizacion })
         })
-        .catch(() => {
-          // Sin precio no pasa nada: la barra no lo muestra y la solicitud igual se puede enviar.
-        })
+        .catch(() => {})
     }, 250)
     return () => {
       clearTimeout(espera)
@@ -146,6 +135,9 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
   const medidasCompletas = !conMedidas || Object.keys(revisionMedidas.errores).length === 0
   const nombreDelPaso = (id: string) => configuracion.pasos.find((p) => p.id === id)?.nombre ?? id
 
+  // ✅ Validación de la entrega delegada a SelectorEntrega
+  const entregaIncompleta = actual?.paso.id === 'entrega' && esEntregaIncompleta(seleccion.entrega)
+
   const irA = (pasoId: string) => {
     setPasoActualId(pasoId)
     setAviso(null)
@@ -157,13 +149,14 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
     irA(pasoId)
   }
 
-  // ✅ INTERCEPCIÓN DE COLORES CORREGIDA
   const alElegir = (opcionId: string) => {
     if (!actual) return
 
-    // Si es un paso de color, guardamos el string (ej. "catálogo:Rosado Claro") 
-    // directamente en la selección sin pasar por el motor.
-    if (actual.paso.id === 'color-superior' || actual.paso.id === 'color-inferior') {
+    if (
+      actual.paso.id === 'color-superior' ||
+      actual.paso.id === 'color-inferior' ||
+      actual.paso.id === 'entrega'
+    ) {
       setSeleccion((prev) => ({
         ...prev,
         [actual.paso.id]: opcionId,
@@ -173,7 +166,6 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
       return
     }
 
-    // Para los demás pasos, dejamos que el motor haga su trabajo
     const resultado = elegir(configuracion, seleccion, actual.paso.id, opcionId)
     setSeleccion(resultado.seleccion)
     setAvisoEnvio(null)
@@ -260,7 +252,9 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
 
   const encabezado = configuracion.encabezado
   const puedeSeguir =
-    fase === 'contacto' || ((enMedidas || actual?.valor !== undefined) && estado.conflictos.length === 0)
+    fase === 'contacto' ||
+    ((enMedidas || actual?.valor !== undefined) && estado.conflictos.length === 0 && !entregaIncompleta)
+
   const parteActual = actual ? parteDelPaso(actual.paso, seleccion) : undefined
   const guiaActual = actual ? guiaDelPaso(actual.paso, seleccion, actual.opciones) : undefined
   const tituloPaso = enMedidas ? (configuracion.medidas?.titulo ?? '') : (actual?.paso.nombre ?? '')
@@ -357,7 +351,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
           className="sticky bottom-0"
           precioEstimado={precioEstimado}
           deshabilitada={!puedeSeguir}
-          ayuda={estado.conflictos.length > 0 ? 'Resuelve el aviso para continuar.' : undefined}
+          ayuda={estado.conflictos.length > 0 ? 'Resuelve el aviso para continuar.' : entregaIncompleta ? 'Completa la dirección de entrega.' : undefined}
           textoBoton={fase === 'contacto' ? 'Revisar' : 'Siguiente'}
           onSiguiente={alSiguiente}
         />
@@ -390,7 +384,6 @@ function Paso({ negocio, ...props }: PasoProps) {
 function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<PasoProps, 'negocio'>) {
   const { paso, fijada, opciones, valor } = estado
   
-  // ✅ REGLAS DE HOOKS CORREGIDAS: Hooks van primero.
   const vistas = useMemo(() => {
     const porOpcion = new Map(opciones.map((o) => [o.id, ilustrarOpcion(configuracion, seleccion, paso.id, o.id)]))
     const primera = porOpcion.get(opciones[0]?.id)
@@ -399,9 +392,12 @@ function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<Pa
   }, [configuracion, seleccion, paso.id, opciones])
   const vista = useEncuadreComun(paso.id, vistas)
 
-  // ✅ Retornos condicionales seguros (después de los hooks)
   if (paso.id === "color-superior" || paso.id === "color-inferior") {
     return <SelectorColorTela paso={paso} seleccion={seleccion} onSeleccionar={onElegir} />
+  }
+
+  if (paso.id === 'entrega') {
+    return <SelectorEntrega valor={seleccion.entrega} onElegir={onElegir} />
   }
 
   if (fijada) {

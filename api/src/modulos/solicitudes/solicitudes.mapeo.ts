@@ -9,19 +9,18 @@ export const CONVENCIONES = {
   categoriaSoportada: 'pijamas',
   pasoPerfil: 'perfil',
   pasoModalidadTalla: 'modalidad-talla',
-  valorPresencial: 'presencial', // AJUSTA al id real de la opción de modalidad-talla
+  valorPresencial: 'presencial',
   pasoEntrega: 'entrega',
-  valorEnvio: 'envio', // hoy el catálogo solo ofrece «retiro»
+  valorEnvio: 'envio',
 } as const;
 
 const PASOS_COLOR = new Set(['color-superior', 'color-inferior']);
-
+const LIMITE_SENAS_ENVIO = 200;
 const UN_DIA_MS = 24 * 60 * 60 * 1000;
 
 export function desdeEsquema(s: SolicitudWeb): SolicitudEntrada {
   const declarada = new Date(s.consentimiento.fecha);
   const ahora = new Date();
-  // Si la fecha del navegador es inválida o se aleja más de un día, manda la del servidor
   const confiable =
     !Number.isNaN(declarada.getTime()) && Math.abs(ahora.getTime() - declarada.getTime()) <= UN_DIA_MS;
   return {
@@ -35,7 +34,10 @@ export function desdeEsquema(s: SolicitudWeb): SolicitudEntrada {
 }
 
 export function entregaDe(entrada: SolicitudEntrada): 'RETIRO' | 'ENVIO' {
-  return entrada.seleccion[CONVENCIONES.pasoEntrega] === CONVENCIONES.valorEnvio ? 'ENVIO' : 'RETIRO';
+  const valor = entrada.seleccion[CONVENCIONES.pasoEntrega] ?? '';
+  return valor === CONVENCIONES.valorEnvio || valor.startsWith(`${CONVENCIONES.valorEnvio}:`)
+    ? 'ENVIO'
+    : 'RETIRO';
 }
 
 export function modalidadTallaDe(entrada: SolicitudEntrada): 'UNIVERSAL' | 'MEDIDA' | 'PRESENCIAL' {
@@ -46,7 +48,6 @@ export function modalidadTallaDe(entrada: SolicitudEntrada): 'UNIVERSAL' | 'MEDI
   return 'UNIVERSAL';
 }
 
-// ErrorSeleccion y ErrorMedidas traen un tipo y, según el caso, el paso o el campo
 function textoDeError(e: unknown): string {
   if (typeof e === 'string') return e;
   if (e && typeof e === 'object') {
@@ -72,11 +73,20 @@ function formatearColor(valor: string): string {
   return valor;
 }
 
+export function formatearEntrega(valor: string): string {
+  if (valor.startsWith('envio:')) {
+    const [provincia = '', canton = '', distrito = '', senas = ''] = valor
+      .slice('envio:'.length)
+      .split('|');
+    return `Envío a domicilio — ${provincia}, ${canton}, ${distrito}. Señas: ${senas} (El costo del envío lo confirma la costurera)`;
+  }
+  return valor;
+}
+
 function validarColores(seleccion: Record<string, string>): string[] {
   const errores: string[] = [];
   for (const pasoId of PASOS_COLOR) {
     const valor = seleccion[pasoId];
-    // Si no eligió color o quedó vacío (opcional / no aplica), es válido
     if (valor === undefined || valor.trim() === '') continue;
 
     const esCatalogo =
@@ -91,8 +101,33 @@ function validarColores(seleccion: Record<string, string>): string[] {
   return errores;
 }
 
-/** Inyecta en memoria las opciones dinámicas de color elegidas para que `validarSeleccion` y el mensaje las reconozcan. */
-function configConColoresElegidos(
+/** Valida HU-17: si eligió envío, exige provincia, cantón, distrito y señas <= 200 caracteres. */
+function validarEntrega(seleccion: Record<string, string>): string[] {
+  const valor = seleccion[CONVENCIONES.pasoEntrega];
+  if (!valor || valor === 'retiro') return [];
+
+  if (!valor.startsWith('envio:')) {
+    return ['entrega: modalidad de entrega no válida'];
+  }
+
+  const [provincia = '', canton = '', distrito = '', senas = ''] = valor
+    .slice('envio:'.length)
+    .split('|');
+
+  const errores: string[] = [];
+  if (!provincia.trim()) errores.push('entrega: selecciona una provincia');
+  if (!canton.trim()) errores.push('entrega: selecciona un cantón');
+  if (!distrito.trim()) errores.push('entrega: selecciona un distrito');
+  if (!senas.trim()) {
+    errores.push('entrega: indica las señas exactas para el envío');
+  } else if (senas.trim().length > LIMITE_SENAS_ENVIO) {
+    errores.push(`entrega: las señas deben tener ${LIMITE_SENAS_ENVIO} caracteres o menos`);
+  }
+  return errores;
+}
+
+/** Inyecta en memoria las opciones dinámicas (colores y destino de envío) para `validarSeleccion` y WhatsApp. */
+function configConOpcionesDinamicas(
   config: ConfiguracionNegocio,
   seleccion: Record<string, string>,
 ): ConfiguracionNegocio {
@@ -102,17 +137,28 @@ function configConColoresElegidos(
   if (!Array.isArray(c.pasos)) return config;
 
   const pasosActualizados = c.pasos.map((paso) => {
-    if (!PASOS_COLOR.has(paso.id)) return paso;
     const valor = seleccion[paso.id];
-    if (valor === undefined || valor.trim() === '') return paso;
+    if (!valor || valor.trim() === '') return paso;
 
-    const yaExiste = paso.opciones?.some((o) => o.id === valor);
-    if (yaExiste) return paso;
+    if (PASOS_COLOR.has(paso.id)) {
+      const yaExiste = paso.opciones?.some((o) => o.id === valor);
+      if (yaExiste) return paso;
+      return {
+        ...paso,
+        opciones: [...(paso.opciones ?? []), { id: valor, nombre: formatearColor(valor) }],
+      };
+    }
 
-    return {
-      ...paso,
-      opciones: [...(paso.opciones ?? []), { id: valor, nombre: formatearColor(valor) }],
-    };
+    if (paso.id === CONVENCIONES.pasoEntrega && valor.startsWith('envio:')) {
+      const yaExiste = paso.opciones?.some((o) => o.id === valor);
+      if (yaExiste) return paso;
+      return {
+        ...paso,
+        opciones: [...(paso.opciones ?? []), { id: valor, nombre: formatearEntrega(valor) }],
+      };
+    }
+
+    return paso;
   });
 
   return { ...config, pasos: pasosActualizados } as unknown as ConfiguracionNegocio;
@@ -128,15 +174,20 @@ export async function verificarReglas(
   }
 
   const erroresColores = validarColores(entrada.seleccion);
-  const configEfectiva = configConColoresElegidos(config, entrada.seleccion);
+  const erroresEntrega = validarEntrega(entrada.seleccion);
+  const configEfectiva = configConOpcionesDinamicas(config, entrada.seleccion);
   const seleccion = validarSeleccion(configEfectiva, entrada.seleccion);
   const medidas = validarMedidas(configEfectiva, entrada.seleccion, entrada.medidas);
-  return [...seleccion.errores.map(textoDeError), ...medidas.errores.map(textoDeError), ...erroresColores];
+  return [
+    ...seleccion.errores.map(textoDeError),
+    ...medidas.errores.map(textoDeError),
+    ...erroresColores,
+    ...erroresEntrega,
+  ];
 }
 
 // --- Piezas del pijamas.json -------------------------------------------------------
 
-// Busca en «medidas» cualquier objeto con id y nombre (por ejemplo, ancho-espalda → «Ancho de espalda»)
 function nombresDeMedidas(nodo: unknown, mapa: Record<string, string> = {}): Record<string, string> {
   if (Array.isArray(nodo)) {
     for (const elemento of nodo) nombresDeMedidas(elemento, mapa);

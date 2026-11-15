@@ -27,13 +27,13 @@ const mujerBlusa: [string, string][] = [
 ]
 
 describe('nada se elige solo antes de tiempo', () => {
-  it('al iniciar solo se fija lo que no depende de nada (la entrega, que tiene una sola opción)', () => {
-    expect(iniciarSeleccion(configuracion)).toEqual({ entrega: 'retiro' })
+  it('al iniciar no se fija nada porque ningún paso tiene opción única', () => {
+    expect(iniciarSeleccion(configuracion)).toEqual({})
   })
 
   it('tras elegir perfil y base, el escote y los acabados siguen sin elegir', () => {
     const s = recorrer(['perfil', 'mujer'], ['base', 'dos-piezas'])
-    expect(s).toEqual({ perfil: 'mujer', base: 'dos-piezas', entrega: 'retiro' })
+    expect(s).toEqual({ perfil: 'mujer', base: 'dos-piezas' })
   })
 
   it('una fijación que solo depende de lo ya elegido sí se aplica de inmediato', () => {
@@ -322,6 +322,7 @@ describe('flujo completo', () => {
       ['grupo-talla', 'adulto'],
       ['talla-superior', 'adulto-m'],
       ['talla-inferior', 'adulto-m'],
+      ['entrega', 'retiro'],
     )
     expect(evaluarFlujo(configuracion, s).completo).toBe(true)
     expect(validarSeleccion(configuracion, s)).toEqual({ valida: true, errores: [] })

@@ -4,6 +4,8 @@ import { Boton } from '../components/ui'
 import { formatColones } from '../lib/formatColones'
 import type { Contacto } from './PantallaContacto'
 import { avisoDatos, TEXTO_ACEPTACION } from './textosDatos'
+// ✅ NUEVO: Importamos la función desde el SelectorEntrega
+import { formatearValorEntrega } from '../components/ui/SelectorEntrega'
 
 interface Fila {
   id: string
@@ -37,19 +39,27 @@ function agrupar(
   onEditarPaso: (id: string) => void,
 ): GrupoResumen[] {
   const respondidos = estado.pasos.filter((e) => e.valor !== undefined)
-  const fila = (e: EstadoPaso): Fila => {
-    const esColor = e.paso.id === 'color-superior' || e.paso.id === 'color-inferior'
-    const valorMostrado = esColor
-      ? formatearColorResumen(e.valor)
-      : (e.paso.opciones.find((o) => o.id === e.valor)?.nombre ?? '')
 
-    return {
-      id: e.paso.id,
-      etiqueta: e.paso.nombre,
-      valor: valorMostrado,
-      onCambiar: e.fijada ? undefined : () => onEditarPaso(e.paso.id),
+  // ✅ NUEVO: Formatea el valor del paso. Si es envío, usa la función de SelectorEntrega.
+  const formatearValorPaso = (e: EstadoPaso): string => {
+    if (e.paso.id === 'entrega') {
+      const formateado = formatearValorEntrega(e.valor)
+      if (formateado) return formateado
     }
+    // Si es un color, formateamos su valor especial
+    if (e.paso.id === 'color-superior' || e.paso.id === 'color-inferior') {
+      return formatearColorResumen(e.valor)
+    }
+    // Para el resto, buscamos el nombre de la opción
+    return e.paso.opciones.find((o) => o.id === e.valor)?.nombre ?? e.valor ?? ''
   }
+
+  const fila = (e: EstadoPaso): Fila => ({
+    id: e.paso.id,
+    etiqueta: e.paso.nombre,
+    valor: formatearValorPaso(e),
+    onCambiar: e.fijada ? undefined : () => onEditarPaso(e.paso.id),
+  })
 
   const secciones = configuracion.resumen?.secciones ?? []
   const usados = new Set(secciones.flatMap((s) => s.pasos))

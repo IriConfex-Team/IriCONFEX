@@ -76,7 +76,19 @@ export function armarMensaje(config: ConfigMensaje, datos: DatosMensaje): string
       const elegida = entrada.seleccion[idPaso];
       if (elegida === undefined) continue; // no aplica: se omite (HU-22 CA2)
       const paso = pasosPorId.get(idPaso);
-      bloque.push(sinSignos(paso?.nombre ?? idPaso) + ': ' + formatearValorPaso(idPaso, elegida));
+
+      // ✅ NUEVO: Formateo especial para el paso de entrega (HU-17)
+      let textoValor: string;
+      if (idPaso === 'entrega' && elegida.startsWith('envio:')) {
+        const [provincia = '', canton = '', distrito = '', senas = ''] = elegida
+          .slice('envio:'.length)
+          .split('|');
+        textoValor = `Envío a domicilio — ${provincia}, ${canton}, ${distrito}. Señas: ${senas} (El costo del envío lo confirma la costurera)`;
+      } else {
+        textoValor = formatearValorPaso(idPaso, elegida);
+      }
+
+      bloque.push(sinSignos(paso?.nombre ?? idPaso) + ': ' + textoValor);
     }
     const llevaMedidas =
       lineasMedidas.length > 0 &&
@@ -97,7 +109,19 @@ export function armarMensaje(config: ConfigMensaje, datos: DatosMensaje): string
     if (pasosUsados.has(paso.id)) continue;
     const elegida = entrada.seleccion[paso.id];
     if (elegida === undefined) continue;
-    otrosBloque.push(sinSignos(paso.nombre) + ': ' + formatearValorPaso(paso.id, elegida));
+
+    // ✅ NUEVO: Por si el paso de entrega no está en las secciones, aplicamos el mismo formateo
+    let textoValor: string;
+    if (paso.id === 'entrega' && elegida.startsWith('envio:')) {
+      const [provincia = '', canton = '', distrito = '', senas = ''] = elegida
+        .slice('envio:'.length)
+        .split('|');
+      textoValor = `Envío a domicilio — ${provincia}, ${canton}, ${distrito}. Señas: ${senas} (El costo del envío lo confirma la costurera)`;
+    } else {
+      textoValor = formatearValorPaso(paso.id, elegida);
+    }
+
+    otrosBloque.push(sinSignos(paso.nombre) + ': ' + textoValor);
   }
   if (otrosBloque.length > 0) {
     lineas.push('*Colores*', ...otrosBloque);

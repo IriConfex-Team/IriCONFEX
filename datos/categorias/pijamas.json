@@ -474,11 +474,14 @@
       ]
     },
     {
-      "id": "entrega",
-      "nombre": "¿Cómo recibes tu pijama?",
-      "presentacion": "tarjetas",
-      "opciones": [{ "id": "retiro", "nombre": "Retiro en el local", "muestraInfoLocal": true }]
-    }
+          "id": "entrega",
+          "nombre": "¿Cómo recibes tu pijama?",
+          "presentacion": "tarjetas",
+          "opciones": [
+            { "id": "retiro", "nombre": "Retiro en el local", "muestraInfoLocal": true },
+            { "id": "envio", "nombre": "Envío a domicilio" }
+          ]
+        }
   ],
   "reglas": [
     {
