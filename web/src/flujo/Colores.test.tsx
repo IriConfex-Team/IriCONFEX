@@ -32,17 +32,26 @@ describe('HU-12a · color de cada pieza', () => {
 
     expect(screen.getByText('Color de la parte de arriba')).toBeInTheDocument()
     expect(screen.getByText('Parte de arriba')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Colores lisos' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Estampados' })).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: colores.otro.nombre })).toBeInTheDocument()
     // Sin elegir no se puede seguir.
     expect(screen.getByRole('button', { name: 'Siguiente' })).toBeDisabled()
+
+    // La tela tiene lisos y estampados: primero se elige cuál, y solo se muestran esos.
+    expect(screen.getByText(colores.tipos!.pregunta)).toBeInTheDocument()
+    expect(screen.queryByRole('radio', { name: 'Rosado Claro' })).toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: colores.tipos!.estampado }))
+    expect(screen.getByRole('heading', { name: 'Estampados' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Colores lisos' })).toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: colores.tipos!.liso }))
+    expect(screen.getByRole('heading', { name: 'Colores lisos' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Estampados' })).toBeNull()
 
     await userEvent.click(screen.getByRole('radio', { name: 'Rosado Claro' }))
     expect(screen.getByRole('radio', { name: 'Rosado Claro' })).toHaveAttribute('aria-checked', 'true')
     expect(screen.getByText('Elegiste: Rosado Claro')).toBeInTheDocument()
     expect(screen.getByText(colores.rotuloCatalogo, { exact: false })).toBeInTheDocument()
 
+    await userEvent.click(screen.getByRole('button', { name: colores.tipos!.estampado }))
     await userEvent.click(screen.getByRole('radio', { name: /^Flores/ }))
     expect(screen.getByText(colores.rotuloEstampado, { exact: false })).toBeInTheDocument()
 
@@ -51,6 +60,8 @@ describe('HU-12a · color de cada pieza', () => {
     expect(screen.getByText('Tela de la parte de abajo')).toBeInTheDocument()
     await elegirYSeguir('Satín')
     expect(screen.getByText('Color de la parte de abajo')).toBeInTheDocument()
+    // Satín solo tiene estampados: no se pregunta lisa o estampada.
+    expect(screen.queryByText(colores.tipos!.pregunta)).toBeNull()
     expect(screen.queryByRole('radio', { name: 'Rosado Claro' })).toBeNull()
     expect(screen.getByRole('radio', { name: 'ST-29' })).toBeInTheDocument()
   })
@@ -70,6 +81,7 @@ describe('HU-12a · color de cada pieza', () => {
     await userEvent.type(screen.getByLabelText(colores.otro.pregunta), '  vino ')
     await siguiente()
     await elegirYSeguir('Brush')
+    await userEvent.click(screen.getByRole('button', { name: colores.tipos!.liso }))
     await elegirYSeguir('Blanco Hueso')
     await elegirYSeguir('Talla estándar')
     await elegirYSeguir(/^Adulto/)

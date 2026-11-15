@@ -890,6 +890,7 @@
     "nota": "Son los colores del catálogo del proveedor. La costurera confirma por WhatsApp si están disponibles.",
     "rotuloCatalogo": "Color del catálogo, sujeto a disponibilidad.",
     "rotuloEstampado": "Estampado del catálogo: la costurera te enviará los diseños por WhatsApp para que elijas.",
+    "tipos": { "pregunta": "¿La quieres lisa o estampada?", "liso": "Lisa", "estampado": "Estampada" },
     "otro": {
       "nombre": "Otro color",
       "pregunta": "¿Qué color o estampado buscas?",

@@ -203,6 +203,8 @@ const esquemaColores = z.strictObject({
   nota: z.string().optional(),
   rotuloCatalogo: z.string().min(1),
   rotuloEstampado: z.string().min(1),
+  /** Si la tela tiene lisos y estampados, primero se pregunta cuál de los dos (sin `tono` = estampado). */
+  tipos: z.strictObject({ pregunta: z.string().min(1), liso: z.string().min(1), estampado: z.string().min(1) }).optional(),
   otro: z.strictObject({
     nombre: z.string().min(1),
     pregunta: z.string().min(1),

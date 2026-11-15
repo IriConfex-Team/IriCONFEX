@@ -1,7 +1,7 @@
 import { coloresDeLaTela, type ColorCatalogo, type ColorElegido, type ConfiguracionCategoria, type PasoConColor } from '@iriconfex/shared'
-import { useId, type CSSProperties, type ReactNode } from 'react'
+import { useId, useState, type CSSProperties, type ReactNode } from 'react'
 import iconoCheck from '../assets/icons/check.svg'
-import { AvisoEnLinea, CampoMedida } from '../components/ui'
+import { AvisoEnLinea, CampoMedida, ChipSeleccion } from '../components/ui'
 import { cx } from '../lib/cx'
 
 export interface PantallaColorProps {
@@ -20,10 +20,15 @@ export interface PantallaColorProps {
  */
 export function PantallaColor({ configuracion, pedido, elegido, onElegir, mostrarErrores }: PantallaColorProps) {
   const colores = configuracion.colores
+  const todos = coloresDeLaTela(configuracion, pedido.tela)
+  const elegidoDelCatalogo = elegido && 'catalogo' in elegido ? todos.flatMap((g) => g.colores).find((c) => c.id === elegido.catalogo) : undefined
+  // Si la tela tiene lisos y estampados, primero se elige cuál (lo ya elegido define el tipo inicial).
+  const [tipo, setTipo] = useState<Tipo | undefined>(elegidoDelCatalogo && tipoDe(elegidoDelCatalogo))
   if (!colores) return null
   const catalogo = colores.porTela[pedido.tela]
-  const grupos = coloresDeLaTela(configuracion, pedido.tela)
-  const elegidoDelCatalogo = elegido && 'catalogo' in elegido ? grupos.flatMap((g) => g.colores).find((c) => c.id === elegido.catalogo) : undefined
+  const tiposDeLaTela = new Set(todos.flatMap((g) => g.colores.map(tipoDe)))
+  const preguntaTipo = colores.tipos && tiposDeLaTela.size > 1 ? colores.tipos : undefined
+  const grupos = preguntaTipo ? (tipo ? todos.filter((g) => g.colores.some((c) => tipoDe(c) === tipo)) : []) : todos
   const otro = elegido && 'otro' in elegido ? elegido.otro : undefined
 
   // Lo elegido del catálogo se confirma arriba (la lista ocupa varias pantallas); el rótulo de «otro» va junto a su campo.
@@ -38,6 +43,18 @@ export function PantallaColor({ configuracion, pedido, elegido, onElegir, mostra
           <span className="block estilo-cuerpo-fuerte">Elegiste: {elegidoDelCatalogo.nombre}</span>
           {rotuloCatalogo}
         </Rotulo>
+      )}
+      {preguntaTipo && (
+        <section className="flex flex-col gap-3">
+          <h2 className="m-0 estilo-titulo-3 text-texto">{preguntaTipo.pregunta}</h2>
+          <div className="flex gap-3">
+            {(['liso', 'estampado'] as const).map((t) => (
+              <ChipSeleccion key={t} seleccionado={tipo === t} onClick={() => setTipo(t)} className="flex-1">
+                {preguntaTipo[t]}
+              </ChipSeleccion>
+            ))}
+          </div>
+        </section>
       )}
       {grupos.map((grupo) => (
         <Grupo key={grupo.titulo} titulo={grupo.titulo} etiqueta={`${pedido.nombre}: ${grupo.titulo.toLowerCase()}`}>
@@ -87,6 +104,9 @@ export function PantallaColor({ configuracion, pedido, elegido, onElegir, mostra
     </>
   )
 }
+
+type Tipo = 'liso' | 'estampado'
+const tipoDe = (color: ColorCatalogo): Tipo => (color.tono ? 'liso' : 'estampado')
 
 function Rotulo({ children }: { children: ReactNode }) {
   return (

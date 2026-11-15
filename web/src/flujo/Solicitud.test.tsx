@@ -25,6 +25,7 @@ async function hastaContacto() {
   await elegirYSeguir('Short corto')
   await siguiente() // acabado inferior único
   await elegirYSeguir('Brush')
+  await userEvent.click(screen.getByRole('button', { name: 'Lisa' })) // brush: lisa o estampada
   await elegirYSeguir('Rosado Claro') // color de la tela
   await elegirYSeguir('Modal')
   await elegirYSeguir('Charcoal') // color de la tela
@@ -150,8 +151,10 @@ describe('información del local (HU-03, HU-15, HU-16)', () => {
     await elegirYSeguir('Short corto')
     await siguiente()
     await elegirYSeguir('Brush')
+    await userEvent.click(screen.getByRole('button', { name: 'Lisa' })) // brush: lisa o estampada
     await elegirYSeguir('Rosado Claro') // color de la tela
     await elegirYSeguir('Brush')
+    await userEvent.click(screen.getByRole('button', { name: 'Lisa' })) // brush: lisa o estampada
     await elegirYSeguir('Rosado Claro') // color de la tela
     await userEvent.click(screen.getByRole('radio', { name: 'Medición presencial' }))
     expect(screen.getByRole('link', { name: negocio.direccion })).toBeInTheDocument()
