@@ -7,7 +7,7 @@ import { avisoDatos, TEXTO_ACEPTACION } from './textosDatos'
 // ✅ NUEVO: Importamos la función desde el SelectorEntrega
 import { formatearValorEntrega } from '../components/ui/SelectorEntrega'
 
-interface Fila {
+export interface FilaResumen {
   id: string
   etiqueta: string
   valor: string
@@ -17,26 +17,17 @@ interface Fila {
 
 export interface GrupoResumen {
   titulo: string
-  filas: Fila[]
+  filas: FilaResumen[]
 }
 
-function formatearColorResumen(valor?: string): string {
-  if (!valor) return 'Sin preferencia de color'
-  if (valor.startsWith('catálogo:')) {
-    return `${valor.replace('catálogo:', '').trim()} (catálogo)`
-  }
-  if (valor.startsWith('personalizado:')) {
-    const texto = valor.replace('personalizado:', '').trim()
-    return texto ? `${texto} (personalizado)` : 'Sin preferencia de color'
-  }
-  return valor
-}
+type Fila = FilaResumen
 
 /** Agrupa los pasos respondidos según `resumen.secciones`; lo que no está en ninguna sección va al final. */
 function agrupar(
   configuracion: ConfiguracionCategoria,
   estado: EstadoFlujo,
   onEditarPaso: (id: string) => void,
+  despuesDe: Readonly<Record<string, FilaResumen[]>> = {},
 ): GrupoResumen[] {
   const respondidos = estado.pasos.filter((e) => e.valor !== undefined)
 
@@ -66,10 +57,10 @@ function agrupar(
   const grupos = secciones
     .map((s) => ({
       titulo: s.titulo,
-      filas: s.pasos.flatMap((id) => respondidos.filter((e) => e.paso.id === id)).map(fila),
+      filas: s.pasos.flatMap((id) => respondidos.filter((e) => e.paso.id === id)).flatMap((e) => [fila(e), ...(despuesDe[e.paso.id] ?? [])]),
     }))
     .filter((g) => g.filas.length > 0)
-  const otros = respondidos.filter((e) => !usados.has(e.paso.id)).map(fila)
+  const otros = respondidos.filter((e) => !usados.has(e.paso.id)).flatMap((e) => [fila(e), ...(despuesDe[e.paso.id] ?? [])])
   return otros.length > 0 ? [...grupos, { titulo: 'Otros detalles', filas: otros }] : grupos
 }
 
@@ -107,6 +98,8 @@ export interface PantallaResumenProps {
   contacto: Contacto
   /** Medidas propias (HU-14), después de las elecciones. */
   medidas?: GrupoResumen
+  /** Filas que van justo después de la de un paso (p. ej. el color de una tela, HU-12a). */
+  despuesDe?: Readonly<Record<string, FilaResumen[]>>
   negocio?: Negocio
   /** Precio estimado calculado en el servidor (HU-18). `null` o sin valor: a confirmar por la costurera. */
   precio?: number | null
@@ -124,6 +117,7 @@ export function PantallaResumen({
   estado,
   contacto,
   medidas,
+  despuesDe,
   negocio,
   precio,
   aceptado,
@@ -143,7 +137,7 @@ export function PantallaResumen({
   return (
     <>
       <Grupo titulo="Tus datos" filas={datos} />
-      {agrupar(configuracion, estado, onEditarPaso).map((g) => (
+      {agrupar(configuracion, estado, onEditarPaso, despuesDe).map((g) => (
         <Grupo key={g.titulo} titulo={g.titulo} filas={g.filas} />
       ))}
       {medidas && medidas.filas.length > 0 && <Grupo titulo={medidas.titulo} filas={medidas.filas} />}

@@ -1,6 +1,7 @@
 import { SelectorColorTela } from '../components/SelectorColorTela'
 import {
   camposQueAplican,
+  coloresVigentes,
   elegir,
   evaluarFlujo,
   formatoNumero,
@@ -9,13 +10,18 @@ import {
   ilustrarOpcion,
   iniciarSeleccion,
   mismaIlustracion,
+  nombreDelColor,
   normalizarTelefono,
   parteDelPaso,
+  pasosConColor,
   pasosQueDibujan,
   pideMedidas,
   revisarMedidasEscritas,
   textoEncabezado,
+  tonosPorPieza,
+  validarColores,
   validarContacto,
+  type ColorElegido,
   type ConfiguracionCategoria,
   type Conflicto,
   type EstadoPaso,
@@ -44,9 +50,10 @@ import { encuadrar, unirCajas, type Caja } from './encuadre'
 import { EncabezadoParte, GuiaDeOpciones } from './GuiasDelPaso'
 import { IlustracionPrenda } from './IlustracionPrenda'
 import { HojaInfoLocal, TarjetaInfoLocal } from './InfoLocal'
+import { PantallaColor } from './PantallaColor'
 import { PantallaContacto, type Contacto } from './PantallaContacto'
 import { PantallaMedidas, type MedidasEscritas } from './PantallaMedidas'
-import { PantallaResumen, type GrupoResumen } from './PantallaResumen'
+import { PantallaResumen, type FilaResumen, type GrupoResumen } from './PantallaResumen'
 import { SolicitudEnviada } from './SolicitudEnviada'
 import { VistaPrenda } from './VistaPrenda'
 import { SelectorEntrega, esEntregaIncompleta } from '../components/ui/SelectorEntrega'
@@ -74,6 +81,8 @@ function mensajeDeError(error: unknown): string {
 }
 
 const PANTALLA_MEDIDAS = '#medidas'
+/** Pantalla del color de una tela (HU-12a), justo después del paso de esa tela: «#color:<paso>». */
+const PANTALLA_COLOR = '#color:'
 
 export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSalir }: FlujoConfiguracionProps) {
   const [seleccion, setSeleccion] = useState(() => iniciarSeleccion(configuracion))
@@ -90,7 +99,11 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
   const [avisoEnvio, setAvisoEnvio] = useState<{ tipo: TipoAviso; texto: string } | null>(null)
   const [medidasEscritas, setMedidasEscritas] = useState<MedidasEscritas>({})
   const [intentoMedidas, setIntentoMedidas] = useState(false)
-  
+  const [coloresElegidos, setColoresElegidos] = useState<Record<string, ColorElegido>>({})
+  const [intentoColor, setIntentoColor] = useState(false)
+  // HU-18: el precio lo calcula el servidor cada vez que cambia la selección (con una pequeña espera
+  // para no consultar en cada toque). Se guarda junto con la selección a la que pertenece: si el cliente
+  // ya cambió algo, el precio viejo no se muestra mientras llega el nuevo.
   const claveSeleccion = JSON.stringify(seleccion)
   const [precio, setPrecio] = useState<{ clave: string; cotizacion: Cotizacion } | null>(null)
   
@@ -127,12 +140,21 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
     const antes = recorrido.indexOf(configuracion.medidas.antesDe)
     recorrido.splice(antes < 0 ? recorrido.length : antes, 0, PANTALLA_MEDIDAS)
   }
+  // Y el color de cada tela ya elegida, después de su paso (HU-12a).
+  const pedidosDeColor = pasosConColor(configuracion, seleccion)
+  for (const pedido of pedidosDeColor) recorrido.splice(recorrido.indexOf(pedido.paso) + 1, 0, PANTALLA_COLOR + pedido.paso)
   const indice = Math.max(0, recorrido.indexOf(pasoActualId))
   const enMedidas = recorrido[indice] === PANTALLA_MEDIDAS
+  const pedidoActual = pedidosDeColor.find((p) => PANTALLA_COLOR + p.paso === recorrido[indice])
   const actual = estado.pasos.find((e) => e.paso.id === recorrido[indice])
   const total = recorrido.length
   const revisionMedidas = revisarMedidasEscritas(configuracion, seleccion, medidasEscritas)
   const medidasCompletas = !conMedidas || Object.keys(revisionMedidas.errores).length === 0
+  // Si se cambió la tela, el color del catálogo anterior ya no cuenta.
+  const colores = coloresVigentes(configuracion, seleccion, coloresElegidos)
+  const erroresColor = validarColores(configuracion, seleccion, colores).errores
+  const colorPendiente = (paso: string) => erroresColor.some((e) => e.paso === paso)
+  const tonos = tonosPorPieza(configuracion, seleccion, colores)
   const nombreDelPaso = (id: string) => configuracion.pasos.find((p) => p.id === id)?.nombre ?? id
 
   // ✅ Validación de la entrega delegada a SelectorEntrega
@@ -179,8 +201,12 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
 
   const irAlResumen = () => {
     const pendiente = estado.pasos.find((e) => e.valor === undefined || e.conflictos.length > 0)
+    const sinColor = erroresColor[0]?.paso
     if (pendiente) irA(pendiente.paso.id)
-    else if (!medidasCompletas) {
+    else if (sinColor) {
+      setIntentoColor(true)
+      irA(PANTALLA_COLOR + sinColor)
+    } else if (!medidasCompletas) {
       setIntentoMedidas(true)
       irA(PANTALLA_MEDIDAS)
     } else {
@@ -198,6 +224,10 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
     if (enMedidas && !medidasCompletas) {
       setIntentoMedidas(true)
       requestAnimationFrame(() => document.querySelector<HTMLInputElement>('input[aria-invalid="true"]')?.focus())
+      return
+    }
+    if (pedidoActual && colorPendiente(pedidoActual.paso)) {
+      setIntentoColor(true)
       return
     }
     const siguiente = recorrido[indice + 1]
@@ -221,6 +251,11 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
       categoria: configuracion.categoria.id,
       seleccion,
       ...(conMedidas && { medidas: revisionMedidas.medidas }),
+      ...(pedidosDeColor.length > 0 && {
+        colores: Object.fromEntries(
+          Object.entries(colores).map(([paso, color]) => [paso, 'otro' in color ? { otro: color.otro.trim() } : color]),
+        ),
+      }),
       contacto: { nombre: contacto.nombre.trim(), telefono: normalizarTelefono(contacto.telefono) },
       consentimiento: { aceptado: true, fecha: new Date().toISOString() },
     }
@@ -251,13 +286,19 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
   }
 
   const encabezado = configuracion.encabezado
+  const colorActual = pedidoActual && colores[pedidoActual.paso]
   const puedeSeguir =
-    fase === 'contacto' ||
-    ((enMedidas || actual?.valor !== undefined) && estado.conflictos.length === 0 && !entregaIncompleta)
+    ((enMedidas || (pedidoActual ? colorActual !== undefined : actual?.valor !== undefined)) &&
+      estado.conflictos.length === 0 &&
+      !entregaIncompleta)
 
-  const parteActual = actual ? parteDelPaso(actual.paso, seleccion) : undefined
+  // En la pantalla del color, la parte es la de su tela.
+  const pasoDeLaParte = actual?.paso ?? configuracion.pasos.find((p) => p.id === pedidoActual?.paso)
+  const parteActual = pasoDeLaParte ? parteDelPaso(pasoDeLaParte, seleccion) : undefined
   const guiaActual = actual ? guiaDelPaso(actual.paso, seleccion, actual.opciones) : undefined
-  const tituloPaso = enMedidas ? (configuracion.medidas?.titulo ?? '') : (actual?.paso.nombre ?? '')
+  const tituloPaso = enMedidas
+    ? (configuracion.medidas?.titulo ?? '')
+    : (pedidoActual?.nombre ?? actual?.paso.nombre ?? '')
   const tituloFase = {
     configurar: tituloPaso,
     contacto: 'Tus datos',
@@ -281,6 +322,21 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
         }
       : undefined
 
+  // HU-12a y HU-21: el color de cada tela, debajo de la tela en el resumen.
+  const coloresResumen: Record<string, FilaResumen[]> = Object.fromEntries(
+    pedidosDeColor.flatMap((pedido) => {
+      const color = colores[pedido.paso]
+      if (!color) return []
+      const fila: FilaResumen = {
+        id: PANTALLA_COLOR + pedido.paso,
+        etiqueta: pedido.nombre,
+        valor: nombreDelColor(configuracion, pedido.tela, color),
+        onCambiar: () => editarDesdeResumen(PANTALLA_COLOR + pedido.paso),
+      }
+      return [[pedido.paso, [fila]]]
+    }),
+  )
+
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-md flex-col bg-fondo">
       <EncabezadoFlujo
@@ -296,12 +352,13 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
       <main className="flex flex-1 flex-col gap-4 px-4 py-6">
         {fase === 'resumen' && (
           <>
-            <VistaPrenda ilustracion={ilustrar(configuracion, seleccion)} grande />
+            <VistaPrenda ilustracion={ilustrar(configuracion, seleccion)} tonos={tonos} grande />
             <PantallaResumen
               configuracion={configuracion}
               estado={estado}
               contacto={contacto}
               medidas={medidasResumen}
+              despuesDe={coloresResumen}
               negocio={negocio}
               precio={precioEstimado}
               aceptado={aceptado}
@@ -320,7 +377,7 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
         {fase === 'enviada' && respuesta && <SolicitudEnviada respuesta={respuesta} />}
         {fase === 'configurar' && (
           <>
-            {parteActual && <EncabezadoParte parte={parteActual} ilustracion={ilustrar(configuracion, seleccion)} />}
+            {parteActual && <EncabezadoParte parte={parteActual} ilustracion={ilustrar(configuracion, seleccion)} tonos={tonos} />}
             {aviso && <AvisoEnLinea tipo="aviso">{aviso}</AvisoEnLinea>}
             <Conflictos conflictos={estado.conflictos} pasoActual={recorrido[indice]} nombreDelPaso={nombreDelPaso} onIr={irA} />
             {enMedidas && (
@@ -332,12 +389,29 @@ export function FlujoConfiguracion({ configuracion, onSolicitar, onCotizar, onSa
                 mostrarErrores={intentoMedidas}
               />
             )}
+            {pedidoActual && (
+              <PantallaColor
+                key={pedidoActual.paso}
+                configuracion={configuracion}
+                pedido={pedidoActual}
+                elegido={colorActual}
+                onElegir={(color) => setColoresElegidos((previos) => ({ ...previos, [pedidoActual.paso]: color }))}
+                mostrarErrores={intentoColor}
+              />
+            )}
             {actual?.paso.nota && <AvisoEnLinea>{actual.paso.nota}</AvisoEnLinea>}
             {actual && (
-              <Paso configuracion={configuracion} seleccion={seleccion} estado={actual} negocio={negocio} onElegir={alElegir} />
+              <Paso
+                configuracion={configuracion}
+                seleccion={seleccion}
+                estado={actual}
+                negocio={negocio}
+                tonos={tonos}
+                onElegir={alElegir}
+              />
             )}
             {actual && guiaActual && <GuiaDeOpciones guia={guiaActual} elegida={actual.fijada?.opcion ?? actual.valor} />}
-            {vieneDelResumen && estado.completo && medidasCompletas && (
+            {vieneDelResumen && estado.completo && medidasCompletas && erroresColor.length === 0 && (
               <Boton tipo="secundario" onClick={irAlResumen}>
                 Volver al resumen
               </Boton>
@@ -367,6 +441,8 @@ interface PasoProps {
   seleccion: Seleccion
   estado: EstadoPaso
   negocio?: Negocio
+  /** Color de cada pieza según su tela (HU-12b). */
+  tonos?: Readonly<Record<string, string>>
   onElegir: (opcionId: string) => void
 }
 
@@ -381,7 +457,7 @@ function Paso({ negocio, ...props }: PasoProps) {
   )
 }
 
-function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<PasoProps, 'negocio'>) {
+function OpcionesDelPaso({ configuracion, seleccion, estado, tonos, onElegir }: Omit<PasoProps, 'negocio'>) {
   const { paso, fijada, opciones, valor } = estado
   
   const vistas = useMemo(() => {
@@ -431,6 +507,7 @@ function OpcionesDelPaso({ configuracion, seleccion, estado, onElegir }: Omit<Pa
             muestraElSi ? ilustrarOpcion(configuracion, seleccion, paso.id, 'si') : ilustrar(configuracion, seleccion)
           }
           proporcion={1.8}
+          tonos={tonos}
         />
         {muestraElSi && (
           <p className="m-0 -mt-2 text-center estilo-pequeno text-texto-secundario">Así se vería si eliges «Sí».</p>

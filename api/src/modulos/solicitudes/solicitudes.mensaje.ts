@@ -1,3 +1,4 @@
+import type { ColorElegido } from '@iriconfex/shared';
 import { formatearTelefono } from '../../comun/whatsapp.js';
 import type { SolicitudEntrada } from './solicitudes.tipos.js';
 
@@ -6,6 +7,11 @@ export interface ConfigMensaje {
   secciones: { titulo: string; pasos: string[] }[];
   pasoMedidas?: string; // las medidas se muestran en la sección que contiene este paso
   nombresMedida?: Record<string, string>;
+  /** Pasos de tela con color (HU-12a) y cómo se nombra el color elegido. */
+  colores?: {
+    pasos: { paso: string; nombre: string }[];
+    nombre: (tela: string, elegido: ColorElegido) => string;
+  };
 }
 
 export interface DatosMensaje {
@@ -77,18 +83,20 @@ export function armarMensaje(config: ConfigMensaje, datos: DatosMensaje): string
       if (elegida === undefined) continue; // no aplica: se omite (HU-22 CA2)
       const paso = pasosPorId.get(idPaso);
 
-      // ✅ NUEVO: Formateo especial para el paso de entrega (HU-17)
-      let textoValor: string;
+      const opcion = paso?.opciones.find((o) => o.id === elegida);
+      let textoValor = opcion?.nombre ?? elegida;
       if (idPaso === 'entrega' && elegida.startsWith('envio:')) {
         const [provincia = '', canton = '', distrito = '', senas = ''] = elegida
           .slice('envio:'.length)
           .split('|');
         textoValor = `Envío a domicilio — ${provincia}, ${canton}, ${distrito}. Señas: ${senas} (El costo del envío lo confirma la costurera)`;
-      } else {
-        textoValor = formatearValorPaso(idPaso, elegida);
       }
-
       bloque.push(sinSignos(paso?.nombre ?? idPaso) + ': ' + textoValor);
+      const color = entrada.colores?.[idPaso];
+      const pasoColor = config.colores?.pasos.find((p) => p.paso === idPaso);
+      if (color && pasoColor && config.colores) {
+        bloque.push(pasoColor.nombre + ': ' + config.colores.nombre(elegida, color));
+      }
     }
     const llevaMedidas =
       lineasMedidas.length > 0 &&

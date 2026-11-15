@@ -46,9 +46,16 @@ export function SelectorEntrega({ valor, onElegir }: SelectorEntregaProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Tarjetas de modalidad (HU-16 / HU-17) */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div
+        role="radiogroup"
+        aria-label="Modalidad de entrega"
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+      >
         <button
           type="button"
+          role="radio"
+          aria-label="Retiro en el local"
+          aria-checked={modalidad === 'retiro'}
           onClick={() => setModalidad('retiro')}
           className={cx(
             'flex cursor-pointer flex-col items-start gap-1 rounded-tarjeta border p-4 text-left transition-colors',
@@ -63,6 +70,9 @@ export function SelectorEntrega({ valor, onElegir }: SelectorEntregaProps) {
 
         <button
           type="button"
+          role="radio"
+          aria-label="Envío a domicilio"
+          aria-checked={modalidad === 'envio'}
           onClick={() => setModalidad('envio')}
           className={cx(
             'flex cursor-pointer flex-col items-start gap-1 rounded-tarjeta border p-4 text-left transition-colors',

@@ -45,6 +45,10 @@ export const esquemaSolicitud = z.strictObject({
   seleccion: z.record(z.string(), z.string()),
   /** HU-14 CA6: medidas propias (id del campo → número); solo cuando la selección las pide. Se revalidan con `validarMedidas`. */
   medidas: z.record(z.string(), z.number().positive()).optional(),
+  /** HU-12a: color de cada pieza (id del paso de la tela → color del catálogo u otro). Se revalida con `validarColores`. */
+  colores: z
+    .record(z.string(), z.union([z.strictObject({ catalogo: z.string().min(1) }), z.strictObject({ otro: z.string().trim().min(1).max(60) })]))
+    .optional(),
   contacto: z.strictObject({
     nombre: z.string().trim().min(1).max(LIMITE_NOMBRE),
     telefono: z.string().refine(esTelefonoValido, 'teléfono de Costa Rica de 8 dígitos').transform(normalizarTelefono),

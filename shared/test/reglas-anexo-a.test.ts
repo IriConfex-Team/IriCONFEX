@@ -315,9 +315,9 @@ describe('flujo completo', () => {
       ['manga', 'corta'],
       ['tipo-inferior', 'short'],
       ['tela-superior', 'brush'],
-      ['color-superior', 'catalogo'],
+     
       ['tela-inferior', 'brush'],
-      ['color-inferior', 'catalogo'],
+    
       ['modalidad-talla', 'universal'],
       ['grupo-talla', 'adulto'],
       ['talla-superior', 'adulto-m'],

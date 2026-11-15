@@ -5,6 +5,8 @@ export {
   type Condicion,
   type ConfiguracionCategoria,
   type CampoMedidas,
+  type ColorCatalogo,
+  type ConfiguracionColores,
   type ConfiguracionIlustracion,
   type ConfiguracionMedidas,
   type GuiaOpciones,
@@ -47,6 +49,21 @@ export {
   type Medidas,
   type TipoErrorMedidas,
 } from './medidas'
+export {
+  coloresDeLaTela,
+  coloresVigentes,
+  nombreDelColor,
+  pasosConColor,
+  tonoDelColor,
+  tonosPorPieza,
+  validarColores,
+  type ColorElegido,
+  type Colores,
+  type ErrorColor,
+  type GrupoDeColores,
+  type PasoConColor,
+  type TipoErrorColor,
+} from './colores'
 export {
   ilustrar,
   ilustrarOpcion,

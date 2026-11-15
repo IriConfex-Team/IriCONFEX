@@ -1,4 +1,4 @@
-import { validarMedidas, validarSeleccion } from '@iriconfex/shared';
+import { nombreDelColor, validarColores, validarMedidas, validarSeleccion } from '@iriconfex/shared';
 import type { ConfiguracionNegocio } from '../../comun/configuracion.js';
 import type { SolicitudWeb } from './solicitudes.esquemas.js';
 import type { ConfigMensaje } from './solicitudes.mensaje.js';
@@ -14,7 +14,6 @@ export const CONVENCIONES = {
   valorEnvio: 'envio',
 } as const;
 
-const PASOS_COLOR = new Set(['color-superior', 'color-inferior']);
 const LIMITE_SENAS_ENVIO = 200;
 const UN_DIA_MS = 24 * 60 * 60 * 1000;
 
@@ -29,6 +28,7 @@ export function desdeEsquema(s: SolicitudWeb): SolicitudEntrada {
     telefono: s.contacto.telefono,
     seleccion: s.seleccion,
     medidas: s.medidas,
+    colores: s.colores,
     consentimientoEn: confiable ? declarada : ahora,
   };
 }
@@ -62,17 +62,6 @@ function textoDeError(e: unknown): string {
   return 'Valor no válido';
 }
 
-function formatearColor(valor: string): string {
-  if (valor.startsWith('catálogo:')) {
-    return `${valor.slice('catálogo:'.length).trim()} (catálogo)`;
-  }
-  if (valor.startsWith('personalizado:')) {
-    const texto = valor.slice('personalizado:'.length).trim();
-    return texto ? `${texto} (personalizado)` : 'Sin preferencia de color';
-  }
-  return valor;
-}
-
 export function formatearEntrega(valor: string): string {
   if (valor.startsWith('envio:')) {
     const [provincia = '', canton = '', distrito = '', senas = ''] = valor
@@ -81,24 +70,6 @@ export function formatearEntrega(valor: string): string {
     return `Envío a domicilio — ${provincia}, ${canton}, ${distrito}. Señas: ${senas} (El costo del envío lo confirma la costurera)`;
   }
   return valor;
-}
-
-function validarColores(seleccion: Record<string, string>): string[] {
-  const errores: string[] = [];
-  for (const pasoId of PASOS_COLOR) {
-    const valor = seleccion[pasoId];
-    if (valor === undefined || valor.trim() === '') continue;
-
-    const esCatalogo =
-      valor.startsWith('catálogo:') && valor.slice('catálogo:'.length).trim().length > 0;
-    const esPersonalizado =
-      valor.startsWith('personalizado:') && valor.slice('personalizado:'.length).trim().length <= 60;
-
-    if (!esCatalogo && !esPersonalizado) {
-      errores.push(`${pasoId}: el color elegido no tiene un formato válido`);
-    }
-  }
-  return errores;
 }
 
 /** Valida HU-17: si eligió envío, exige provincia, cantón, distrito y señas <= 200 caracteres. */
@@ -126,39 +97,27 @@ function validarEntrega(seleccion: Record<string, string>): string[] {
   return errores;
 }
 
-/** Inyecta en memoria las opciones dinámicas (colores y destino de envío) para `validarSeleccion` y WhatsApp. */
-function configConOpcionesDinamicas(
+/** Inyecta en memoria las opciones dinámicas del destino de envío para `validarSeleccion`. */
+function configConEntregaDinamica(
   config: ConfiguracionNegocio,
   seleccion: Record<string, string>,
 ): ConfiguracionNegocio {
+  const valor = seleccion[CONVENCIONES.pasoEntrega];
+  if (!valor || !valor.startsWith('envio:')) return config;
+
   const c = config as unknown as {
     pasos?: Array<{ id: string; opciones?: Array<{ id: string; nombre: string }> }>;
   };
   if (!Array.isArray(c.pasos)) return config;
 
   const pasosActualizados = c.pasos.map((paso) => {
-    const valor = seleccion[paso.id];
-    if (!valor || valor.trim() === '') return paso;
-
-    if (PASOS_COLOR.has(paso.id)) {
-      const yaExiste = paso.opciones?.some((o) => o.id === valor);
-      if (yaExiste) return paso;
-      return {
-        ...paso,
-        opciones: [...(paso.opciones ?? []), { id: valor, nombre: formatearColor(valor) }],
-      };
-    }
-
-    if (paso.id === CONVENCIONES.pasoEntrega && valor.startsWith('envio:')) {
-      const yaExiste = paso.opciones?.some((o) => o.id === valor);
-      if (yaExiste) return paso;
-      return {
-        ...paso,
-        opciones: [...(paso.opciones ?? []), { id: valor, nombre: formatearEntrega(valor) }],
-      };
-    }
-
-    return paso;
+    if (paso.id !== CONVENCIONES.pasoEntrega) return paso;
+    const yaExiste = paso.opciones?.some((o) => o.id === valor);
+    if (yaExiste) return paso;
+    return {
+      ...paso,
+      opciones: [...(paso.opciones ?? []), { id: valor, nombre: formatearEntrega(valor) }],
+    };
   });
 
   return { ...config, pasos: pasosActualizados } as unknown as ConfiguracionNegocio;
@@ -173,15 +132,15 @@ export async function verificarReglas(
     return ['categoria: la categoría «' + entrada.categoria + '» no está disponible'];
   }
 
-  const erroresColores = validarColores(entrada.seleccion);
   const erroresEntrega = validarEntrega(entrada.seleccion);
-  const configEfectiva = configConOpcionesDinamicas(config, entrada.seleccion);
+  const configEfectiva = configConEntregaDinamica(config, entrada.seleccion);
   const seleccion = validarSeleccion(configEfectiva, entrada.seleccion);
   const medidas = validarMedidas(configEfectiva, entrada.seleccion, entrada.medidas);
+  const colores = validarColores(configEfectiva, entrada.seleccion, entrada.colores);
   return [
     ...seleccion.errores.map(textoDeError),
     ...medidas.errores.map(textoDeError),
-    ...erroresColores,
+    ...colores.errores.map(textoDeError),
     ...erroresEntrega,
   ];
 }
@@ -210,6 +169,13 @@ export function aConfigMensaje(config: ConfiguracionNegocio): ConfigMensaje {
     secciones: c.resumen?.secciones ?? [],
     pasoMedidas: CONVENCIONES.pasoModalidadTalla,
     nombresMedida: nombresDeMedidas(c.medidas),
+    // HU-12a: el color va debajo de la tela a la que pertenece
+    colores: config.colores
+      ? {
+          pasos: config.colores.pasos,
+          nombre: (tela, elegido) => nombreDelColor(config, tela, elegido),
+        }
+      : undefined,
   };
 }
 

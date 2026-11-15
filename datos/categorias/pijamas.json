@@ -173,18 +173,7 @@
         { "id": "modal", "nombre": "Modal", "descripcion": "Fibra ligera, sedosa y muy fresca, con excelente caída. Es transpirable e ideal para climas cálidos o para dormir.", "imagen": "/telas/modal.jpg" }
       ]
     },
-    {
-      "id": "color-superior",
-      "nombre": "Color de la parte de arriba",
-      "nota": "Opcional. El color exacto está sujeto a la disponibilidad de la costurera.",
-      "presentacion": "tarjetas",
-      "opciones": [
-        { "id": "catalogo", "nombre": "Color del catálogo" },{
-          "id": "otro-color",
-          "nombre": "Otro color"
-        }
-      ]
-    },
+
     {
       "id": "tela-inferior",
       "nombre": "Tela de la parte de abajo",
@@ -199,18 +188,7 @@
         { "id": "modal", "nombre": "Modal", "descripcion": "Fibra ligera, sedosa y muy fresca, con excelente caída. Es transpirable e ideal para climas cálidos o para dormir.", "imagen": "/telas/modal.jpg" }
       ]
     },
-    {
-      "id": "color-inferior",
-      "nombre": "Color de la parte de abajo",
-      "nota": "Opcional. El color exacto está sujeto a la disponibilidad de la costurera.",
-      "presentacion": "tarjetas",
-      "opciones": [
-        { "id": "catalogo", "nombre": "Color del catálogo" },{
-          "id": "otro-color",
-          "nombre": "Otro color"
-        }
-      ]
-    },
+    
     {
       "id": "modalidad-talla",
       "nombre": "¿Cómo indicas la talla?",
@@ -762,12 +740,7 @@
       "cuando": { "paso": "perfil", "en": ["mujer", "nino", "bebe"] }
     },
 
-    {
-      "tipo": "visibilidad",
-      "codigo": "R7",
-      "objetivo": { "paso": "color-inferior" },
-      "cuando": { "paso": "base", "en": ["dos-piezas"] }
-    },
+
 
     {
       "tipo": "visibilidad",
@@ -910,11 +883,293 @@
       { "titulo": "Parte superior", "pasos": ["escote", "manga", "botones", "largo", "aberturas", "acabado-superior"] },
       { "titulo": "Parte inferior", "pasos": ["tipo-inferior", "abertura-lateral", "acabado-inferior"] },
       { "titulo": "Telas", "pasos": ["tela-superior", "tela-inferior"] },
-      { "titulo": "Colores", "pasos": ["color-superior", "color-inferior"] },
+      
       { "titulo": "Bata de salida", "pasos": ["bata-salida", "bata-salida-manga", "bata-salida-acabado"] },
       { "titulo": "Tallaje", "pasos": ["modalidad-talla", "grupo-talla", "talla-superior", "talla-inferior"] },
       { "titulo": "Entrega", "pasos": ["entrega"] }
     ]
+  },
+  "colores": {
+    "titulo": "Color de la tela",
+    "pasos": [
+      { "paso": "tela-superior", "nombre": "Color de la parte de arriba" },
+      { "paso": "tela-inferior", "nombre": "Color de la parte de abajo" }
+    ],
+    "nota": "Son los colores del catálogo del proveedor. La costurera confirma por WhatsApp si están disponibles.",
+    "rotuloCatalogo": "Color del catálogo, sujeto a disponibilidad.",
+    "rotuloEstampado": "Estampado del catálogo: la costurera te enviará los diseños por WhatsApp para que elijas.",
+    "tipos": { "pregunta": "¿La quieres lisa o estampada?", "liso": "Lisa", "estampado": "Estampada" },
+    "otro": {
+      "nombre": "Otro color",
+      "pregunta": "¿Qué color o estampado buscas?",
+      "ejemplo": "Por ejemplo: vino, flores pequeñas",
+      "rotulo": "Color de referencia: la costurera confirmará si lo consigue.",
+      "maximo": 60
+    },
+    "porTela": {
+      "brush": {
+        "grupos": [
+          {
+            "titulo": "Colores lisos",
+            "colores": [
+              {"id": "blanco-hueso", "nombre": "Blanco Hueso", "tono": "#E8E1D9"},
+              {"id": "c1-rosado-claro", "nombre": "Rosado Claro", "codigo": "C1", "tono": "#FFCCDB"},
+              {"id": "c11-mostaza", "nombre": "Mostaza", "codigo": "C11", "tono": "#BD8236"},
+              {"id": "c12-verde-claro", "nombre": "Verde Claro", "codigo": "C12", "tono": "#25B458"},
+              {"id": "c15-verde-musgo", "nombre": "Verde Musgo", "codigo": "C15", "tono": "#3B4731"},
+              {"id": "c18-rojo", "nombre": "Rojo", "codigo": "C18", "tono": "#A60506"},
+              {"id": "c22-gasolina", "nombre": "Gasolina", "codigo": "C22", "tono": "#397290"},
+              {"id": "c23-negro", "nombre": "Negro", "codigo": "C23", "tono": "#030303"},
+              {"id": "c24-blanco", "nombre": "Blanco", "codigo": "C24", "tono": "#FFFFFF"},
+              {"id": "c29-palo-rosa-claro", "nombre": "Palo Rosa Claro", "codigo": "C29", "tono": "#BE8895"},
+              {"id": "c32-agua", "nombre": "Agua", "codigo": "C32", "tono": "#8EEBE3"},
+              {"id": "c33-turquesa", "nombre": "Turquesa", "codigo": "C33", "tono": "#0093F2"},
+              {"id": "c34-menta-claro", "nombre": "Menta Claro", "codigo": "C34", "tono": "#9AFBDA"},
+              {"id": "c35-verde", "nombre": "Verde", "codigo": "C35", "tono": "#125D25"},
+              {"id": "c38-amarillo-oro", "nombre": "Amarillo Oro", "codigo": "C38", "tono": "#FFCA40"},
+              {"id": "c39-gris-jaspeado-claro", "nombre": "Gris Jaspeado Claro", "codigo": "C39", "tono": "#868686"},
+              {"id": "c4-coral-claro", "nombre": "Coral Claro", "codigo": "C4", "tono": "#F8AC9F"},
+              {"id": "c40-gris-jaspeado-oscuro", "nombre": "Gris Jaspeado Oscuro", "codigo": "C40", "tono": "#3B3B3B"},
+              {"id": "c41-lavanda", "nombre": "Lavanda", "codigo": "C41", "tono": "#DAC1FB"},
+              {"id": "c42-lilac", "nombre": "Lilac", "codigo": "C42", "tono": "#BDA0F0"},
+              {"id": "c43-morado", "nombre": "Morado", "codigo": "C43", "tono": "#411341"},
+              {"id": "c44-olivo", "nombre": "Olivo", "codigo": "C44", "tono": "#95A686"},
+              {"id": "c45-celeste", "nombre": "Celeste", "codigo": "C45", "tono": "#A3CFF4"},
+              {"id": "c46-gris-oscuro", "nombre": "Gris Oscuro", "codigo": "C46", "tono": "#4A4A4A"},
+              {"id": "c5-vino-claro", "nombre": "Vino Claro", "codigo": "C5", "tono": "#570C35"},
+              {"id": "c52-terracota", "nombre": "Terracota", "codigo": "C52", "tono": "#9E4E35"},
+              {"id": "c6-palo-rosa-intermedio", "nombre": "Palo Rosa Intermedio", "codigo": "C6", "tono": "#BF8287"},
+              {"id": "c7-palo-rosa-oscuro", "nombre": "Palo Rosa Oscuro", "codigo": "C7", "tono": "#895762"},
+              {"id": "c8-coral", "nombre": "Coral", "codigo": "C8", "tono": "#FE7471"},
+              {"id": "c9-fucsia", "nombre": "Fucsia", "codigo": "C9", "tono": "#D93268"},
+              {"id": "c61-magenta", "nombre": "Magenta", "codigo": "C61", "tono": "#CE10A4"},
+              {"id": "c109-rojo-quemado", "nombre": "Rojo Quemado", "codigo": "C109", "tono": "#410C16"},
+              {"id": "c112-tabaco", "nombre": "Tabaco", "codigo": "C112", "tono": "#A06F46"},
+              {"id": "c114-azul-escolar", "nombre": "Azul Escolar", "codigo": "C114", "tono": "#000E2A"},
+              {"id": "c13-jade", "nombre": "Jade", "codigo": "C13", "tono": "#0A928C"},
+              {"id": "c14-verde-botella", "nombre": "Verde Botella", "codigo": "C14", "tono": "#16393D"},
+              {"id": "c19-azul-rey", "nombre": "Azul Rey", "codigo": "C19", "tono": "#010080"},
+              {"id": "c20-cafe", "nombre": "Café", "codigo": "C20", "tono": "#311F1B"},
+              {"id": "c30-vino-oscuro", "nombre": "Vino Oscuro", "codigo": "C30", "tono": "#4D0814"},
+              {"id": "c49-piel", "nombre": "Piel", "codigo": "C49", "tono": "#E8D9C4"},
+              {"id": "c54-gris-claro", "nombre": "Gris Claro", "codigo": "C54", "tono": "#AEAFB1"},
+              {"id": "c55-amarillo-pastel", "nombre": "Amarillo Pastel", "codigo": "C55", "tono": "#FFFF85"},
+              {"id": "c56-rosado-bebe", "nombre": "Rosado Bebé", "codigo": "C56", "tono": "#FEBCE0"},
+              {"id": "c57-fucsia-neon", "nombre": "Fucsia Neón", "codigo": "C57", "tono": "#FE0595"},
+              {"id": "c58-naranja-neon", "nombre": "Naranja Neón", "codigo": "C58", "tono": "#FF4105"},
+              {"id": "c59-amarillo-neon", "nombre": "Amarillo Neón", "codigo": "C59", "tono": "#C8F536"},
+              {"id": "c60-rosa-neon", "nombre": "Rosa Neón", "codigo": "C60", "tono": "#EA407C"},
+              {"id": "c62-purpura", "nombre": "Púrpura", "codigo": "C62", "tono": "#BC34BA"},
+              {"id": "c63-mint-new", "nombre": "Mint New", "codigo": "C63", "tono": "#6ED1CC"},
+              {"id": "c64-lime", "nombre": "Lime", "codigo": "C64", "tono": "#C3D738"},
+              {"id": "c65-ruby", "nombre": "Ruby", "codigo": "C65", "tono": "#880018"},
+              {"id": "c67-naranja", "nombre": "Naranja", "codigo": "C67", "tono": "#FF6300"},
+              {"id": "c68-amarillo-fuerte", "nombre": "Amarillo Fuerte", "codigo": "C68", "tono": "#FFF005"},
+              {"id": "c69-beige", "nombre": "Beige", "codigo": "C69", "tono": "#D3BCAC"},
+              {"id": "c71-mocha", "nombre": "Mocha", "codigo": "C71", "tono": "#796C64"},
+              {"id": "c82-papaya", "nombre": "Papaya", "codigo": "C82", "tono": "#FFBF81"},
+              {"id": "c85-verde-pastel", "nombre": "Verde Pastel", "codigo": "C85", "tono": "#CBFF98"},
+              {"id": "c88-sky", "nombre": "Sky", "codigo": "C88", "tono": "#B9E0FF"},
+              {"id": "c90-lavanda-pastel", "nombre": "Lavanda Pastel", "codigo": "C90", "tono": "#C982E2"},
+              {"id": "c95-lima-pastel", "nombre": "Lima Pastel", "codigo": "C95", "tono": "#8AB04B"}
+            ]
+          },
+          {
+            "titulo": "Estampados",
+            "colores": [
+              {"id": "afrocaribenas", "nombre": "Afrocaribeñas", "disenos": 17},
+              {"id": "animados", "nombre": "Animados", "disenos": 540},
+              {"id": "animal-print", "nombre": "Animal Print", "disenos": 29},
+              {"id": "cartoon", "nombre": "Cartoon", "disenos": 146},
+              {"id": "flores", "nombre": "Flores", "disenos": 473},
+              {"id": "frentes", "nombre": "Frentes", "disenos": 376},
+              {"id": "marcas", "nombre": "Marcas", "disenos": 162},
+              {"id": "mariposas", "nombre": "Mariposas", "disenos": 35},
+              {"id": "navidad-estampado", "nombre": "Navidad Estampado", "disenos": 77},
+              {"id": "navidad-puerta", "nombre": "Navidad Puerta", "disenos": 7},
+              {"id": "patrios", "nombre": "Patrios", "disenos": 18},
+              {"id": "promocion-navidad", "nombre": "Promoción Navidad", "disenos": 10},
+              {"id": "rayas", "nombre": "Rayas", "disenos": 35},
+              {"id": "varios", "nombre": "Varios", "disenos": 68}
+            ]
+          }
+        ]
+      },
+      "satin": {
+        "nota": "Esta tela no tiene colores lisos en el catálogo. Si quieres un color liso, elige «Otro color».",
+        "grupos": [
+          {
+            "titulo": "Estampados",
+            "colores": [
+              {"id": "st-29", "nombre": "ST-29"},
+              {"id": "st-30", "nombre": "ST-30"},
+              {"id": "st-31", "nombre": "ST-31"},
+              {"id": "st-32", "nombre": "ST-32"},
+              {"id": "st-42", "nombre": "ST-42"},
+              {"id": "st-43", "nombre": "ST-43"},
+              {"id": "st-44", "nombre": "ST-44"},
+              {"id": "st-46", "nombre": "ST-46"},
+              {"id": "st-47", "nombre": "ST-47"}
+            ]
+          }
+        ]
+      },
+      "satin-alicrado": {
+        "grupos": [
+          {
+            "titulo": "Colores lisos",
+            "colores": [
+              {"id": "beige", "nombre": "Beige", "tono": "#927E69"},
+              {"id": "blanco", "nombre": "Blanco", "tono": "#DEE5F4"},
+              {"id": "fucsia", "nombre": "Fucsia", "tono": "#DF378B"},
+              {"id": "lila", "nombre": "Lila", "tono": "#B99FC0"},
+              {"id": "marfil", "nombre": "Marfil", "tono": "#D6DBD1"},
+              {"id": "menta", "nombre": "Menta", "tono": "#72C9BE"},
+              {"id": "negro", "nombre": "Negro", "tono": "#1E1E1E"},
+              {"id": "palo-rosa", "nombre": "Palo Rosa", "tono": "#C9A7AD"},
+              {"id": "rojo", "nombre": "Rojo", "tono": "#AF0203"},
+              {"id": "verde-botella", "nombre": "Verde Botella", "tono": "#036150"}
+            ]
+          }
+        ]
+      },
+      "resorte": {
+        "grupos": [
+          {
+            "titulo": "Colores lisos",
+            "colores": [
+              {"id": "blush", "nombre": "Blush", "tono": "#C27465"},
+              {"id": "mostaza", "nombre": "Mostaza", "tono": "#935E1E"},
+              {"id": "olivo", "nombre": "Olivo", "tono": "#686C5C"},
+              {"id": "rojo", "nombre": "Rojo", "tono": "#77131C"},
+              {"id": "rosado-bebe", "nombre": "Rosado Bebé", "tono": "#B48994"},
+              {"id": "agua", "nombre": "Agua", "tono": "#70C1BA"},
+              {"id": "amarillo-neon", "nombre": "Amarillo Neón", "tono": "#ACBC40"},
+              {"id": "amarillo-oro", "nombre": "Amarillo Oro", "tono": "#BF940A"},
+              {"id": "amarillo", "nombre": "Amarillo", "tono": "#B9A70B"},
+              {"id": "azul-escolar", "nombre": "Azul Escolar", "tono": "#2C3249"},
+              {"id": "azul-rey", "nombre": "Azul Rey", "tono": "#143175"},
+              {"id": "beige-claro", "nombre": "Beige Claro", "tono": "#9B968C"},
+              {"id": "blanco", "nombre": "Blanco", "tono": "#E5E8E9"},
+              {"id": "cafe", "nombre": "Café", "tono": "#2E221F"},
+              {"id": "celeste", "nombre": "Celeste", "tono": "#7D9CD0"},
+              {"id": "fucsia-neon", "nombre": "Fucsia Neón", "tono": "#C53193"},
+              {"id": "fucsia", "nombre": "Fucsia", "tono": "#A32774"},
+              {"id": "gasolina", "nombre": "Gasolina", "tono": "#12385B"},
+              {"id": "gris-claro-jaspeado", "nombre": "Gris Claro Jaspeado", "tono": "#75747B"},
+              {"id": "gris-claro", "nombre": "Gris Claro", "tono": "#7C7F8C"},
+              {"id": "gris-oscuro-jaspeado", "nombre": "Gris Oscuro Jaspeado", "tono": "#211F1E"},
+              {"id": "gris-oscuro", "nombre": "Gris Oscuro", "tono": "#343A48"},
+              {"id": "khaki", "nombre": "Khaki", "tono": "#8D7B6B"},
+              {"id": "lila", "nombre": "Lila", "tono": "#827AA5"},
+              {"id": "marfil", "nombre": "Marfil", "tono": "#A7AEB0"},
+              {"id": "mint-light", "nombre": "Mint Light", "tono": "#A5EEE0"},
+              {"id": "mint-new", "nombre": "Mint New", "tono": "#62A0AE"},
+              {"id": "mocha", "nombre": "Mocha", "tono": "#504E55"},
+              {"id": "negro", "nombre": "Negro", "tono": "#131313"},
+              {"id": "olivo-jaspeado", "nombre": "Olivo Jaspeado", "tono": "#8D8C81"},
+              {"id": "olivo-claro", "nombre": "Olivo Claro", "tono": "#798E84"},
+              {"id": "palo-rosa-claro", "nombre": "Palo Rosa Claro", "tono": "#94708C"},
+              {"id": "papaya", "nombre": "Papaya", "tono": "#B07A7D"},
+              {"id": "rojo-quemado", "nombre": "Rojo Quemado", "tono": "#4E172C"},
+              {"id": "rosado", "nombre": "Rosado", "tono": "#CC9FB8"},
+              {"id": "terracota", "nombre": "Terracota", "tono": "#7C3920"},
+              {"id": "verde-botella", "nombre": "Verde Botella", "tono": "#131F28"},
+              {"id": "verde-musgo", "nombre": "Verde Musgo", "tono": "#323832"},
+              {"id": "vino", "nombre": "Vino", "tono": "#3C1823"}
+            ]
+          },
+          {
+            "titulo": "Lisos gruesos",
+            "colores": [
+              {"id": "grueso-rojo-quemado", "nombre": "Rojo Quemado", "tono": "#751520"},
+              {"id": "grueso-blanco", "nombre": "Blanco", "tono": "#FAFAFA"},
+              {"id": "grueso-gris", "nombre": "Gris", "tono": "#737373"},
+              {"id": "grueso-azul-rey", "nombre": "Azul Rey", "tono": "#152B69"},
+              {"id": "grueso-fucsia", "nombre": "Fucsia", "tono": "#B61F6C"},
+              {"id": "grueso-khaki", "nombre": "Khaki", "tono": "#7E6855"},
+              {"id": "grueso-lila", "nombre": "Lila", "tono": "#83768C"},
+              {"id": "grueso-negro", "nombre": "Negro", "tono": "#1A1917"},
+              {"id": "grueso-papaya", "nombre": "Papaya", "tono": "#BC7974"},
+              {"id": "grueso-rojo", "nombre": "Rojo", "tono": "#851723"},
+              {"id": "grueso-tabaco", "nombre": "Tabaco", "tono": "#8B5A3B"},
+              {"id": "grueso-verde-botella", "nombre": "Verde Botella", "tono": "#254344"},
+              {"id": "grueso-vino-claro", "nombre": "Vino Claro", "tono": "#671B35"},
+              {"id": "grueso-vino-oscuro", "nombre": "Vino Oscuro", "tono": "#451517"}
+            ]
+          },
+          {
+            "titulo": "Lisos con rayas",
+            "colores": [
+              {"id": "rayas-coral", "nombre": "Coral", "tono": "#C07467"},
+              {"id": "rayas-negro", "nombre": "Negro", "tono": "#1E1D1B"},
+              {"id": "rayas-rojo", "nombre": "Rojo", "tono": "#A01011"},
+              {"id": "rayas-sage", "nombre": "Sage", "tono": "#73756A"},
+              {"id": "rayas-azul-escolar", "nombre": "Azul Escolar", "tono": "#292C39"},
+              {"id": "rayas-fucsia", "nombre": "Fucsia", "tono": "#CC3E68"},
+              {"id": "rayas-khaki", "nombre": "Khaki", "tono": "#88765F"},
+              {"id": "rayas-verde-musgo", "nombre": "Verde Musgo", "tono": "#404533"}
+            ]
+          }
+        ]
+      },
+      "rib": {
+        "grupos": [
+          {
+            "titulo": "Colores lisos",
+            "colores": [
+              {"id": "azul-rey", "nombre": "Azul Rey", "tono": "#254299"},
+              {"id": "blanco-hueso", "nombre": "Blanco Hueso", "tono": "#A6A299"},
+              {"id": "blanco", "nombre": "Blanco", "tono": "#D9DAD8"},
+              {"id": "fucsia", "nombre": "Fucsia", "tono": "#DB4481"},
+              {"id": "gris", "nombre": "Gris", "tono": "#646568"},
+              {"id": "kakhi", "nombre": "Kakhi", "tono": "#6A4D3C"},
+              {"id": "magenta", "nombre": "Magenta", "tono": "#9D417F"},
+              {"id": "menta", "nombre": "Menta", "tono": "#83ABA9"},
+              {"id": "negro", "nombre": "Negro", "tono": "#23221F"},
+              {"id": "rojo-claro", "nombre": "Rojo Claro", "tono": "#78120E"},
+              {"id": "rosado", "nombre": "Rosado", "tono": "#EC9CB6"},
+              {"id": "tabaco", "nombre": "Tabaco", "tono": "#5D482C"}
+            ]
+          }
+        ]
+      },
+      "modal": {
+        "grupos": [
+          {
+            "titulo": "Colores lisos",
+            "colores": [
+              {"id": "blanco", "nombre": "Blanco", "tono": "#FFFFFF"},
+              {"id": "blue-ligth", "nombre": "Blue Ligth", "tono": "#A3CFF4"},
+              {"id": "cafe", "nombre": "Café", "tono": "#311F1B"},
+              {"id": "charcoal", "nombre": "Charcoal", "tono": "#4A4A4A"},
+              {"id": "dark-melange", "nombre": "Dark Melange", "tono": "#3E3E3E"},
+              {"id": "fuchia", "nombre": "Fuchia", "tono": "#FA008A"},
+              {"id": "ivory", "nombre": "Ivory", "tono": "#E9E0DB"},
+              {"id": "khaki", "nombre": "Khaki", "tono": "#A68B77"},
+              {"id": "ladrillo", "nombre": "Ladrillo", "tono": "#932F2F"},
+              {"id": "lilac", "nombre": "Lilac", "tono": "#BDA0F0"},
+              {"id": "mauve-dark", "nombre": "Mauve Dark", "tono": "#8A5863"},
+              {"id": "mauve", "nombre": "Mauve", "tono": "#BF8287"},
+              {"id": "mocha", "nombre": "Mocha", "tono": "#796C64"},
+              {"id": "mora-en-leche", "nombre": "Mora En Leche", "tono": "#A0709A"},
+              {"id": "mustard", "nombre": "Mustard", "tono": "#BE8337"},
+              {"id": "navy", "nombre": "Navy", "tono": "#161D47"},
+              {"id": "olivo", "nombre": "Olivo", "tono": "#3B4731"},
+              {"id": "red-bright", "nombre": "Red Bright", "tono": "#A70507"},
+              {"id": "royal", "nombre": "Royal", "tono": "#010080"},
+              {"id": "silver", "nombre": "Silver", "tono": "#AEAFB1"},
+              {"id": "tabaco", "nombre": "Tabaco", "tono": "#A06F46"},
+              {"id": "taupe", "nombre": "Taupe", "tono": "#E8D9C4"},
+              {"id": "teal", "nombre": "Teal", "tono": "#065363"},
+              {"id": "terracota", "nombre": "Terracota", "tono": "#9E4E35"},
+              {"id": "verde-oscuro-botella", "nombre": "Verde Oscuro Botella", "tono": "#16393D"},
+              {"id": "wine", "nombre": "Wine", "tono": "#300010"}
+            ]
+          }
+        ]
+      }
+    }
   },
   "medidas": {
     "cuando": { "paso": "modalidad-talla", "en": ["medida"] },

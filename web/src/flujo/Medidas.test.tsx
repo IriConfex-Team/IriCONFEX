@@ -27,9 +27,11 @@ async function hastaMedidas() {
   await elegirYSeguir('Short corto')
   await siguiente() // acabado inferior único
   await elegirYSeguir('Brush')
+  await userEvent.click(screen.getByRole('button', { name: 'Lisa' })) // brush: lisa o estampada
+  await elegirYSeguir('Rosado Claro') // color de la tela
   await elegirYSeguir('Brush')
-  await elegirYSeguir('Rojo') // Color superior (mock)
-  await elegirYSeguir('Azul') // Color inferior (mock)
+  await userEvent.click(screen.getByRole('button', { name: 'Lisa' })) // brush: lisa o estampada
+  await elegirYSeguir('Rosado Claro') // color de la tela
   await elegirYSeguir('Mis medidas')
   await elegirYSeguir(/^Adulto/)
 }
@@ -108,10 +110,12 @@ describe.skip('HU-14 · medidas propias con guía visual', () => {
     await elegirYSeguir('Simple')
     expect(screen.getByText('Parte de arriba')).toBeInTheDocument()
     await elegirYSeguir('Brush')
+    await userEvent.click(screen.getByRole('button', { name: 'Lisa' })) // brush: lisa o estampada
+    await elegirYSeguir('Rosado Claro') // color de la tela
     expect(screen.getByText('Parte de abajo')).toBeInTheDocument()
     await elegirYSeguir('Brush')
-    await elegirYSeguir('Rojo')
-    await elegirYSeguir('Azul')
+    await userEvent.click(screen.getByRole('button', { name: 'Lisa' })) // brush: lisa o estampada
+    await elegirYSeguir('Rosado Claro') // color de la tela
     await elegirYSeguir('Talla estándar')
     await elegirYSeguir(/^Adulto/)
 
@@ -138,9 +142,11 @@ describe.skip('HU-14 · medidas propias con guía visual', () => {
     await elegirYSeguir('Short corto')
     await siguiente()
     await elegirYSeguir('Brush')
+    await userEvent.click(screen.getByRole('button', { name: 'Lisa' })) // brush: lisa o estampada
+    await elegirYSeguir('Rosado Claro') // color de la tela
     await elegirYSeguir('Brush')
-    await elegirYSeguir('Rojo')
-    await elegirYSeguir('Azul')
+    await userEvent.click(screen.getByRole('button', { name: 'Lisa' })) // brush: lisa o estampada
+    await elegirYSeguir('Rosado Claro') // color de la tela
     await elegirYSeguir('Talla estándar')
     await elegirYSeguir(/^Adulto/)
     await elegirYSeguir('M')
