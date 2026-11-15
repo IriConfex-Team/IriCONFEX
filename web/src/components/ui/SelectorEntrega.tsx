@@ -1,21 +1,10 @@
 import { useEffect, useState } from 'react'
-import { COSTA_RICA } from '../../data/costaRica'
+import { COSTA_RICA, parsearEntrega } from '../../data/costaRica'
 import { cx } from '../../lib/cx'
 
 interface SelectorEntregaProps {
   valor?: string
   onElegir: (valor: string) => void
-}
-
-export function parsearEntrega(valor?: string) {
-  if (!valor) return { modalidad: null as 'retiro' | 'envio' | null, provincia: '', canton: '', distrito: '', senas: '' }
-  if (valor === 'retiro') return { modalidad: 'retiro' as const, provincia: '', canton: '', distrito: '', senas: '' }
-  if (valor.startsWith('envio')) {
-    const crudo = valor.includes(':') ? valor.slice(valor.indexOf(':') + 1) : ''
-    const [provincia = '', canton = '', distrito = '', senas = ''] = crudo.split('|')
-    return { modalidad: 'envio' as const, provincia, canton, distrito, senas }
-  }
-  return { modalidad: null, provincia: '', canton: '', distrito: '', senas: '' }
 }
 
 export function SelectorEntrega({ valor, onElegir }: SelectorEntregaProps) {
@@ -181,16 +170,4 @@ export function SelectorEntrega({ valor, onElegir }: SelectorEntregaProps) {
       )}
     </div>
   )
-}
-
-export function esEntregaIncompleta(valor?: string): boolean {
-  if (!valor || valor === 'retiro') return false
-  const d = parsearEntrega(valor)
-  return !d.provincia || !d.canton || !d.distrito || d.senas.trim().length === 0
-}
-
-export function formatearValorEntrega(valor?: string): string | null {
-  if (!valor || !valor.includes(':')) return null
-  const [provincia = '', canton = '', distrito = '', senas = ''] = valor.slice(valor.indexOf(':') + 1).split('|')
-  return `Envío a domicilio — ${provincia}, ${canton}, ${distrito} (${senas})`
 }

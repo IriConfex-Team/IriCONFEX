@@ -56,7 +56,8 @@ import { PantallaMedidas, type MedidasEscritas } from './PantallaMedidas'
 import { PantallaResumen, type FilaResumen, type GrupoResumen } from './PantallaResumen'
 import { SolicitudEnviada } from './SolicitudEnviada'
 import { VistaPrenda } from './VistaPrenda'
-import { SelectorEntrega, esEntregaIncompleta } from '../components/ui/SelectorEntrega'
+import { SelectorEntrega } from '../components/ui/SelectorEntrega'
+import { esEntregaIncompleta } from '../data/costaRica'
 
 export interface FlujoConfiguracionProps {
   configuracion: ConfiguracionCategoria

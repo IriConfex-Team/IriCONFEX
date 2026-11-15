@@ -5,8 +5,7 @@ import { formatColones } from '../lib/formatColones'
 import type { Contacto } from './PantallaContacto'
 import { avisoDatos, TEXTO_ACEPTACION } from './textosDatos'
 // ✅ NUEVO: Importamos la función desde el SelectorEntrega
-import { formatearValorEntrega } from '../components/ui/SelectorEntrega'
-
+import { formatearValorEntrega } from '../data/costaRica'
 export interface FilaResumen {
   id: string
   etiqueta: string
