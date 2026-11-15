@@ -20,7 +20,20 @@ export interface DatosMensaje {
   precioEstimadoCrc: number | null;
 }
 
+const PASOS_COLOR = new Set(['color-superior', 'color-inferior']);
+
 const sinSignos = (rotulo: string) => rotulo.replace(/[¿?]/g, '').trim();
+
+function formatearColor(valor: string): string {
+  if (valor.startsWith('catálogo:')) {
+    return `${valor.slice('catálogo:'.length).trim()} (catálogo)`;
+  }
+  if (valor.startsWith('personalizado:')) {
+    const texto = valor.slice('personalizado:'.length).trim();
+    return texto ? `${texto} (personalizado)` : 'Sin preferencia de color';
+  }
+  return valor;
+}
 
 function rotuloDeMedida(id: string, nombres?: Record<string, string>): string {
   const nombre = nombres?.[id];
@@ -40,6 +53,13 @@ export function armarMensaje(config: ConfigMensaje, datos: DatosMensaje): string
   lineas.push('Teléfono: ' + formatearTelefono(entrada.telefono));
 
   const pasosPorId = new Map(config.pasos.map((p) => [p.id, p]));
+  const formatearValorPaso = (idPaso: string, elegida: string): string => {
+    if (PASOS_COLOR.has(idPaso)) return formatearColor(elegida);
+    const paso = pasosPorId.get(idPaso);
+    const opcion = paso?.opciones.find((o) => o.id === elegida);
+    return opcion?.nombre ?? elegida;
+  };
+
   const medidas = Object.entries(entrada.medidas ?? {});
   const lineasMedidas =
     medidas.length > 0
@@ -53,14 +73,25 @@ export function armarMensaje(config: ConfigMensaje, datos: DatosMensaje): string
       : [];
   let medidasListas = false;
 
+  const pasosUsados = new Set<string>();
+
   for (const seccion of config.secciones) {
     const bloque: string[] = [];
     for (const idPaso of seccion.pasos) {
+      pasosUsados.add(idPaso);
       const elegida = entrada.seleccion[idPaso];
       if (elegida === undefined) continue; // no aplica: se omite (HU-22 CA2)
       const paso = pasosPorId.get(idPaso);
+
       const opcion = paso?.opciones.find((o) => o.id === elegida);
-      bloque.push(sinSignos(paso?.nombre ?? idPaso) + ': ' + (opcion?.nombre ?? elegida));
+      let textoValor = opcion?.nombre ?? elegida;
+      if (idPaso === 'entrega' && elegida.startsWith('envio:')) {
+        const [provincia = '', canton = '', distrito = '', senas = ''] = elegida
+          .slice('envio:'.length)
+          .split('|');
+        textoValor = `Envío a domicilio — ${provincia}, ${canton}, ${distrito}. Señas: ${senas} (El costo del envío lo confirma la costurera)`;
+      }
+      bloque.push(sinSignos(paso?.nombre ?? idPaso) + ': ' + textoValor);
       const color = entrada.colores?.[idPaso];
       const pasoColor = config.colores?.pasos.find((p) => p.paso === idPaso);
       if (color && pasoColor && config.colores) {
@@ -79,6 +110,31 @@ export function armarMensaje(config: ConfigMensaje, datos: DatosMensaje): string
       medidasListas = true;
     }
   }
+
+  // Pasos fuera de `secciones` (ej. color-superior, color-inferior)
+  const otrosBloque: string[] = [];
+  for (const paso of config.pasos) {
+    if (pasosUsados.has(paso.id)) continue;
+    const elegida = entrada.seleccion[paso.id];
+    if (elegida === undefined) continue;
+
+    // ✅ NUEVO: Por si el paso de entrega no está en las secciones, aplicamos el mismo formateo
+    let textoValor: string;
+    if (paso.id === 'entrega' && elegida.startsWith('envio:')) {
+      const [provincia = '', canton = '', distrito = '', senas = ''] = elegida
+        .slice('envio:'.length)
+        .split('|');
+      textoValor = `Envío a domicilio — ${provincia}, ${canton}, ${distrito}. Señas: ${senas} (El costo del envío lo confirma la costurera)`;
+    } else {
+      textoValor = formatearValorPaso(paso.id, elegida);
+    }
+
+    otrosBloque.push(sinSignos(paso.nombre) + ': ' + textoValor);
+  }
+  if (otrosBloque.length > 0) {
+    lineas.push('*Colores*', ...otrosBloque);
+  }
+
   if (lineasMedidas.length > 0 && !medidasListas) lineas.push(...lineasMedidas);
 
   if (precioEstimadoCrc === null) {

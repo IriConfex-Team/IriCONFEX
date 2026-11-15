@@ -4,6 +4,7 @@ import { Boton } from '../components/ui'
 import { formatColones } from '../lib/formatColones'
 import type { Contacto } from './PantallaContacto'
 import { avisoDatos, TEXTO_ACEPTACION } from './textosDatos'
+import { formatearValorEntrega } from '../data/costaRica'
 
 export interface FilaResumen {
   id: string
@@ -28,12 +29,24 @@ function agrupar(
   despuesDe: Readonly<Record<string, FilaResumen[]>> = {},
 ): GrupoResumen[] {
   const respondidos = estado.pasos.filter((e) => e.valor !== undefined)
+
+  // ✅ Solo formateamos el valor de entrega. Los colores vienen formateados desde `main`.
+  const formatearValorPaso = (e: EstadoPaso): string => {
+    if (e.paso.id === 'entrega') {
+      const formateado = formatearValorEntrega(e.valor)
+      if (formateado) return formateado
+    }
+    // Para el resto, buscamos el nombre de la opción
+    return e.paso.opciones.find((o) => o.id === e.valor)?.nombre ?? e.valor ?? ''
+  }
+
   const fila = (e: EstadoPaso): Fila => ({
     id: e.paso.id,
     etiqueta: e.paso.nombre,
-    valor: e.paso.opciones.find((o) => o.id === e.valor)?.nombre ?? '',
+    valor: formatearValorPaso(e),
     onCambiar: e.fijada ? undefined : () => onEditarPaso(e.paso.id),
   })
+
   const secciones = configuracion.resumen?.secciones ?? []
   const usados = new Set(secciones.flatMap((s) => s.pasos))
   const grupos = secciones

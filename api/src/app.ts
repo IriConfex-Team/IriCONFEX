@@ -1,4 +1,3 @@
-
 import cors from 'cors';
 import express, { Router, type Express } from 'express';
 import swaggerUi from 'swagger-ui-express';
@@ -7,6 +6,8 @@ import type { Dependencias } from './contenedor.js';
 import { documentoOpenApi } from './docs/openapi.js';
 import { crearCategoriasController } from './modulos/categorias/categorias.controlador.js';
 import { crearCategoriasRouter } from './modulos/categorias/categorias.rutas.js';
+import { crearColoresController } from './modulos/colores/colores.controlador.js';
+import { crearColoresRouter } from './modulos/colores/colores.rutas.js';
 import { crearCotizacionesController } from './modulos/cotizaciones/cotizaciones.controlador.js';
 import { crearCotizacionesRouter } from './modulos/cotizaciones/cotizaciones.rutas.js';
 import { crearSaludController } from './modulos/salud/salud.controlador.js';
@@ -30,6 +31,7 @@ export function crearApp(dependencias: Dependencias, opciones: OpcionesApp = {})
   const api = Router();
   api.use('/health', crearSaludRouter(crearSaludController(dependencias.salud)));
   api.use('/categorias', crearCategoriasRouter(crearCategoriasController(dependencias.categorias)));
+  api.use('/colores', crearColoresRouter(crearColoresController(dependencias.colores)));
   api.use(
     '/solicitudes',
     crearSolicitudesRouter(crearSolicitudesController(dependencias.solicitudes), {

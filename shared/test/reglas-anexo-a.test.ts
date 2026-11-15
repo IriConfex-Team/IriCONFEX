@@ -27,13 +27,13 @@ const mujerBlusa: [string, string][] = [
 ]
 
 describe('nada se elige solo antes de tiempo', () => {
-  it('al iniciar solo se fija lo que no depende de nada (la entrega, que tiene una sola opción)', () => {
-    expect(iniciarSeleccion(configuracion)).toEqual({ entrega: 'retiro' })
+  it('al iniciar no se fija nada porque ningún paso tiene opción única', () => {
+    expect(iniciarSeleccion(configuracion)).toEqual({})
   })
 
   it('tras elegir perfil y base, el escote y los acabados siguen sin elegir', () => {
     const s = recorrer(['perfil', 'mujer'], ['base', 'dos-piezas'])
-    expect(s).toEqual({ perfil: 'mujer', base: 'dos-piezas', entrega: 'retiro' })
+    expect(s).toEqual({ perfil: 'mujer', base: 'dos-piezas' })
   })
 
   it('una fijación que solo depende de lo ya elegido sí se aplica de inmediato', () => {
@@ -310,18 +310,19 @@ describe('R10 · cuello camisero solo con satín, satín alicrado o modal', () =
 describe('flujo completo', () => {
   it('una selección hecha paso a paso pasa la revalidación del servidor', () => {
     const s = recorrer(
-      ['perfil', 'nino'],
-      ['escote', 'camisero'],
+      ['perfil', 'hombre'],
+      ['escote', 'redondo'],
       ['manga', 'corta'],
-      ['es-nina', 'si'],
-      ['acabado-superior', 'vuelitos'],
       ['tipo-inferior', 'short'],
-      ['acabado-inferior', 'vuelitos'],
-      ['tela-superior', 'modal'],
+      ['tela-superior', 'brush'],
+     
       ['tela-inferior', 'brush'],
+    
       ['modalidad-talla', 'universal'],
-      ['talla-superior', 'nino-6'],
-      ['talla-inferior', 'nino-8'],
+      ['grupo-talla', 'adulto'],
+      ['talla-superior', 'adulto-m'],
+      ['talla-inferior', 'adulto-m'],
+      ['entrega', 'retiro'],
     )
     expect(evaluarFlujo(configuracion, s).completo).toBe(true)
     expect(validarSeleccion(configuracion, s)).toEqual({ valida: true, errores: [] })

@@ -1,4 +1,3 @@
-
 import type { PrismaClient } from '../generated/prisma/client.js';
 import type { ConfiguracionNegocio } from './comun/configuracion.js';
 import { crearCategoriasRepository } from './modulos/categorias/categorias.repositorio.js';
@@ -6,6 +5,11 @@ import {
   crearCategoriasService,
   type CategoriasService,
 } from './modulos/categorias/categorias.servicio.js';
+import { crearColoresRepository } from './modulos/colores/colores.repositorio.js';
+import {
+  crearColoresService,
+  type ColoresService,
+} from './modulos/colores/colores.servicio.js';
 import { crearCotizacionesRepository } from './modulos/cotizaciones/cotizaciones.repositorio.js';
 import { revisarSeleccionParaPrecio } from './modulos/cotizaciones/cotizaciones.reglas.js';
 import {
@@ -29,6 +33,7 @@ import {
 export interface Dependencias {
   salud: SaludService;
   categorias: CategoriasService;
+  colores: ColoresService;
   cotizaciones: CotizacionesService;
   solicitudes: SolicitudesService;
 }
@@ -51,6 +56,7 @@ export function crearDependencias(
   return {
     salud: crearSaludService(crearSaludRepository(prisma), { version }),
     categorias: crearCategoriasService(crearCategoriasRepository(prisma)),
+    colores: crearColoresService(crearColoresRepository(prisma)),
     cotizaciones,
     solicitudes: crearSolicitudesService({
       repositorio: crearSolicitudesRepository(prisma),
@@ -65,4 +71,3 @@ export function crearDependencias(
     }),
   };
 }
-

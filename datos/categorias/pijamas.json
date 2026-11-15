@@ -173,6 +173,7 @@
         { "id": "modal", "nombre": "Modal", "descripcion": "Fibra ligera, sedosa y muy fresca, con excelente caída. Es transpirable e ideal para climas cálidos o para dormir.", "imagen": "/telas/modal.jpg" }
       ]
     },
+
     {
       "id": "tela-inferior",
       "nombre": "Tela de la parte de abajo",
@@ -187,6 +188,7 @@
         { "id": "modal", "nombre": "Modal", "descripcion": "Fibra ligera, sedosa y muy fresca, con excelente caída. Es transpirable e ideal para climas cálidos o para dormir.", "imagen": "/telas/modal.jpg" }
       ]
     },
+    
     {
       "id": "modalidad-talla",
       "nombre": "¿Cómo indicas la talla?",
@@ -450,11 +452,14 @@
       ]
     },
     {
-      "id": "entrega",
-      "nombre": "¿Cómo recibes tu pijama?",
-      "presentacion": "tarjetas",
-      "opciones": [{ "id": "retiro", "nombre": "Retiro en el local", "muestraInfoLocal": true }]
-    }
+          "id": "entrega",
+          "nombre": "¿Cómo recibes tu pijama?",
+          "presentacion": "tarjetas",
+          "opciones": [
+            { "id": "retiro", "nombre": "Retiro en el local", "muestraInfoLocal": true },
+            { "id": "envio", "nombre": "Envío a domicilio" }
+          ]
+        }
   ],
   "reglas": [
     {
@@ -735,6 +740,8 @@
       "cuando": { "paso": "perfil", "en": ["mujer", "nino", "bebe"] }
     },
 
+
+
     {
       "tipo": "visibilidad",
       "codigo": "A8.7",
@@ -876,6 +883,7 @@
       { "titulo": "Parte superior", "pasos": ["escote", "manga", "botones", "largo", "aberturas", "acabado-superior"] },
       { "titulo": "Parte inferior", "pasos": ["tipo-inferior", "abertura-lateral", "acabado-inferior"] },
       { "titulo": "Telas", "pasos": ["tela-superior", "tela-inferior"] },
+      
       { "titulo": "Bata de salida", "pasos": ["bata-salida", "bata-salida-manga", "bata-salida-acabado"] },
       { "titulo": "Tallaje", "pasos": ["modalidad-talla", "grupo-talla", "talla-superior", "talla-inferior"] },
       { "titulo": "Entrega", "pasos": ["entrega"] }

@@ -87,7 +87,7 @@ describe('HU-12a · color de cada pieza', () => {
     await elegirYSeguir(/^Adulto/)
     await elegirYSeguir('M')
     await elegirYSeguir('M')
-    await siguiente() // entrega fijada
+    await elegirYSeguir('Retiro en el local') // entrega fijada
     await userEvent.type(screen.getByLabelText('Nombre'), 'Ana')
     await userEvent.type(screen.getByLabelText('Teléfono'), '88887777')
     await siguiente()
