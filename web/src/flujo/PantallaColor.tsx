@@ -26,7 +26,7 @@ export function PantallaColor({ configuracion, pedido, elegido, onElegir, mostra
   const elegidoDelCatalogo = elegido && 'catalogo' in elegido ? grupos.flatMap((g) => g.colores).find((c) => c.id === elegido.catalogo) : undefined
   const otro = elegido && 'otro' in elegido ? elegido.otro : undefined
 
-  // Lo elegido del catálogo se confirma arriba (la lista es larga); el rótulo de «otro» va junto a su campo.
+  // Lo elegido del catálogo se confirma arriba (la lista ocupa varias pantallas); el rótulo de «otro» va junto a su campo.
   const rotuloCatalogo = elegidoDelCatalogo && (elegidoDelCatalogo.tono ? colores.rotuloCatalogo : colores.rotuloEstampado)
 
   return (
