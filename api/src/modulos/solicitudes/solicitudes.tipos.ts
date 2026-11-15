@@ -1,9 +1,12 @@
+import type { Colores } from '@iriconfex/shared';
+
 export interface SolicitudEntrada {
   categoria: string;
   nombre: string;
   telefono: string;
   seleccion: Record<string, string>;
   medidas?: Record<string, number>;
+  colores?: Colores; // HU-12a: id del paso de la tela → color del catálogo u otro
   consentimientoEn: Date;
 }
 
@@ -15,6 +18,7 @@ export interface RegistroSolicitud {
   telefono: string;
   seleccion: Record<string, string>;
   medidas?: Record<string, number>;
+  colores?: Colores;
   modalidadTalla: 'UNIVERSAL' | 'MEDIDA' | 'PRESENCIAL'; // AJUSTA al enum de Prisma
   entrega: 'RETIRO' | 'ENVIO'; // AJUSTA al enum de Prisma
   precioEstimadoCrc: number | null;

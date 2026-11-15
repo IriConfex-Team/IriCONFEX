@@ -7,13 +7,23 @@ import { VistaPrenda } from './VistaPrenda'
  * Deja claro a qué parte de la prenda se refiere el paso (p. ej. la talla de arriba y después la de abajo):
  * la prenda con esa parte destacada y su nombre. Así el cambio de un paso al otro no parece un error.
  */
-export function EncabezadoParte({ parte, ilustracion }: { parte: ParteDelPaso; ilustracion: Ilustracion | null }) {
+export function EncabezadoParte({
+  parte,
+  ilustracion,
+  tonos,
+}: {
+  parte: ParteDelPaso
+  ilustracion: Ilustracion | null
+  /** Color de cada pieza según su tela (HU-12b). */
+  tonos?: Readonly<Record<string, string>>
+}) {
   return (
     <div className="flex items-center gap-3 rounded-tarjeta bg-primario-suave p-3">
       {ilustracion && (
         <VistaPrenda
           ilustracion={ilustracion}
           resaltar={new Set(parte.piezas)}
+          tonos={tonos}
           descripcion={`Pijama con la ${parte.nombre.toLowerCase()} destacada`}
           className="h-32 w-24 shrink-0 rounded-tarjeta bg-superficie p-1"
           proporcion={3 / 4}

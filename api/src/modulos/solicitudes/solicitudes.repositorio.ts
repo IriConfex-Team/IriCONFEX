@@ -47,7 +47,8 @@ export function crearSolicitudesRepository(prisma: Cliente): SolicitudesReposito
           perfilId: perfil.id,
           nombreCliente: r.nombreCliente,
           telefono: r.telefono,
-          selecciones: r.seleccion,
+          // HU-12a: los colores se guardan con las elecciones (las piezas aún no se registran por separado)
+          selecciones: r.colores ? { ...r.seleccion, colores: r.colores } : r.seleccion,
           modalidadTalla: r.modalidadTalla,
           entrega: r.entrega,
           precioEstimadoCrc: r.precioEstimadoCrc,

@@ -25,7 +25,9 @@ async function hastaContacto() {
   await elegirYSeguir('Short corto')
   await siguiente() // acabado inferior único
   await elegirYSeguir('Brush')
+  await elegirYSeguir('Rosado Claro') // color de la tela
   await elegirYSeguir('Modal')
+  await elegirYSeguir('Charcoal') // color de la tela
   await elegirYSeguir('Talla estándar')
   await siguiente() // grupo fijado
   await elegirYSeguir('3-6 meses')
@@ -99,6 +101,7 @@ describe('fin del flujo: contacto, resumen y aviso de datos', () => {
       contacto: { nombre: 'Ana Mora', telefono: '88887777' },
       consentimiento: { aceptado: true },
       seleccion: { perfil: 'bebe', entrega: 'retiro' },
+      colores: { 'tela-superior': { catalogo: 'c1-rosado-claro' }, 'tela-inferior': { catalogo: 'charcoal' } },
     })
     expect(await screen.findByText('Listo: tu solicitud de cotización se envió.')).toBeInTheDocument()
   })
@@ -111,8 +114,14 @@ describe('fin del flujo: contacto, resumen y aviso de datos', () => {
     await siguiente()
     await userEvent.click(screen.getByRole('button', { name: 'Cambiar Tela de la parte de arriba' }))
     await userEvent.click(screen.getByRole('radio', { name: 'Rib acanalado' }))
+    // El color de la tela anterior no existe en la nueva: hay que elegirlo antes de volver (HU-12a).
+    expect(screen.queryByRole('button', { name: 'Volver al resumen' })).toBeNull()
+    await siguiente()
+    await userEvent.click(screen.getByRole('radio', { name: 'Azul Rey' }))
     await userEvent.click(screen.getByRole('button', { name: 'Volver al resumen' }))
     expect(screen.getByText('Rib acanalado')).toBeInTheDocument()
+    expect(screen.getByText('Azul Rey')).toBeInTheDocument()
+    expect(screen.queryByText('Rosado Claro (C1)')).toBeNull()
     expect(screen.getByText('Ana')).toBeInTheDocument()
   })
 })
@@ -141,7 +150,9 @@ describe('información del local (HU-03, HU-15, HU-16)', () => {
     await elegirYSeguir('Short corto')
     await siguiente()
     await elegirYSeguir('Brush')
+    await elegirYSeguir('Rosado Claro') // color de la tela
     await elegirYSeguir('Brush')
+    await elegirYSeguir('Rosado Claro') // color de la tela
     await userEvent.click(screen.getByRole('radio', { name: 'Medición presencial' }))
     expect(screen.getByRole('link', { name: negocio.direccion })).toBeInTheDocument()
   })

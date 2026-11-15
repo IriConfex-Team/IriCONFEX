@@ -79,6 +79,7 @@ export function crearSolicitudesService(deps: DependenciasSolicitudes): Solicitu
             telefono: entrada.telefono,
             seleccion: entrada.seleccion,
             medidas: entrada.medidas,
+            colores: entrada.colores,
             modalidadTalla: modalidadTallaDe(entrada),
             entrega: entregaDe(entrada),
             precioEstimadoCrc: precio,

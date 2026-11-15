@@ -1,4 +1,4 @@
-import { validarMedidas, validarSeleccion } from '@iriconfex/shared';
+import { nombreDelColor, validarColores, validarMedidas, validarSeleccion } from '@iriconfex/shared';
 import type { ConfiguracionNegocio } from '../../comun/configuracion.js';
 import type { SolicitudWeb } from './solicitudes.esquemas.js';
 import type { ConfigMensaje } from './solicitudes.mensaje.js';
@@ -28,6 +28,7 @@ export function desdeEsquema(s: SolicitudWeb): SolicitudEntrada {
     telefono: s.contacto.telefono,
     seleccion: s.seleccion,
     medidas: s.medidas,
+    colores: s.colores,
     consentimientoEn: confiable ? declarada : ahora,
   };
 }
@@ -69,7 +70,8 @@ export async function verificarReglas(
   }
   const seleccion = validarSeleccion(config, entrada.seleccion);
   const medidas = validarMedidas(config, entrada.seleccion, entrada.medidas);
-  return [...seleccion.errores, ...medidas.errores].map(textoDeError);
+  const colores = validarColores(config, entrada.seleccion, entrada.colores);
+  return [...seleccion.errores, ...medidas.errores, ...colores.errores].map(textoDeError);
 }
 
 // --- Piezas del pijamas.json -------------------------------------------------------
@@ -97,6 +99,13 @@ export function aConfigMensaje(config: ConfiguracionNegocio): ConfigMensaje {
     secciones: c.resumen?.secciones ?? [],
     pasoMedidas: CONVENCIONES.pasoModalidadTalla,
     nombresMedida: nombresDeMedidas(c.medidas),
+    // HU-12a: el color va debajo de la tela a la que pertenece
+    colores: config.colores
+      ? {
+          pasos: config.colores.pasos,
+          nombre: (tela, elegido) => nombreDelColor(config, tela, elegido),
+        }
+      : undefined,
   };
 }
 
