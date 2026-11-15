@@ -182,6 +182,45 @@ const esquemaMedidas = z.strictObject({
     .min(1),
 })
 
+/** Un color del catálogo de una tela (HU-12a). Sin `tono`, es un estampado. */
+const esquemaColor = z.strictObject({
+  id: z.string().min(1),
+  nombre: z.string().min(1),
+  /** Código del proveedor (p. ej. «C1»). */
+  codigo: z.string().optional(),
+  tono: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'debe ser un color #RRGGBB').optional(),
+  /** Cuántos diseños tiene el estampado. */
+  disenos: z.number().int().positive().optional(),
+})
+
+/**
+ * Color de cada pieza (HU-12a): después de cada paso de `pasos` se pide el color, entre los del catálogo
+ * de la tela elegida (`porTela`, por id de opción) u «otro» escrito por la persona.
+ */
+const esquemaColores = z.strictObject({
+  titulo: z.string().min(1),
+  pasos: z.array(z.strictObject({ paso: z.string().min(1), nombre: z.string().min(1) })).min(1),
+  nota: z.string().optional(),
+  rotuloCatalogo: z.string().min(1),
+  rotuloEstampado: z.string().min(1),
+  /** Si la tela tiene lisos y estampados, primero se pregunta cuál de los dos (sin `tono` = estampado). */
+  tipos: z.strictObject({ pregunta: z.string().min(1), liso: z.string().min(1), estampado: z.string().min(1) }).optional(),
+  otro: z.strictObject({
+    nombre: z.string().min(1),
+    pregunta: z.string().min(1),
+    ejemplo: z.string().optional(),
+    rotulo: z.string().min(1),
+    maximo: z.number().int().positive(),
+  }),
+  porTela: z.record(
+    z.string().min(1),
+    z.strictObject({
+      nota: z.string().optional(),
+      grupos: z.array(z.strictObject({ titulo: z.string().min(1), colores: z.array(esquemaColor).min(1) })).min(1),
+    }),
+  ),
+})
+
 export const esquemaConfiguracion = z.strictObject({
   $schema: z.string().optional(),
   version: z.literal(1),
@@ -210,6 +249,7 @@ export const esquemaConfiguracion = z.strictObject({
   negocio: esquemaNegocio.optional(),
   resumen: esquemaResumen.optional(),
   medidas: esquemaMedidas.optional(),
+  colores: esquemaColores.optional(),
 })
 
 export type Opcion = z.infer<typeof esquemaOpcion>
@@ -225,6 +265,8 @@ export type Negocio = z.infer<typeof esquemaNegocio>
 export type ConfiguracionResumen = z.infer<typeof esquemaResumen>
 export type ConfiguracionMedidas = z.infer<typeof esquemaMedidas>
 export type CampoMedidas = z.infer<typeof esquemaCampoMedidas>
+export type ConfiguracionColores = z.infer<typeof esquemaColores>
+export type ColorCatalogo = z.infer<typeof esquemaColor>
 
 export class ErrorConfiguracion extends Error {
   readonly problemas: string[]
@@ -367,6 +409,24 @@ function verificarReferencias(configuracion: ConfiguracionCategoria): string[] {
         for (const [, paso] of campo.imagen?.matchAll(/\{([^}]+)\}/g) ?? []) {
           if (!opcionesPorPaso.has(paso)) problemas.push(`${donde}: «{${paso}}» no es un paso`)
         }
+      }
+    }
+  }
+
+  const { colores } = configuracion
+  if (colores) {
+    const telas = new Set<string>()
+    for (const { paso } of colores.pasos) {
+      revisarOpciones('colores, pasos', paso, [])
+      opcionesPorPaso.get(paso)?.forEach((opcion) => telas.add(opcion))
+    }
+    for (const [tela, catalogo] of Object.entries(colores.porTela)) {
+      const donde = `colores, tela «${tela}»`
+      if (!telas.has(tela)) problemas.push(`${donde}: no es una opción de los pasos con color`)
+      const ids = new Set<string>()
+      for (const color of catalogo.grupos.flatMap((g) => g.colores)) {
+        if (ids.has(color.id)) problemas.push(`${donde}: el color «${color.id}» está repetido`)
+        ids.add(color.id)
       }
     }
   }

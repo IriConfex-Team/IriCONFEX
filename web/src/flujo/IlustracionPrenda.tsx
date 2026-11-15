@@ -114,6 +114,8 @@ export interface IlustracionPrendaProps {
   vista?: Caja | null
   /** Color de la tela (HU-12a). Sin elegir: gris neutro. */
   color?: string
+  /** Color de cada pieza (id → «#RRGGBB», HU-12b); las que no están usan `color`. */
+  tonos?: Readonly<Record<string, string>>
   /** Ids de las piezas que se destacan; las demás se dibujan atenuadas. Sin valor, todas iguales. */
   resaltar?: ReadonlySet<string>
   /** Texto alternativo; vacío si la imagen es decorativa. */
@@ -128,6 +130,7 @@ export function IlustracionPrenda({
   onMedir,
   vista,
   color,
+  tonos,
   resaltar,
   descripcion,
   className,
@@ -136,7 +139,7 @@ export function IlustracionPrenda({
   const referencia = useRef<SVGSVGElement>(null)
   const [marcado, setMarcado] = useState<{ clave: string; html: string } | null>(null)
   const destacadas = resaltar ? [...resaltar].sort().join() : null
-  const clave = JSON.stringify([ilustracion, destacadas])
+  const clave = JSON.stringify([ilustracion, destacadas, tonos ?? null])
 
   useEffect(() => {
     if (!ilustracion) return
@@ -146,9 +149,12 @@ export function IlustracionPrenda({
         const capas = await Promise.all(pieza.archivos.map(async (url) => ({ url, svg: await cargarCapa(url) })))
         const contenido = armarPieza(capas, `${prefijo}-m${i}`, pieza.ancho, pieza.alto)
         const atenuada = resaltar && !resaltar.has(pieza.id) ? ' opacity="0.25"' : ''
+        // El tono viene de la configuración, ya validado como «#RRGGBB».
+        const tono = tonos?.[pieza.id]
+        const pintada = tono && /^#[0-9a-f]{6}$/i.test(tono) ? ` style="--ilus-color:${tono}"` : ''
         return (
           `<g transform="translate(${pieza.desplazamientoX} ${pieza.desplazamiento})" ` +
-          `data-desplazamiento="${pieza.desplazamiento}" data-desplazamiento-x="${pieza.desplazamientoX}"${atenuada}>${contenido}</g>`
+          `data-desplazamiento="${pieza.desplazamiento}" data-desplazamiento-x="${pieza.desplazamientoX}"${atenuada}${pintada}>${contenido}</g>`
         )
       }),
     ).then((piezas) => {
@@ -157,7 +163,7 @@ export function IlustracionPrenda({
     return () => {
       vigente = false
     }
-    // `clave` resume `ilustracion` y `resaltar`; así no se vuelve a armar con cada render.
+    // `clave` resume `ilustracion`, `resaltar` y `tonos`; así no se vuelve a armar con cada render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clave, prefijo])
 

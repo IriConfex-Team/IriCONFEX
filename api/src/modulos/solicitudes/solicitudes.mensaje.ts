@@ -1,3 +1,4 @@
+import type { ColorElegido } from '@iriconfex/shared';
 import { formatearTelefono } from '../../comun/whatsapp.js';
 import type { SolicitudEntrada } from './solicitudes.tipos.js';
 
@@ -6,6 +7,11 @@ export interface ConfigMensaje {
   secciones: { titulo: string; pasos: string[] }[];
   pasoMedidas?: string; // las medidas se muestran en la sección que contiene este paso
   nombresMedida?: Record<string, string>;
+  /** Pasos de tela con color (HU-12a) y cómo se nombra el color elegido. */
+  colores?: {
+    pasos: { paso: string; nombre: string }[];
+    nombre: (tela: string, elegido: ColorElegido) => string;
+  };
 }
 
 export interface DatosMensaje {
@@ -55,6 +61,11 @@ export function armarMensaje(config: ConfigMensaje, datos: DatosMensaje): string
       const paso = pasosPorId.get(idPaso);
       const opcion = paso?.opciones.find((o) => o.id === elegida);
       bloque.push(sinSignos(paso?.nombre ?? idPaso) + ': ' + (opcion?.nombre ?? elegida));
+      const color = entrada.colores?.[idPaso];
+      const pasoColor = config.colores?.pasos.find((p) => p.paso === idPaso);
+      if (color && pasoColor && config.colores) {
+        bloque.push(pasoColor.nombre + ': ' + config.colores.nombre(elegida, color));
+      }
     }
     const llevaMedidas =
       lineasMedidas.length > 0 &&

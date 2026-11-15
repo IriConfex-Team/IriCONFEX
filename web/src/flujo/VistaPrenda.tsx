@@ -16,6 +16,8 @@ export interface VistaPrendaProps {
   proporcion?: number
   /** Color de la tela; sin valor, el gris neutro. */
   color?: string
+  /** Color de cada pieza (id → tono); las que no están usan `color`. */
+  tonos?: Readonly<Record<string, string>>
 }
 
 /** La prenda armada hasta ahora, siempre sobre lienzo neutro, recortada al dibujo (sin lienzo vacío). */
@@ -27,6 +29,7 @@ export function VistaPrenda({
   descripcion = 'Vista previa de tu elección',
   proporcion = 1,
   color,
+  tonos,
 }: VistaPrendaProps) {
   const clave = JSON.stringify(ilustracion)
   const capas = useMemo(
@@ -53,6 +56,7 @@ export function VistaPrenda({
         vista={caja}
         resaltar={resaltar}
         color={color}
+        tonos={tonos}
         descripcion={descripcion}
         className="h-full w-full"
       />
